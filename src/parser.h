@@ -7,7 +7,8 @@ class Memory
 {
     public:
     std::string mem_Name = "";
-    std::string mem_Path = "";
+    //std::string mem_Path = "";
+    std::vector<std::string> mem_Paths;
 
 };
 

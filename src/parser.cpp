@@ -43,6 +43,7 @@ void Parser::parsermemlist(std::string filename)
         if (flag)
         {
             m.mem_Name = str;
+            m.mem_Paths.clear();
             str = "";
             flag = false;
             pointer_of_buf++;
@@ -50,10 +51,21 @@ void Parser::parsermemlist(std::string filename)
         }
         else
         {
-            m.mem_Path = str;
+           // m.mem_Path = str;
+            //m.mem_Paths.push_back(str);
+            
+            auto it = memorys.find(m.mem_Name);
+            if (it != memorys.end())
+            {
+                it->second.mem_Paths.push_back(str);
+            }
+            else
+            {
+                memorys.insert(pair<string,Memory>(m.mem_Name,m));
+            }
             str = "";
-            memorys.insert(pair<string,Memory>(m.mem_Path,m));
-            m.mem_Path = "";
+            
+            //m.mem_Path = "";
             pointer_of_buf++;
             continue;
 
@@ -67,6 +79,11 @@ void Parser::print()
 {
     for (auto i : memorys)
     {
-        cout << i.first << " " << i.second.mem_Name << endl;
+        cout << i.first << endl;
+        for (auto j : i.second.mem_Paths)
+        {
+            cout << "Path: " << j << endl;
+        }
+        cout << endl;
     }
 }
