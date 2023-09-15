@@ -11,7 +11,7 @@ int main()
 {
 
     Parser p;
-    p.parsermemlist("test.f");
+    p.parsermemlist("test.f"); // 
 
     p.print();
 
