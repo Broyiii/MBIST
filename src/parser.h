@@ -7,8 +7,8 @@ class Memory
 {
     public:
     std::string mem_Name = "";
-    //std::string mem_Path = "";
-    std::vector<std::string> mem_Paths;
+    std::string mem_Path = "";
+    //std::vector<std::string> mem_Paths;
 
 };
 
@@ -23,7 +23,7 @@ class Parser
     void print();
 
     private:
-    std::map<std::string,Memory> memorys; // memory_location / memory
+    std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
     std::vector<char> buf;
     int pointer_of_buf = 0;
     int size_of_buf = 0;
