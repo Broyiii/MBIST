@@ -82,6 +82,88 @@ void Parser::parsermemlist(std::string filename)
     
 }
 
+void Parser::parserdef(std::string filename)
+{
+    std::ifstream file(filename, std::ios::binary);
+	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
+	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
+	file.close();
+
+    buf = buf_tmp;
+	buf_tmp.clear();
+	pointer_of_buf = 0;
+	size_of_buf = buf.size();
+
+    while (pointer_of_buf < size_of_buf)
+    {
+        if (buf[pointer_of_buf] != '-') // skip <File Partial>
+        {
+            pointer_of_buf++;
+            continue;
+        }
+        else
+        {
+            pointer_of_buf += 2;
+            string path_ = "";
+            string memory_name = "";
+            while (buf[pointer_of_buf] != ' ')
+            {
+                path_ += buf[pointer_of_buf];
+                pointer_of_buf++;
+            }
+            pointer_of_buf++;
+            while (buf[pointer_of_buf] != ' ')
+            {
+                memory_name += buf[pointer_of_buf];
+                pointer_of_buf++;
+            }
+            while (buf[pointer_of_buf] != '(')
+            {
+                pointer_of_buf++;
+                continue;
+            } 
+            pointer_of_buf++;
+            string low = "";
+            string up = "";
+            while (buf[pointer_of_buf] != ' ')
+            {
+                low += buf[pointer_of_buf];
+                pointer_of_buf++;
+            }
+            pointer_of_buf++;
+            while (buf[pointer_of_buf] != ')')
+            {
+                up += buf[pointer_of_buf];
+                pointer_of_buf++;
+            }
+            int Low = atoi(low.c_str());
+            int Up = atoi(up.c_str());
+            low = "";
+            up = "";
+            auto it_name = memorys.find(memory_name);
+            if (it_name != memorys.end())
+            {
+                auto it_name_path = it_name->second.find(path_);
+                if (it_name_path != it_name->second.end())
+                {
+                    it_name_path->second.low_bound = Low;
+                    it_name_path->second.up_bound = Up;
+                }
+                else
+                {
+                    cout << "Not path_: " << path_ << " of" << memory_name << endl;
+                }
+            }
+            else
+            {
+                cout << "Not name: " << memory_name << endl;
+            }
+            
+
+        }   
+    }
+}
+
 void Parser::print()
 {
     for (auto i : memorys)
@@ -89,7 +171,7 @@ void Parser::print()
         cout << i.first << endl;
         for (auto j : i.second)
         {
-            cout << "Path: " << j.first << endl;
+            cout << "Path: " << j.first << " Low_limit: " << j.second.low_bound << " Up_limit: " << j.second.up_bound << endl;
         }
         cout << endl;
     }

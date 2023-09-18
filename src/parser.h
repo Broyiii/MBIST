@@ -8,7 +8,8 @@ class Memory
     public:
     std::string mem_Name = "";
     std::string mem_Path = "";
-    //std::vector<std::string> mem_Paths;
+    int up_bound = 0;
+    int low_bound = 0;
 
 };
 
