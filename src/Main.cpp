@@ -11,9 +11,9 @@ int main()
 {
 
     Parser p;
-    p.parsermemlist("test.f");
-    p.parserdef("test.def");
-    p.print();
+    p.ParserMemList("test.f");
+    p.ParserDef("test.def");
+    p.Print();
 
     return 0;
 }

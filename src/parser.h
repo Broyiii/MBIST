@@ -16,17 +16,17 @@ class Memory
 class Parser
 {
     public:
-    void parsermemlist(std::string filename);
-    void parserdatasheet(std::string filename);
-    void parserdef(std::string filename);
-    void parserlib(std::string filename);
-    void parserverilog(std::string filename);
-    void print();
+    void ParserMemList(std::string filename);
+    void ParserDataSheet(std::string filename);
+    void ParserDef(std::string filename);
+    void ParserLib(std::string filename);
+    void ParserVerilog(std::string filename);
+    void Print();
 
     private:
     std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
     std::vector<char> buf;
-    int pointer_of_buf = 0;
+    int ptr_of_buf = 0;
     int size_of_buf = 0;
 
 };

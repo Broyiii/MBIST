@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Parser::parsermemlist(std::string filename)
+void Parser::ParserMemList(std::string filename)
 {
     std::ifstream file(filename, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
@@ -16,29 +16,29 @@ void Parser::parsermemlist(std::string filename)
 
     buf = buf_tmp;
 	buf_tmp.clear();
-	pointer_of_buf = 0;
+	ptr_of_buf = 0;
 	size_of_buf = buf.size();
 
     Memory m;
     bool flag = false;
 
-    while (pointer_of_buf < size_of_buf)
+    while (ptr_of_buf < size_of_buf)
     {
         string str = "";
-        while (buf[pointer_of_buf] != '\n')
+        while (buf[ptr_of_buf] != '\n')
         {
-            if (buf[pointer_of_buf] == ' ')
+            if (buf[ptr_of_buf] == ' ')
             {
-                pointer_of_buf++;
+                ptr_of_buf++;
                 continue;
             }
-            if (buf[pointer_of_buf] == ':')
+            if (buf[ptr_of_buf] == ':')
             {
                 flag = true;
                 break;
             }
-            str += buf[pointer_of_buf];
-            pointer_of_buf++;
+            str += buf[ptr_of_buf];
+            ptr_of_buf++;
         }
         if (flag)
         {
@@ -46,7 +46,7 @@ void Parser::parsermemlist(std::string filename)
             //m.mem_Paths.clear();
             str = "";
             flag = false;
-            pointer_of_buf++;
+            ptr_of_buf++;
             continue;
         }
         else
@@ -73,7 +73,7 @@ void Parser::parsermemlist(std::string filename)
             str = "";
             
             
-            pointer_of_buf++;
+            ptr_of_buf++;
             continue;
 
         }
@@ -82,7 +82,7 @@ void Parser::parsermemlist(std::string filename)
     
 }
 
-void Parser::parserdef(std::string filename)
+void Parser::ParserDef(std::string filename)
 {
     std::ifstream file(filename, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
@@ -91,50 +91,50 @@ void Parser::parserdef(std::string filename)
 
     buf = buf_tmp;
 	buf_tmp.clear();
-	pointer_of_buf = 0;
+	ptr_of_buf = 0;
 	size_of_buf = buf.size();
 
-    while (pointer_of_buf < size_of_buf)
+    while (ptr_of_buf < size_of_buf)
     {
-        if (buf[pointer_of_buf] != '-') // skip <File Partial>
+        if (buf[ptr_of_buf] != '-') // skip <File Partial>
         {
-            pointer_of_buf++;
+            ptr_of_buf++;
             continue;
         }
         else
         {
-            pointer_of_buf += 2;
+            ptr_of_buf += 2;
             string path_ = "";
             string memory_name = "";
-            while (buf[pointer_of_buf] != ' ')
+            while (buf[ptr_of_buf] != ' ')
             {
-                path_ += buf[pointer_of_buf];
-                pointer_of_buf++;
+                path_ += buf[ptr_of_buf];
+                ptr_of_buf++;
             }
-            pointer_of_buf++;
-            while (buf[pointer_of_buf] != ' ')
+            ptr_of_buf++;
+            while (buf[ptr_of_buf] != ' ')
             {
-                memory_name += buf[pointer_of_buf];
-                pointer_of_buf++;
+                memory_name += buf[ptr_of_buf];
+                ptr_of_buf++;
             }
-            while (buf[pointer_of_buf] != '(')
+            while (buf[ptr_of_buf] != '(')
             {
-                pointer_of_buf++;
+                ptr_of_buf++;
                 continue;
             } 
-            pointer_of_buf++;
+            ptr_of_buf++;
             string low = "";
             string up = "";
-            while (buf[pointer_of_buf] != ' ')
+            while (buf[ptr_of_buf] != ' ')
             {
-                low += buf[pointer_of_buf];
-                pointer_of_buf++;
+                low += buf[ptr_of_buf];
+                ptr_of_buf++;
             }
-            pointer_of_buf++;
-            while (buf[pointer_of_buf] != ')')
+            ptr_of_buf++;
+            while (buf[ptr_of_buf] != ')')
             {
-                up += buf[pointer_of_buf];
-                pointer_of_buf++;
+                up += buf[ptr_of_buf];
+                ptr_of_buf++;
             }
             int Low = atoi(low.c_str());
             int Up = atoi(up.c_str());
@@ -164,7 +164,7 @@ void Parser::parserdef(std::string filename)
     }
 }
 
-void Parser::print()
+void Parser::Print()
 {
     for (auto i : memorys)
     {
