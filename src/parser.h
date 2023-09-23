@@ -3,9 +3,8 @@
 #include <vector>
 #include <map>
 
-class Memory
+struct Memory
 {
-    public:
     std::string mem_Name = "";
     std::string mem_Path = "";
     int up_bound = 0;
@@ -16,17 +15,36 @@ class Memory
 class Parser
 {
     public:
-    void ParserMemList(std::string filename);
-    void ParserDataSheet(std::string filename);
-    void ParserDef(std::string filename);
-    void ParserLib(std::string filename);
-    void ParserVerilog(std::string filename);
+    Parser(std::string mem_list,std::string def)
+    {
+        this->memorylist_file = mem_list;
+        this->def_file = def;
+
+    }
+
+
+    std::string memorylist_file;                                // memoory_list inputfile
+    std::string def_file;                                       // def path inputfile
+    std::string datasheet_file;                                 // datasheet inputfile
+    std::string verilog_file;                                   // verilog inputfile
+    std::string lib_file;                                       // lib input file
+    std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
+    std::vector<Memory> Memorys;
+
     void Print();
+    void GetAllMemory();
+    void GetInformationFromFile();
 
     private:
-    std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
+    void ParserMemList();
+    void ParserDataSheet();
+    void ParserDef();
+    void ParserLib();
+    void ParserVerilog();
+
     std::vector<char> buf;
     int ptr_of_buf = 0;
     int size_of_buf = 0;
+    
 
 };

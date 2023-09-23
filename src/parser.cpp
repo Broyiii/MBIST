@@ -7,8 +7,9 @@
 
 using namespace std;
 
-void Parser::ParserMemList(std::string filename)
+void Parser::ParserMemList()
 {
+    std::string filename = this->memorylist_file;
     std::ifstream file(filename, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
 	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
@@ -79,11 +80,15 @@ void Parser::ParserMemList(std::string filename)
         }
         
     }
+    buf.clear();
     
 }
 
-void Parser::ParserDef(std::string filename)
+
+
+void Parser::ParserDef()
 {
+    std::string filename = this->def_file;
     std::ifstream file(filename, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
 	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
@@ -162,6 +167,7 @@ void Parser::ParserDef(std::string filename)
 
         }   
     }
+    buf.clear();
 }
 
 void Parser::Print()
@@ -175,4 +181,34 @@ void Parser::Print()
         }
         cout << endl;
     }
+    cout << "-----------------------------------------------" << endl;
+    for (auto i : Memorys)
+    {
+        cout << "Name: " << i.mem_Name << " Path: " << i.mem_Path << " UP: " << i.up_bound << " LOW: " << i.low_bound << endl;
+    }
+}
+
+void Parser::GetAllMemory()
+{
+    for (auto i : memorys)
+    {
+        for (auto j : i.second)
+        {
+            Memorys.push_back(j.second);
+        }
+    }
+}
+
+void Parser::GetInformationFromFile()
+{
+    // parser file 
+    ParserMemList();
+    ParserDef();
+
+
+
+    // Show Information
+    GetAllMemory();
+    Print();
+
 }

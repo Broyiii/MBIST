@@ -10,10 +10,9 @@ using namespace std;
 int main()
 {
 
-    Parser p;
-    p.ParserMemList("test.f");
-    p.ParserDef("test.def");
-    p.Print();
+    Parser parser("test.f","test.def");
+    parser.GetInformationFromFile();
+
 
     return 0;
 }
