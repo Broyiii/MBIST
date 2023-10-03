@@ -170,6 +170,162 @@ void Parser::ParserDef()
     buf.clear();
 }
 
+void Parser::ParserLib()
+{
+    std::string filename = this->lib_file;
+    std::ifstream file(filename, std::ios::binary);
+	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
+	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
+	file.close();
+
+    buf = buf_tmp;
+	buf_tmp.clear();
+	ptr_of_buf = 0;
+	size_of_buf = buf.size();
+
+    string cellname = "";
+    int words = 0;
+
+    while (ptr_of_buf < size_of_buf)
+    {
+        string str = "";
+        while (buf[ptr_of_buf] != '\n')
+        {
+            str += buf[ptr_of_buf];
+            ptr_of_buf++;
+        }
+
+        if (!str.length())
+        {
+            ptr_of_buf++;
+           // continue;
+        }
+        else
+        {
+            if (str.find("CellName") != string::npos) 
+            {
+                cellname = "";
+                int t = str.find(':');
+                t += 2;
+                while (str[t] != ';')
+                {
+                    cellname += str[t];
+                    t++;
+                }
+                ptr_of_buf++;
+              //  continue;
+            }
+            else if (str.find("NumberOfWords") != string::npos)
+            {
+                int t = str.find(':');
+                t += 2;
+                string word = "";
+                while (str[t] != ';')
+                {
+                    word += str[t];
+                    t++;
+                }
+                words = atoi(word.c_str());
+                auto it = memorys.find(cellname);
+                for (auto & j : it->second)
+                {
+                    j.second.NumberOfWords = words;
+                }
+            }
+            else if (str.find("Algorithm") != string::npos)
+            {
+                auto it = memorys.find(cellname);
+                int t = str.find(':');
+                t += 2;
+                string tmp = "";
+                while (str[t] != ';')
+                {   
+                    if (str[t] == ' ')
+                    {
+                        t++;
+                        for (auto & j : it->second)
+                        {
+                            j.second.Algorithms.insert(pair<string,int>(tmp,1));
+                        }
+                        tmp = "";
+                        continue;
+                    }
+                    else
+                    {
+                        tmp += str[t];
+                        t++;
+                    }
+
+                }
+                for (auto & j : it->second)
+                {
+                    j.second.Algorithms.insert(pair<string,int>(tmp,1));
+                }
+
+               // ptr_of_buf++;
+                continue;
+            }
+            else if (str.find("Port") != string::npos)
+            {
+                ptr_of_buf++;
+                string func = "";
+                while (buf[ptr_of_buf] != '\n')
+                {
+                    func += buf[ptr_of_buf];
+                    ptr_of_buf++;
+                }
+                if (func.find("Clock") != string::npos)
+                {
+                    int t = str.find('(');
+                    t++;
+                    string tmp = "";
+                    auto it = memorys.find(cellname);
+                    while (str[t] != ')')
+                    {
+                        if (str[t] == ' ')
+                        {
+                            t++;
+                            for (auto & j : it->second)
+                            {
+                                j.second.Clock_Siganls.insert(pair<string,int>(tmp,1));
+                            }
+                            tmp = "";
+                            continue;
+                        }
+                        else
+                        {
+                            tmp += str[t];
+                            t++;
+                            continue;
+                        }
+
+                    }
+                    for (auto & j : it->second)
+                    {
+                        j.second.Clock_Siganls.insert(pair<string,int>(tmp,1));
+                    }
+                    ptr_of_buf++;
+                  //  continue;
+                }
+                else
+                {
+                    ptr_of_buf++;
+                  //  continue;
+                }
+            }
+            else
+            {
+                ptr_of_buf++;
+               // continue;
+            }
+        }
+
+
+    }
+
+
+}
+
 void Parser::Print()
 {
     for (auto i : memorys)
@@ -177,7 +333,20 @@ void Parser::Print()
         cout << i.first << endl;
         for (auto j : i.second)
         {
-            cout << "Path: " << j.first << " Low_limit: " << j.second.low_bound << " Up_limit: " << j.second.up_bound << endl;
+            cout << "Path: " << j.first << " Low_limit: " << j.second.low_bound << " Up_limit: " << j.second.up_bound << " NumberOfWords: " << j.second.NumberOfWords << endl;
+            cout << "Algorithms: " << endl;
+            for (auto k : j.second.Algorithms)
+            {
+                cout << k.first << " ";
+            }
+            cout << endl;
+            cout << "Clock_Siganls: " << endl;
+            for (auto k1 : j.second.Clock_Siganls)
+            {
+                cout << k1.first << " ";
+            }
+            cout <<endl;
+            
         }
         cout << endl;
     }
@@ -204,6 +373,7 @@ void Parser::GetInformationFromFile()
     // parser file 
     ParserMemList();
     ParserDef();
+    ParserLib();
 
 
 

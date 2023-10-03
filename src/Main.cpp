@@ -7,10 +7,13 @@
 
 using namespace std;
 
-int main()
+int main(int argc,char *argv[])
 {
+    string f_file = argv[1];
+    string def_file = argv[2];
+    string lib_file = argv[3];
 
-    Parser parser("test.f","test.def");
+    Parser parser(f_file,def_file,lib_file);
     parser.GetInformationFromFile();
 
 

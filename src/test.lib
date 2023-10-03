@@ -1,0 +1,137 @@
+MemoryTemplate (spsram_64x62m4s) {
+
+    CellName        : spsram_64x62m4s;
+    Algorithm       : SMarchCHKBvcd;
+    logicalPorets   : 1rw;
+    NumberOfWords   : 64;
+    MinHold         : 0.5;
+    MilliWattsPerMegaHertz  : 0.004;
+    TransparentMode         : None;
+
+
+
+
+    Port (CLK) {
+        Function: Clock;
+    }
+    Port (CEB) {
+        Function: Select;
+    }
+
+    Port (WEB) {
+        Function: WriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (BWEB[15:0]) {
+        Function: GroupWriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (D[15:0]) {
+        Function: Data;
+        Direction: Input;
+    }
+
+    Port (Q[15:0]) {
+        Function: Data;
+        Direction: Output;
+    }
+
+    Port (A[9:0]) {
+        Function: Address;
+        
+    }
+}
+
+MemoryTemplate (spsram_2048x32m4s) {
+
+    CellName        : spsram_2048x32m4s;
+    Algorithm       : SMarchCHKBvcd SMarch;
+    logicalPorets   : 1rw;
+    NumberOfWords   : 2048;
+    MinHold         : 0.5;
+    MilliWattsPerMegaHertz  : 0.004;
+    TransparentMode         : None;
+
+
+
+
+    Port (CLK) {
+        Function: Clock;
+    }
+    Port (CEB) {
+        Function: Select;
+    }
+
+    Port (WEB) {
+        Function: WriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (BWEB[15:0]) {
+        Function: GroupWriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (D[15:0]) {
+        Function: Data;
+        Direction: Input;
+    }
+
+    Port (Q[15:0]) {
+        Function: Data;
+        Direction: Output;
+    }
+
+    Port (A[9:0]) {
+        Function: Address;
+        
+    }
+}
+
+MemoryTemplate (spsram_1024x32m4s) {
+
+    CellName        : spsram_1024x32m4s;
+    Algorithm       : SMarchCHKBvcd SMarchBvcd SBvcd;
+    logicalPorets   : 1rw;
+    NumberOfWords   : 1024;
+    MinHold         : 0.5;
+    MilliWattsPerMegaHertz  : 0.004;
+    TransparentMode         : None;
+
+
+
+
+    Port (CLK) {
+        Function: Clock;
+    }
+    Port (CEB) {
+        Function: Select;
+    }
+
+    Port (WEB) {
+        Function: WriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (BWEB[15:0]) {
+        Function: GroupWriteEnble;
+        Polarity: ActiveLow;
+    }
+
+    Port (D[15:0]) {
+        Function: Data;
+        Direction: Input;
+    }
+
+    Port (Q[15:0]) {
+        Function: Data;
+        Direction: Output;
+    }
+
+    Port (A[9:0]) {
+        Function: Address;
+        
+    }
+}
