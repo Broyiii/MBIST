@@ -1,14 +1,13 @@
 #ifndef _PARSER_CPP_
 #define _PARSER_CPP_
 
-#include "parser.h"
+#include "parser.hpp"
 
 // using namespace std;
 
 void Parser::ParserMemList()
 {
-    std::string filename = this->memorylist_file;
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(this->memorylist_file, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
 	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
 	file.close();
@@ -26,6 +25,10 @@ void Parser::ParserMemList()
         string str = "";
         while (buf[ptr_of_buf] != '\n')
         {
+            if (ptr_of_buf >= size_of_buf)
+            {
+                break;
+            }
             if (buf[ptr_of_buf] == ' ')
             {
                 ptr_of_buf++;
@@ -71,10 +74,8 @@ void Parser::ParserMemList()
             }
             str = "";
             
-            
             ptr_of_buf++;
             continue;
-
         }
         
     }
@@ -83,11 +84,9 @@ void Parser::ParserMemList()
 }
 
 
-
 void Parser::ParserDef()
 {
-    std::string filename = this->def_file;
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(this->def_file, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
 	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
 	file.close();
@@ -102,6 +101,10 @@ void Parser::ParserDef()
         if (buf[ptr_of_buf] != '-') // skip <File Partial>
         {
             ptr_of_buf++;
+            if (ptr_of_buf >= size_of_buf)
+            {
+                break;
+            }
             continue;
         }
         else
@@ -170,8 +173,7 @@ void Parser::ParserDef()
 
 void Parser::ParserLib()
 {
-    std::string filename = this->lib_file;
-    std::ifstream file(filename, std::ios::binary);
+    std::ifstream file(this->lib_file, std::ios::binary);
 	std::vector<char> buf_tmp(static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg()));
 	file.seekg(0, std::ios::beg).read(&buf_tmp[0], static_cast<std::streamsize>(buf_tmp.size()));
 	file.close();
@@ -191,6 +193,8 @@ void Parser::ParserLib()
         {
             str += buf[ptr_of_buf];
             ptr_of_buf++;
+            if (ptr_of_buf >= ptr_of_buf)
+                break;
         }
 
         if (!str.length())
@@ -321,7 +325,6 @@ void Parser::ParserLib()
 
     }
 
-
 }
 
 void Parser::Print()
@@ -372,8 +375,6 @@ void Parser::GetInformationFromFile()
     ParserMemList();
     ParserDef();
     ParserLib();
-
-
 
     // Show Information
     GetAllMemory();
