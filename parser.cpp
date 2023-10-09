@@ -1,11 +1,9 @@
-#include "parser.h"
-#include <algorithm>
-#include <iomanip>
-#include <math.h>
-#include <fstream>
-#include <sstream>
+#ifndef _PARSER_CPP_
+#define _PARSER_CPP_
 
-using namespace std;
+#include "parser.h"
+
+// using namespace std;
 
 void Parser::ParserMemList()
 {
@@ -382,3 +380,6 @@ void Parser::GetInformationFromFile()
     Print();
 
 }
+
+
+#endif

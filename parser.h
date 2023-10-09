@@ -1,7 +1,17 @@
+#ifndef _PARSER_H_
+#define _PARSER_H_
+
+#include <algorithm>
+#include <iomanip>
+#include <math.h>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
+
+using namespace std;
 
 struct Memory
 {
@@ -17,7 +27,7 @@ struct Memory
 
 class Parser
 {
-    public:
+public:
     Parser(std::string mem_list,std::string def,std::string lib)
     {
         this->memorylist_file = mem_list;
@@ -36,7 +46,7 @@ class Parser
     std::vector<Memory> Memorys;
     void GetInformationFromFile();
 
-    private:
+private:
     void ParserMemList();
     void ParserDataSheet();
     void ParserDef();
@@ -51,3 +61,6 @@ class Parser
     
 
 };
+
+
+#endif

@@ -1,11 +1,7 @@
-#include "parser.cpp"
-#include <algorithm>
-#include <iomanip>
-#include <math.h>
-#include <fstream>
-#include <sstream>
+#include "parser.h"
+// #include "parser.cpp"
 
-using namespace std;
+// using namespace std;
 
 int main(int argc,char *argv[])
 {
