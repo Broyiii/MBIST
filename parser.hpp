@@ -1,5 +1,5 @@
-#ifndef _PARSER_H_
-#define _PARSER_H_
+#ifndef _PARSER_HPP_
+#define _PARSER_HPP_
 
 #include <algorithm>
 #include <iomanip>
@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 #include <map>
-
-using namespace std;
 
 struct Memory
 {
@@ -33,6 +31,14 @@ public:
         this->memorylist_file = mem_list;
         this->def_file = def;
         this->lib_file = lib;
+        printf("**************************************************************************\n");
+        printf("*                          Partitioning Context                          *\n");
+        printf("**************************************************************************\n");
+        printf("Partition Parameters:\n");
+        printf("    - f file:                         %s\n", mem_list.c_str());
+        printf("    - def file:                       %s\n", def.c_str());
+        printf("    - lib file:                       %s\n", lib.c_str());
+        printf("--------------------------------------------------------------------------\n");
     }
 
 
@@ -52,12 +58,7 @@ private:
     void ParserLib();
     void ParserVerilog();
     void Print();
-    void GetAllMemory();
-
-    std::vector<char> buf;
-    size_t ptr_of_buf = 0;
-    size_t size_of_buf = 0;
-    
+    void GetAllMemory();  
 
 };
 

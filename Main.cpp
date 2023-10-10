@@ -1,10 +1,10 @@
 #include "parser.hpp"
 #include "writeInfo.hpp"
 
-// using namespace std;
-
 int main(int argc,char *argv[])
 {
+    TIME_START;
+
     WriteHead();
 
     if ((argc == 1) || (argc % 2 == 0))
@@ -13,31 +13,28 @@ int main(int argc,char *argv[])
         return 1;
     }
 
-    string f_file;
-    string def_file;
-    string lib_file;
+    std::string f_file;
+    std::string def_file;
+    std::string lib_file;
 
     int argIndex = 1;
     int requiredArgNum = 0;
     while (argIndex < (argc - 1))
     {
-        string arg_str = argv[argIndex++];
+        std::string arg_str = argv[argIndex++];
         if (arg_str == "-f")
         {
             f_file = argv[argIndex++];
-            printf("f_file = %s\n", f_file.c_str());
             ++requiredArgNum;
         }
         else if (arg_str == "-def")
         {
             def_file = argv[argIndex++];
-            printf("def_file = %s\n", def_file.c_str());
             ++requiredArgNum;
         }
         else if (arg_str == "-lib")
         {
             lib_file = argv[argIndex++];
-            printf("lib_file = %s\n", lib_file.c_str());
             ++requiredArgNum;
         }
         else if (arg_str == "-info")
@@ -57,11 +54,11 @@ int main(int argc,char *argv[])
         return 1;
     }
 
-    printf("Get argv successfully !\n");
-
     Parser parser(f_file, def_file, lib_file);
     parser.GetInformationFromFile();
 
+    TIME_OUT;
+    printf("\n- Running Time = %0f s\n", (double)(____end - ____start) / 1000000);
 
     return 0;
 }
