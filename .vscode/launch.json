@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) 启动",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/lzx/git_mbist/MBIST/MBIST/build/MBISTPart",
+            "args": [
+                "-f",
+                "./demo/tc03_memorylist_c.f",
+                "-def",
+                "./demo/tc03_memory_pos_c.def",
+                "-lib",
+                "./demo/test.lib"
+            ],
+            "stopAtEntry": true,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

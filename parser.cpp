@@ -130,15 +130,15 @@ void Parser::ParserDef()
     input.close();
 }
 
-void Parser::ParserLib(std::string lib)
+void Parser::ParserLvlib(std::string lvlib)
 {
     //std::string Lib = "/home/lzx/mbist/testcase_S1/testcase03/lvlib/" + lib + "_logicv.lib"; 
   //  std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << lib << std::endl;
-    std::ifstream input(lib);
+    std::ifstream input(lvlib);
     
     if (!input.is_open())
     {
-        std::cout << "ERROR! No such file " << lib << std::endl;
+        std::cout << "ERROR! No such file " << lvlib << std::endl;
     }
     std::string line = "";
     
@@ -228,6 +228,117 @@ void Parser::ParserLib(std::string lib)
     input.close();
 }
 
+void Parser::ParserLib(std::string lib)
+{
+    std::ifstream input(lib);
+    
+    if (!input.is_open())
+    {
+        std::cout << "ERROR! No such file " << lib << std::endl;
+    }
+    std::string line = "";
+    std::string cellname = "";
+    std::string type = "";
+    std::string a_width = "";
+    std::string w_width = "";
+    std::string Area = "";
+    std::string timing_pin = "";
+    int a = 0;
+    int w = 0;
+    float AREA = 0.0;
+
+    while (getline(input,line))
+    {
+        if (line.find("cell ( ") != std::string::npos)
+        {
+            int t = line.find('(');
+            t += 2;
+            while (line[t] != ' ')
+            {
+                cellname += line[t];
+                t++;
+            }
+            continue;
+            
+        }
+        else if (line.find("memory () {") != std::string::npos)
+        {
+            getline(input,line);
+            int t = line.find(':');
+            t += 2;
+            while (line[t] != ' ')
+            {
+                type += line[t];
+                t++;
+            }
+            getline(input,line);
+            t = line.find(':');
+            t += 2;
+            while (line[t] != ' ')
+            {
+                a_width += line[t];
+                t++;
+            }
+            getline(input,line);
+            t = line.find(':');
+            t += 2;
+            while (line[t] != ' ')
+            {
+                w_width += line[t];
+                t++;
+            }
+            a = atoi(a_width.c_str());
+            w = atoi(w_width.c_str());
+
+        }
+        else if (line.find("area : ") != std::string::npos)
+        {
+            int t = line.find(':');
+            t += 2;
+            while (line[t] != ' ')
+            {
+                Area += line[t];
+                t++;
+            }
+            AREA = std::stof(Area.c_str());
+        }
+        else if (line.find("timing() {") != std::string::npos)
+        {
+            getline(input,line);
+            getline(input,line);
+            std::cout << line << std::endl;
+            int t = line.find('\"');
+            t++;
+            while (line[t] != '\"')
+            {
+               // std::cout << line[t] << std::endl;
+                timing_pin += line[t];
+                t++;
+            }
+            break;
+        }
+        else
+        {
+            continue;
+        }
+
+
+    }
+
+    auto it = memorys.find(cellname);
+    for (auto &i : it->second)
+    {
+        i.second.mem_type = type;
+        i.second.address_width = a;
+        i.second.word_width = w;
+        i.second.timing_pin = timing_pin;
+        i.second.area = AREA;
+    }
+
+
+    input.close();
+}
+
 void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &filenames)
 {
     DIR *pDir;
@@ -249,10 +360,10 @@ void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &f
 
 void Parser::GetAllFileNames()
 {
-    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/ds",this->ds_folder);
-    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/lib",this->lib_folder);
-    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/lvlib",this->lvlib_folder);
-    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/verilog",this->verilog_folder);
+    GetFileNameFromFolder("/home/lzx/git_mbist/MBIST/MBIST/demo/ds",this->ds_folder);
+    GetFileNameFromFolder("/home/lzx/git_mbist/MBIST/MBIST/demo/lib",this->lib_folder);
+    GetFileNameFromFolder("/home/lzx/git_mbist/MBIST/MBIST/demo/lvlib",this->lvlib_folder);
+    GetFileNameFromFolder("/home/lzx/git_mbist/MBIST/MBIST/demo/verilog",this->verilog_folder);
     std::cout << this->ds_folder.size() << std::endl;
     std::cout << this->lib_folder.size() << std::endl;
     std::cout << this->lvlib_folder.size() << std::endl;
@@ -274,6 +385,8 @@ void Parser::Print()
                 std::cout << k.first << " ";
             }
             std::cout << std::endl;
+            std::cout << "Area: " << j.second.area << " timing_pin: " << j.second.timing_pin << " mem_type: " << j.second.mem_type << std::endl; 
+            std::cout << " address_width: " << j.second.address_width << " word_width: " << j.second.word_width << std::endl;
         }
     }
 }
@@ -286,27 +399,25 @@ void Parser::GetInformationFromFile()
     ParserMemList();
     ParserDef();
 
-    // for (auto i : memorys)
-    // {
-    //     std::cout << i.first << std::endl;
-    // }
-
     for (int i = 0;i < this->lvlib_folder.size();i++)
     {
-        //std::cout << lib_name[i] << std::endl;
-        // if (memorys.find(this->lvlib_folder[i]) != memorys.end())
-        // {
-        //     ParserLib(this->lvlib_folder[i]);
-        // }
         for (auto j : memorys)
         {
             if (this->lvlib_folder[i].find(j.first) != std::string::npos)
             {
-                ParserLib(this->lvlib_folder[i]);
+                ParserLvlib(this->lvlib_folder[i]);
             }
-        }
-        
+
+            if (this->lib_folder[i].find(j.first) != std::string::npos)
+            {
+                ParserLib(this->lib_folder[i]);
+            }
+        }  
     }
+
+
+
+
     // Show Information
     Print();
 }

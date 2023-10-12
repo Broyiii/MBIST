@@ -27,7 +27,11 @@ struct Memory
     std::map<std::string,int> Algorithms;
     std::string Clock_Siganls;
     int NumberOfWords = 0;
-    
+    float area = 0.0;
+    std::string timing_pin = "";
+    std::string mem_type = "";
+    int address_width = 0;
+    int word_width = 0;
 };
 
 class Parser
@@ -57,7 +61,7 @@ public:
     std::vector<std::string> lib_name;
     void GetInformationFromFile();
 
-    std::vector<std::string> ds_folder;
+    std::vector<std::string> ds_folder; 
     std::vector<std::string> lib_folder;
     std::vector<std::string> lvlib_folder;
     std::vector<std::string> verilog_folder;
@@ -68,6 +72,7 @@ private:
     void ParserMemList();
     void ParserDataSheet();
     void ParserDef();
+    void ParserLvlib(std::string lvlib);
     void ParserLib(std::string lib);
     void ParserVerilog();
     void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
