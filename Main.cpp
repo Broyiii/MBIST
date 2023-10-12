@@ -4,38 +4,36 @@
 int main(int argc,char *argv[])
 {
     TIME_START;
+    std::ios::sync_with_stdio(0),std::cin.tie(0),std::cout.tie(0);
 
     WriteHead();
 
-    // if ((argc == 1) || (argc % 2 == 0))
-    // {
-    //     WrongUsage();
-    //     return 1;
-    // }
+    if ((argc == 1) || (argc % 2 == 0))
+    {
+        WrongUsage();
+        return 1;
+    }
 
-    std::string f_file = "/home/lzx/git_mbist/MBIST/MBIST/demo/tc03_memorylist_c.f";
-    std::string def_file = "/home/lzx/git_mbist/MBIST/MBIST/demo/tc03_memory_pos_c.def";
-    std::string lib_file = "";
+    std::string work_dir;
 
     int argIndex = 1;
     int requiredArgNum = 0;
     while (argIndex < (argc - 1))
     {
         std::string arg_str = argv[argIndex++];
-        if (arg_str == "-f")
+        if (arg_str == "-d")
         {
-            f_file = argv[argIndex++];
-            ++requiredArgNum;
-        }
-        else if (arg_str == "-def")
-        {
-            def_file = argv[argIndex++];
-            ++requiredArgNum;
-        }
-        else if (arg_str == "-lib")
-        {
-            lib_file = argv[argIndex++];
-            ++requiredArgNum;
+            int pathExist = access(argv[argIndex], F_OK);
+            if (pathExist == 0)
+            {
+                work_dir= argv[argIndex++];
+            }
+            else
+            {
+                printf("ERROR ! No such directory [ %s ] !\n\n", argv[argIndex]);
+                return 1;
+            }
+            // ++requiredArgNum;
         }
         else if (arg_str == "-info")
         {
@@ -54,11 +52,11 @@ int main(int argc,char *argv[])
     //     return 1;
     // }
 
-    Parser parser(f_file,def_file,lib_file);
+    Parser parser(work_dir);
     parser.GetInformationFromFile();
-
     TIME_OUT;
-    printf("\n- Running Time = %0f s\n", (double)(____end - ____start) / 1000000);
+    parser.PrintResult((double)(____end - ____start) / 1000000);
+    
 
     return 0;
 }

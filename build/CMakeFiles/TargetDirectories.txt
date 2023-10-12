@@ -1,3 +1,0 @@
-/home/lzx/git_mbist/MBIST/MBIST/build/CMakeFiles/rebuild_cache.dir
-/home/lzx/git_mbist/MBIST/MBIST/build/CMakeFiles/MBISTPart.dir
-/home/lzx/git_mbist/MBIST/MBIST/build/CMakeFiles/edit_cache.dir

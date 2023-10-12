@@ -17,19 +17,26 @@
 #include <string>
 #include <algorithm>
 #include <cstring>
+#include <unistd.h>
+
+// define memory type
+#define RAM 0
+
 
 struct Memory
 {
     std::string mem_Name = "";
     std::string mem_Path = "";
+    std::string Clock_Siganls;
+    std::string timing_pin = "";
+
+    std::map<std::string,int> Algorithms;
+
     int up_bound = 0;
     int low_bound = 0;
-    std::map<std::string,int> Algorithms;
-    std::string Clock_Siganls;
     int NumberOfWords = 0;
     float area = 0.0;
-    std::string timing_pin = "";
-    std::string mem_type = "";
+    int mem_type = RAM;
     int address_width = 0;
     int word_width = 0;
 };
@@ -37,47 +44,63 @@ struct Memory
 class Parser
 {
 public:
-    Parser(std::string mem_list,std::string def,std::string lib)
+    Parser(std::string wd)
     {
-        this->memorylist_file = mem_list;
-        this->def_file = def;
-        this->lib_file = lib;
+        if (wd.back() == '/')
+            this->work_dir = wd;
+        else
+            this->work_dir = wd + "/";
+        
+        std::vector<std::string> filenames;
+        GetFileNameFromFolder(this->work_dir, filenames);
+        for (auto &fn : filenames)
+        {
+            if (fn.find(".f") != std::string::npos)
+                this->memorylist_file = fn;
+            else if (fn.find(".def") != std::string::npos)
+                this->def_file = fn;
+        }
+        
         printf("**************************************************************************\n");
         printf("*                          Partitioning Context                          *\n");
         printf("**************************************************************************\n");
         printf("Partition Parameters:\n");
-        printf("    - f file:                         %s\n", mem_list.c_str());
-        printf("    - def file:                       %s\n", def.c_str());
+        printf("    - Work directory:                 %s\n", work_dir.c_str());
+        printf("    - Memory list file:               %s\n", memorylist_file.c_str());
+        printf("    - Memory def file:                %s\n", def_file.c_str());
         printf("--------------------------------------------------------------------------\n");
     }
 
+    void GetInformationFromFile();
+    void Print();
+    void PrintMemInfo();
+    void PrintResult(double running_time);
+    
 
+private:
+    std::string work_dir;
     std::string memorylist_file;                                // memoory_list inputfile
     std::string def_file;                                       // def path inputfile
     std::string datasheet_file;                                 // datasheet inputfile
     std::string verilog_file;                                   // verilog inputfile
     std::string lib_file;                                       // lib input file
     std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
-    std::vector<std::string> lib_name;
-    void GetInformationFromFile();
-
-    std::vector<std::string> ds_folder; 
-    std::vector<std::string> lib_folder;
-    std::vector<std::string> lvlib_folder;
-    std::vector<std::string> verilog_folder;
-
     
+    std::vector<std::string> lib_names;
+    
+    std::vector<std::string> ds_files; 
+    std::vector<std::string> lib_files;
+    std::vector<std::string> lvlib_files;
+    std::vector<std::string> verilog_files;
 
-private:
-    void ParserMemList();
-    void ParserDataSheet();
-    void ParserDef();
-    void ParserLvlib(std::string lvlib);
-    void ParserLib(std::string lib);
-    void ParserVerilog();
+    void ParseMemList();
+    void ParseDataSheet();
+    void ParseDef();
+    void ParseLvlib(std::string lvlib);
+    void ParseLib(std::string lib);
+    void ParseVerilog();
     void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
     void GetAllFileNames();
-    void Print();
 
 };
 
