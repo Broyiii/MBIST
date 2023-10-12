@@ -10,6 +10,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
+#include <sys/types.h>
+#include <dirent.h>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cstring>
 
 struct Memory
 {
@@ -18,7 +25,7 @@ struct Memory
     int up_bound = 0;
     int low_bound = 0;
     std::map<std::string,int> Algorithms;
-    std::map<std::string,int> Clock_Siganls;
+    std::string Clock_Siganls;
     int NumberOfWords = 0;
     
 };
@@ -37,7 +44,6 @@ public:
         printf("Partition Parameters:\n");
         printf("    - f file:                         %s\n", mem_list.c_str());
         printf("    - def file:                       %s\n", def.c_str());
-        printf("    - lib file:                       %s\n", lib.c_str());
         printf("--------------------------------------------------------------------------\n");
     }
 
@@ -48,17 +54,25 @@ public:
     std::string verilog_file;                                   // verilog inputfile
     std::string lib_file;                                       // lib input file
     std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
-    std::vector<Memory> Memorys;
+    std::vector<std::string> lib_name;
     void GetInformationFromFile();
+
+    std::vector<std::string> ds_folder;
+    std::vector<std::string> lib_folder;
+    std::vector<std::string> lvlib_folder;
+    std::vector<std::string> verilog_folder;
+
+    
 
 private:
     void ParserMemList();
     void ParserDataSheet();
     void ParserDef();
-    void ParserLib();
+    void ParserLib(std::string lib);
     void ParserVerilog();
+    void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
+    void GetAllFileNames();
     void Print();
-    void GetAllMemory();  
 
 };
 

@@ -15,7 +15,7 @@ int main(int argc,char *argv[])
 
     std::string f_file;
     std::string def_file;
-    std::string lib_file;
+    std::string lib_file = "";
 
     int argIndex = 1;
     int requiredArgNum = 0;
@@ -54,7 +54,7 @@ int main(int argc,char *argv[])
         return 1;
     }
 
-    Parser parser(f_file, def_file, lib_file);
+    Parser parser(f_file,def_file,lib_file);
     parser.GetInformationFromFile();
 
     TIME_OUT;

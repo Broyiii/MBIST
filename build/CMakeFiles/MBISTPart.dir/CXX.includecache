@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lzx/git_mbist/MBIST/MBIST/Main.cpp
+parser.hpp
+/home/lzx/git_mbist/MBIST/MBIST/parser.hpp
+writeInfo.hpp
+/home/lzx/git_mbist/MBIST/MBIST/writeInfo.hpp
+
+/home/lzx/git_mbist/MBIST/MBIST/parser.cpp
+parser.hpp
+/home/lzx/git_mbist/MBIST/MBIST/parser.hpp
+
+/home/lzx/git_mbist/MBIST/MBIST/parser.hpp
+algorithm
+-
+iomanip
+-
+math.h
+-
+fstream
+-
+sstream
+-
+iostream
+-
+string
+-
+vector
+-
+map
+-
+
+/home/lzx/git_mbist/MBIST/MBIST/writeInfo.cpp
+writeInfo.hpp
+/home/lzx/git_mbist/MBIST/MBIST/writeInfo.hpp
+
+/home/lzx/git_mbist/MBIST/MBIST/writeInfo.hpp
+parser.hpp
+/home/lzx/git_mbist/MBIST/MBIST/parser.hpp
+

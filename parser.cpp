@@ -1,374 +1,315 @@
-#ifndef _PARSER_CPP_
-#define _PARSER_CPP_
-
 #include "parser.hpp"
 
 // using namespace std;
 
 void Parser::ParserMemList()
 {
-    std::ifstream file(this->memorylist_file, std::ios::binary);
-
-    size_t size_of_buf = static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg());
-    size_t ptr_of_buf = 0;
-
-    char *buf = new char[size_of_buf];
-    file.seekg(0, std::ios::beg).read(&buf[0], static_cast<std::streamsize>(size_of_buf));
-    file.close();
+    std::ifstream input(this->memorylist_file);
+    if (!input.is_open())
+    {
+        std::cout << "ERROR! No such file " << this->memorylist_file << std::endl;
+    }
+    std::string line = "";
 
     Memory m;
-    bool flag = false;
+    std::map<std::string,Memory> tmp;
 
-    while (ptr_of_buf < size_of_buf)
+    while (getline(input,line))
     {
-        std::string str = "";
-        while (buf[ptr_of_buf] != '\n')
+        if (line.find(':') != std::string::npos)
         {
-            if (ptr_of_buf >= size_of_buf)
-            {
-                break;
-            }
-            if (buf[ptr_of_buf] == ' ')
-            {
-                ptr_of_buf++;
-                continue;
-            }
-            if (buf[ptr_of_buf] == ':')
-            {
-                flag = true;
-                break;
-            }
-            str += buf[ptr_of_buf];
-            ptr_of_buf++;
+            int t = line.find(':');
+            m.mem_Name = line.substr(0,t);
+            lib_name.push_back(m.mem_Name);
+           // std::cout << "***********" << line << std::endl;
         }
-        if (flag)
+        else if (!line.length())
         {
-            m.mem_Name = str;
-            // m.mem_Paths.clear();
-            str = "";
-            flag = false;
-            ptr_of_buf++;
             continue;
         }
         else
         {
-            m.mem_Path = str;
-
-            if (str.length() != 0)
+            m.mem_Path = line;
+            auto it = memorys.find(m.mem_Name);
+            if (it != memorys.end())
             {
-                auto it = memorys.find(m.mem_Name);
-
-                if (it != memorys.end())
-                {
-                    // it->second.mem_Paths.push_back(str);
-                    it->second.insert(std::pair<std::string, Memory>(str, m));
-                }
-                else
-                {
-                    // memorys.insert(pair<string,Memory>(m.mem_Name,m));
-                    std::map<std::string, Memory> tmp;
-                    tmp.insert(std::pair<std::string, Memory>(str, m));
-                    memorys.insert(std::pair<std::string, std::map<std::string, Memory>>(m.mem_Name, tmp));
-                }
+                it->second.insert(std::pair<std::string,Memory>(m.mem_Path,m));
             }
-            str = "";
-
-            ptr_of_buf++;
-            continue;
+            else
+            {
+                m.mem_Path = line;
+                tmp.insert(std::pair<std::string,Memory>(m.mem_Path,m));
+                memorys.insert(std::pair<std::string,std::map<std::string,Memory>>(m.mem_Name,tmp));
+                tmp.clear();
+            }
         }
     }
-    
-    delete[] buf;
+    input.close();
 }
 
 void Parser::ParserDef()
 {
-    std::ifstream file(this->def_file, std::ios::binary);
-
-    size_t size_of_buf = static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg());
-    size_t ptr_of_buf = 0;
-
-    char *buf = new char[size_of_buf];
-    file.seekg(0, std::ios::beg).read(&buf[0], static_cast<std::streamsize>(size_of_buf));
-    file.close();
-
-    while (ptr_of_buf < size_of_buf)
+    std::ifstream input(this->def_file);
+    if (!input.is_open())
     {
-        if (buf[ptr_of_buf] != '-') // skip <File Partial>
+        std::cout << "ERROR! No such file " << this->def_file << std::endl;
+    }
+    std::string line = "";
+
+    while (getline(input,line))
+    {
+        int i = 2;
+        std::string path = "";
+        std::string mem_type = "";
+        std::string Up = "";
+        std::string Low = "";
+
+        while (line[i] != ' ') // get path
         {
-            ptr_of_buf++;
-            if (ptr_of_buf >= size_of_buf)
-            {
-                break;
-            }
-            continue;
+            path += line[i];
+            i++;
+        }
+        i++;
+        while (line[i] != ' ') // get name
+        {
+            mem_type += line[i];
+            i++;
+        }
+
+        int k = line.find('(');
+        k += 2;
+        std::string str1 = "";
+        std::string str2 = "";
+        while (line[k] != ' ') // get up
+        {
+            str1 += line[k];
+            k++;
+        }
+        k++;
+        while (line[k] != ' ') // get low
+        {
+            str2 += line[k];
+            k++;
+        }
+        int num1 = atoi(str1.c_str());
+        int num2 = atoi(str2.c_str());
+
+        int up = 0;
+        int low = 0;
+        if (num1 > num2)
+        {
+            up = num1;
+            low = num2;
         }
         else
         {
-            ptr_of_buf += 2;
-            std::string path_ = "";
-            std::string memory_name = "";
-            while (buf[ptr_of_buf] != ' ')
+            up = num2;
+            low = num1;
+        }
+
+        auto it = memorys.find(mem_type);
+        if (it != memorys.end())
+        {
+            auto it_path = it->second.find(path);
+            if (it_path != it->second.end())
             {
-                path_ += buf[ptr_of_buf];
-                ptr_of_buf++;
-            }
-            ptr_of_buf++;
-            while (buf[ptr_of_buf] != ' ')
-            {
-                memory_name += buf[ptr_of_buf];
-                ptr_of_buf++;
-            }
-            while (buf[ptr_of_buf] != '(')
-            {
-                ptr_of_buf++;
-                continue;
-            }
-            ptr_of_buf++;
-            std::string low = "";
-            std::string up = "";
-            while (buf[ptr_of_buf] != ' ')
-            {
-                low += buf[ptr_of_buf];
-                ptr_of_buf++;
-            }
-            ptr_of_buf++;
-            while (buf[ptr_of_buf] != ')')
-            {
-                up += buf[ptr_of_buf];
-                ptr_of_buf++;
-            }
-            int Low = atoi(low.c_str());
-            int Up = atoi(up.c_str());
-            low = "";
-            up = "";
-            auto it_name = memorys.find(memory_name);
-            if (it_name != memorys.end())
-            {
-                auto it_name_path = it_name->second.find(path_);
-                if (it_name_path != it_name->second.end())
-                {
-                    it_name_path->second.low_bound = Low;
-                    it_name_path->second.up_bound = Up;
-                }
-                else
-                {
-                    std::cout << "Not path_: " << path_ << " of" << memory_name << std::endl;
-                }
+                it_path->second.up_bound = up;
+                it_path->second.low_bound = low;
             }
             else
             {
-                std::cout << "Not name: " << memory_name << std::endl;
+                std::cout << "error: " << path << std::endl;
             }
+
         }
+        else
+        {
+            std::cout << "error: " << mem_type << std::endl;
+        }   
     }
-    
-    delete[] buf;
+    input.close();
 }
 
-void Parser::ParserLib()
+void Parser::ParserLib(std::string lib)
 {
-    std::ifstream file(this->lib_file, std::ios::binary);
-
-    size_t size_of_buf = static_cast<unsigned int>(file.seekg(0, std::ios::end).tellg());
-    size_t ptr_of_buf = 0;
-
-    char *buf = new char[size_of_buf];
-    file.seekg(0, std::ios::beg).read(&buf[0], static_cast<std::streamsize>(size_of_buf));
-    file.close();
-
-    std::string cellname = "";
-    int words = 0;
-
-    while (ptr_of_buf < size_of_buf)
+    //std::string Lib = "/home/lzx/mbist/testcase_S1/testcase03/lvlib/" + lib + "_logicv.lib"; 
+  //  std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << lib << std::endl;
+    std::ifstream input(lib);
+    
+    if (!input.is_open())
     {
-        std::string str = "";
-        while (buf[ptr_of_buf] != '\n')
-        {
-            str += buf[ptr_of_buf];
-            ptr_of_buf++;
-            if (ptr_of_buf >= ptr_of_buf)
-                break;
-        }
+        std::cout << "ERROR! No such file " << lib << std::endl;
+    }
+    std::string line = "";
+    
+    //auto it = memorys.find(lib);
+    std::string cellname = "";
+    int cnt = 0;
 
-        if (!str.length())
+    while (getline(input,line))
+    {
+        cnt++;
+        if (line.find("Algorithm") != std::string::npos)
         {
-            ptr_of_buf++;
-            // continue;
-        }
-        else
-        {
-            if (str.find("CellName") != std::string::npos)
+          //  std::cout << "wwwwwwwwwwwwwwwwwwwwwwwwwwwww" << cnt << std::endl;
+            int t = line.find(':');
+            t += 2;
+            std::string str = "";
+            auto it = memorys.find(cellname);
+            // if (it == memorys.end())
+            // {
+            //     std::cout << "$$$$$$$$$$$$$$" << std::endl;
+            // }
+            std::cout << cellname << std::endl;
+            while (t < line.length())
             {
-                cellname = "";
-                int t = str.find(':');
-                t += 2;
-                while (str[t] != ';')
+                if (t >= line.length())
                 {
-                    cellname += str[t];
+                    break;
+                }
+                if (line[t] == ' ' || line[t] == ';')
+                {
+                   // std::cout << str << std::endl;
+                    for (auto &i : it->second)
+                    {
+                        i.second.Algorithms.insert(std::pair<std::string,int>(str,1));
+                    }
+                   // std::cout << "ssssssssssssssssssssss" << str << std::endl;
+                    str = "";
                     t++;
-                }
-                ptr_of_buf++;
-                //  continue;
-            }
-            else if (str.find("NumberOfWords") != std::string::npos)
-            {
-                int t = str.find(':');
-                t += 2;
-                std::string word = "";
-                while (str[t] != ';')
-                {
-                    word += str[t];
-                    t++;
-                }
-                words = atoi(word.c_str());
-                auto it = memorys.find(cellname);
-                for (auto &j : it->second)
-                {
-                    j.second.NumberOfWords = words;
-                }
-            }
-            else if (str.find("Algorithm") != std::string::npos)
-            {
-                auto it = memorys.find(cellname);
-                int t = str.find(':');
-                t += 2;
-                std::string tmp = "";
-                while (str[t] != ';')
-                {
-                    if (str[t] == ' ')
-                    {
-                        t++;
-                        for (auto &j : it->second)
-                        {
-                            j.second.Algorithms.insert(std::pair<std::string, int>(tmp, 1));
-                        }
-                        tmp = "";
-                        continue;
-                    }
-                    else
-                    {
-                        tmp += str[t];
-                        t++;
-                    }
-                }
-                for (auto &j : it->second)
-                {
-                    j.second.Algorithms.insert(std::pair<std::string, int>(tmp, 1));
-                }
-
-                // ptr_of_buf++;
-                continue;
-            }
-            else if (str.find("Port") != std::string::npos)
-            {
-                ptr_of_buf++;
-                std::string func = "";
-                while (buf[ptr_of_buf] != '\n')
-                {
-                    func += buf[ptr_of_buf];
-                    ptr_of_buf++;
-                }
-                if (func.find("Clock") != std::string::npos)
-                {
-                    int t = str.find('(');
-                    t++;
-                    std::string tmp = "";
-                    auto it = memorys.find(cellname);
-                    while (str[t] != ')')
-                    {
-                        if (str[t] == ' ')
-                        {
-                            t++;
-                            for (auto &j : it->second)
-                            {
-                                j.second.Clock_Siganls.insert(std::pair<std::string, int>(tmp, 1));
-                            }
-                            tmp = "";
-                            continue;
-                        }
-                        else
-                        {
-                            tmp += str[t];
-                            t++;
-                            continue;
-                        }
-                    }
-                    for (auto &j : it->second)
-                    {
-                        j.second.Clock_Siganls.insert(std::pair<std::string, int>(tmp, 1));
-                    }
-                    ptr_of_buf++;
-                    //  continue;
+                    continue;
                 }
                 else
                 {
-                    ptr_of_buf++;
-                    //  continue;
+                    str += line[t];
+                    t++;
+                   // std::cout << str << std::endl;
+                    continue;
                 }
-            }
-            else
-            {
-                ptr_of_buf++;
-                // continue;
+
             }
         }
+        else if (line.find("NumberOfWords") != std::string::npos)
+        {
+           // std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeee" << cnt << std::endl;
+            auto it = memorys.find(cellname);
+            int t = line.find(':');
+            t += 2;
+            std::string str = "";
+            while (line[t] != ';')
+            {
+                str += line[t];
+                t++;
+            }
+            int words = std::stoi(str.c_str());
+            for (auto &i : it->second)
+            {
+                i.second.NumberOfWords = words;
+            }
+            
+        }
+        else if (line.find("CellName") != std::string::npos)
+        {
+            int t = line.find(':');
+            t += 2;
+            while (line[t] != ';')
+            {
+                cellname += line[t];
+                t++;
+            }
+        }
+        else
+        {
+         //std::cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&" << cnt << std::endl;
+            continue;
+        }
+        
     }
+    input.close();
+}
 
-    delete[] buf;
+void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &filenames)
+{
+    DIR *pDir;
+    struct dirent* ptr;
+    if(!(pDir = opendir(path.c_str())))
+    {
+        std::cout<<"Folder doesn't Exist!"<<std::endl;
+        return;
+    }
+    while((ptr = readdir(pDir))!=0) 
+    {
+        if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
+        {
+            filenames.push_back(path + "/" + ptr->d_name);
+    	}
+    }
+    closedir(pDir);
+}
+
+void Parser::GetAllFileNames()
+{
+    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/ds",this->ds_folder);
+    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/lib",this->lib_folder);
+    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/lvlib",this->lvlib_folder);
+    GetFileNameFromFolder("/home/lzx/mbist/testcase_S1/testcase03/verilog",this->verilog_folder);
+    std::cout << this->ds_folder.size() << std::endl;
+    std::cout << this->lib_folder.size() << std::endl;
+    std::cout << this->lvlib_folder.size() << std::endl;
+    std::cout << this->verilog_folder.size() << std::endl;
 }
 
 void Parser::Print()
 {
+    std::cout << memorys.size() << std::endl;
     for (auto i : memorys)
     {
         std::cout << i.first << std::endl;
         for (auto j : i.second)
         {
             std::cout << "Path: " << j.first << " Low_limit: " << j.second.low_bound << " Up_limit: " << j.second.up_bound << " NumberOfWords: " << j.second.NumberOfWords << std::endl;
-            std::cout << "Algorithms: " << std::endl;
+            std::cout << "Algorithms: ";
             for (auto k : j.second.Algorithms)
             {
                 std::cout << k.first << " ";
             }
             std::cout << std::endl;
-            std::cout << "Clock_Siganls: " << std::endl;
-            for (auto k1 : j.second.Clock_Siganls)
-            {
-                std::cout << k1.first << " ";
-            }
-            std::cout << std::endl;
         }
-        std::cout << std::endl;
-    }
-    std::cout << "-----------------------------------------------" << std::endl;
-    for (auto i : Memorys)
-    {
-        std::cout << "Name: " << i.mem_Name << " Path: " << i.mem_Path << " UP: " << i.up_bound << " LOW: " << i.low_bound << std::endl;
     }
 }
 
-void Parser::GetAllMemory()
-{
-    for (auto i : memorys)
-    {
-        for (auto j : i.second)
-        {
-            Memorys.push_back(j.second);
-        }
-    }
-}
 
 void Parser::GetInformationFromFile()
 {
     // parser file
+    GetAllFileNames();
     ParserMemList();
     ParserDef();
-    ParserLib();
 
+    // for (auto i : memorys)
+    // {
+    //     std::cout << i.first << std::endl;
+    // }
+
+    for (int i = 0;i < this->lvlib_folder.size();i++)
+    {
+        //std::cout << lib_name[i] << std::endl;
+        // if (memorys.find(this->lvlib_folder[i]) != memorys.end())
+        // {
+        //     ParserLib(this->lvlib_folder[i]);
+        // }
+        for (auto j : memorys)
+        {
+            if (this->lvlib_folder[i].find(j.first) != std::string::npos)
+            {
+                ParserLib(this->lvlib_folder[i]);
+            }
+        }
+        
+    }
     // Show Information
-    GetAllMemory();
     Print();
 }
 
-#endif
+
+
