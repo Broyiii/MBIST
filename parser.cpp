@@ -140,6 +140,7 @@ void Parser::ParseLvlib(std::string lvlib)
     std::string line = "";
 
     std::string cellname = "";
+    float mwmhz = 0.0;
     int cnt = 0;
 
     while (getline(input, line))
@@ -201,6 +202,56 @@ void Parser::ParseLvlib(std::string lvlib)
             {
                 cellname += line[t];
                 t++;
+            }
+        }
+        else if (line.find("MilliWattsPerMegaHertz") != std::string::npos)
+        {
+            int t = line.find(':');
+            t += 2;
+            std::string MwMHz = "";
+            auto it = memorys.find(cellname);
+            while (line[t] != ';')
+            {
+                MwMHz += line[t];
+                t++;
+            }
+            mwmhz = std::stof(MwMHz.c_str());
+            for (auto &i : it->second)
+            {
+                i.second.MilliWattsPerMegaHertz = mwmhz;
+            }
+        }
+        else if (line.find("Port (") != std::string::npos || line.find("port (") != std::string::npos)
+        {
+            std::string str = "";
+            while (line.find('}') == std::string::npos)
+            {
+                str += line;
+                getline(input,line);
+            }
+            if (str.find("Function: Clock") != std::string::npos)
+            {
+                std::string clock = "";
+                int t = str.find('(');
+                t++;
+                while (str[t] == ' ')
+                {
+                    t++;
+                }
+                while (str[t] != ' ' && str[t] != ')')
+                {
+                    clock += str[t];
+                    t++;
+                }
+                auto it = memorys.find(cellname);
+                for (auto &i : it->second)
+                {
+                    i.second.Clock_Siganls.push_back(clock);
+                }
+            }
+            else
+            {
+                continue;
             }
         }
         else
@@ -283,21 +334,6 @@ void Parser::ParseLib(std::string lib)
             }
             AREA = std::stof(Area.c_str());
         }
-        else if (line.find("timing() {") != std::string::npos)
-        {
-            getline(input, line);
-            getline(input, line);
-            // std::cout << line << std::endl;
-            int t = line.find('\"');
-            t++;
-            while (line[t] != '\"')
-            {
-                // std::cout << line[t] << std::endl;
-                timing_pin += line[t];
-                t++;
-            }
-            break;
-        }
         else
         {
             continue;
@@ -310,7 +346,6 @@ void Parser::ParseLib(std::string lib)
         i.second.mem_type = (type == "ram") ? RAM : -1;
         i.second.address_width = a;
         i.second.word_width = w;
-        i.second.timing_pin = timing_pin;
         i.second.area = AREA;
     }
 
@@ -344,6 +379,9 @@ void Parser::GetAllFileNames()
     GetFileNameFromFolder(this->work_dir + "lvlib/", this->lvlib_files);
     GetFileNameFromFolder(this->work_dir + "verilog/", this->verilog_files);
 
+    ParseMemList();
+    ParseDef();  
+
     for (int i = 0; i < this->lvlib_files.size(); i++)
     {
         for (auto &j : memorys)
@@ -359,8 +397,32 @@ void Parser::GetAllFileNames()
             }
         }
     }
-    ParseMemList();
-    ParseDef();  
+
+}
+
+void Parser::DivByRowCol()
+{
+    for (auto i : memorys)
+    {
+        for (auto j : i.second)
+        {
+            std::string numofwords = std::to_string(j.second.NumberOfWords);
+            std::string widthofwords = std::to_string(j.second.word_width);
+            std::string str = numofwords + '_' + widthofwords;
+            if (AfterDivByRowCol.find(str) != AfterDivByRowCol.end())
+            {
+                auto it = AfterDivByRowCol.find(str);
+                it->second.push_back(j.second);
+            }
+            else
+            {
+                std::vector<Memory> tmp;
+                tmp.push_back(j.second);
+                AfterDivByRowCol.insert(std::pair<std::string,std::vector<Memory>>(str,tmp));
+                tmp.clear();
+            }
+        }
+    }
 }
 
 void Parser::Print()
@@ -378,9 +440,26 @@ void Parser::Print()
                 std::cout << k.first << " ";
             }
             std::cout << std::endl;
-            std::cout << "Area: " << j.second.area << " timing_pin: " << j.second.timing_pin << " mem_type: " << j.second.mem_type << std::endl;
+            std::cout << "Clock_Siganls: ";
+            for (auto t : j.second.Clock_Siganls)
+            {
+                std::cout << t << " ";
+            }
+            std::cout << std::endl;
+            std::cout << "Area: " << j.second.area << " mem_type: " << j.second.mem_type << " MilliWattsPerMegaHertz: " << j.second.MilliWattsPerMegaHertz << std::endl;
             std::cout << " address_width: " << j.second.address_width << " word_width: " << j.second.word_width << "\n" << std::endl;
         }
+    }
+    std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
+    for (auto i : AfterDivByRowCol)
+    {
+        std::cout << i.first << ": " << std::endl;
+        std::cout << "memory: ";
+        for (auto j : i.second)
+        {
+           std::cout << j.mem_Name << " ";
+        }
+        std::cout << std::endl;
     }
 }
 
@@ -390,6 +469,11 @@ void Parser::GetInformationFromFile()
     GetAllFileNames();
 
     PrintMemInfo();
+
+    //grouping
+    DivByRowCol();
+
+
     // Show Information
     Print();
 }

@@ -27,10 +27,10 @@ struct Memory
 {
     std::string mem_Name = "";
     std::string mem_Path = "";
-    std::string Clock_Siganls;
     std::string timing_pin = "";
 
     std::map<std::string,int> Algorithms;
+    std::vector<std::string> Clock_Siganls;
 
     int up_bound = 0;
     int low_bound = 0;
@@ -39,6 +39,7 @@ struct Memory
     int mem_type = RAM;
     int address_width = 0;
     int word_width = 0;
+    float MilliWattsPerMegaHertz = 0.0;
 };
 
 class Parser
@@ -93,6 +94,8 @@ private:
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
 
+    std::map<std::string,std::vector<Memory>> AfterDivByRowCol;
+
     void ParseMemList();
     void ParseDataSheet();
     void ParseDef();
@@ -101,6 +104,7 @@ private:
     void ParseVerilog();
     void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
     void GetAllFileNames();
+    void DivByRowCol();
 
 };
 
