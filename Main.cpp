@@ -13,7 +13,7 @@ int main(int argc,char *argv[])
         WrongUsage();
         return 1;
     }
-
+    
     std::string work_dir;
 
     int argIndex = 1;

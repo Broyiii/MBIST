@@ -23,6 +23,8 @@
 #define RAM 0
 
 
+
+
 struct Memory
 {
     std::string mem_Name = "";
@@ -32,6 +34,7 @@ struct Memory
     std::map<std::string,int> Algorithms;
     std::vector<std::string> Clock_Siganls;
 
+
     int up_bound = 0;
     int low_bound = 0;
     int NumberOfWords = 0;
@@ -40,6 +43,7 @@ struct Memory
     int address_width = 0;
     int word_width = 0;
     float MilliWattsPerMegaHertz = 0.0;
+    float total_power = 0.0;
 };
 
 class Parser
@@ -97,7 +101,7 @@ private:
     std::map<std::string,std::vector<Memory>> AfterDivByRowCol;
 
     void ParseMemList();
-    void ParseDataSheet();
+    void ParseDataSheet(std::string ds);
     void ParseDef();
     void ParseLvlib(std::string lvlib);
     void ParseLib(std::string lib);

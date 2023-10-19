@@ -1,4 +1,4 @@
-//==================================================================================//
+f//==================================================================================//
 // Author: GWX Technology
 // Attribution: Plain Text
 // Birthday: Tue Oct 10 16:02:57 CST 2023
@@ -845,7 +845,7 @@ cell ( spsram_64x63m4s ) {
         capacitance : 0.001028 ;
         pin ( BWEB[62:0] ) {
             related_power_pin : VDD;
-            related_ground_pin : VSS ;
+            related_ground_pin : VSS ;RTSEL
             internal_power () {
                 related_pg_pin : VDD ;
                 rise_power ( "scalar" ) {

@@ -47,6 +47,166 @@ void Parser::ParseMemList()
     input.close();
 }
 
+void Parser::ParseDataSheet(std::string ds)
+{
+    std::string cellname = "";
+    float power = 0.0;
+    for (auto i : memorys)
+    {
+        if (ds.find(i.first) != std::string::npos)
+        {
+            cellname = i.first;
+            break;
+        }
+    }
+    auto it = memorys.find(cellname);
+
+
+    if (ds.find(".summ") != std::string::npos)
+    {
+        std::ifstream input(ds);
+        if (!input.is_open())
+        {
+            std::cout << "ERROR 5! No such file " << ds << std::endl;
+        }
+        std::string line = "";
+        std::string allpower = "";
+
+
+        while (getline(input,line))
+        {
+            if (line.find("Power(mW/MHz)") != std::string::npos)
+            {
+                getline(input,line);
+                int i = 0;
+                while (i < line.length())
+                {
+                    if (i >= line.length())
+                    {
+                        break;
+                    }
+                    
+                    int i = line.length() - 1;
+                    while (line[i] != ' ')
+                    {
+                        i--;
+                    }
+                    i++;
+
+                    allpower += line[i];
+                    i++;
+                }
+
+                power = std::stof(allpower.c_str());
+            }
+            else
+            {
+                continue;
+            }
+        }
+        
+    }
+    else
+    {
+        std::ifstream input(ds);
+        if (!input.is_open())
+        {
+            std::cout << "ERROR 6! No such file " << ds << std::endl;
+        }
+        std::string line = "";
+        std::string Leakage_power = "";
+        std::string temp = "";
+        
+
+        while (getline(input,line))
+        {
+            if (line.find("Leakage Current") != std::string::npos)
+            {
+                int t = line.find('t');
+                t += 2;
+                if (line[t] == '=')
+                {
+                    continue;
+                }
+                else
+                {
+                    while (line[t] == ' ')
+                    {
+                        t++;
+                    }
+                    while (line[t] != '(')
+                    {
+                        Leakage_power += line[t];
+                        t++;
+                    }
+                    power = std::stof(Leakage_power.c_str());   
+                }
+            }
+            else if (line.find("Breakout per pin") != std::string::npos)
+            {
+                while (line.find("--") == std::string::npos)
+                {
+                    getline(input,line);
+                }
+                getline(input,line);
+                while (line.length() != 0)
+                {
+                    int t = 0;
+                    while (t < line.length())
+                    {
+                        if (t >= line.length())
+                        {
+                            break;
+                        }
+
+                        if (line.find('[') != std::string::npos)
+                        {   
+                            t = line.find(']');
+                            t++;
+                            while (!(line[t] >= '0' && line[t] <= '9'))
+                            {
+                                t++;
+                            }
+                            while (line[t] != '(')
+                            {
+                                temp += line[t];
+                                t++;
+                            }
+
+                        }
+                        else
+                        {
+                            while (!(line[t] >= '0' && line[t] <= '9'))
+                            {
+                                t++;
+                            }
+                            while (line[t] != '(')
+                            {
+                                temp += line[t];
+                                t++;
+                            }
+                        }
+                        
+
+                        break;
+                    }
+                    power += std::stof(temp.c_str());
+                    temp = "";
+                    getline(input,line);
+                }
+            }
+        }
+        
+    }
+
+    for (auto &i : it->second)
+    {
+        i.second.total_power = power;
+    }
+
+
+}
+
 void Parser::ParseDef()
 {
     std::ifstream input(this->def_file);
@@ -366,7 +526,6 @@ void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &f
         if (strcmp(ptr->d_name, ".") != 0 && strcmp(ptr->d_name, "..") != 0)
         {
             filenames.push_back(path + ptr->d_name);
-            // printf("%s\n", ptr->d_name);
         }
     }
     closedir(pDir);
@@ -395,6 +554,12 @@ void Parser::GetAllFileNames()
             {
                 ParseLib(this->lib_files[i]);
             }
+
+            if (this->ds_files[i].find(j.first) != std::string::npos)
+            {
+                ParseDataSheet(this->ds_files[i]);
+            }
+
         }
     }
 
@@ -447,6 +612,7 @@ void Parser::Print()
             }
             std::cout << std::endl;
             std::cout << "Area: " << j.second.area << " mem_type: " << j.second.mem_type << " MilliWattsPerMegaHertz: " << j.second.MilliWattsPerMegaHertz << std::endl;
+            std::cout << "Total power: " << j.second.total_power << std::endl;
             std::cout << " address_width: " << j.second.address_width << " word_width: " << j.second.word_width << "\n" << std::endl;
         }
     }
@@ -454,10 +620,9 @@ void Parser::Print()
     for (auto i : AfterDivByRowCol)
     {
         std::cout << i.first << ": " << std::endl;
-        std::cout << "memory: ";
         for (auto j : i.second)
         {
-           std::cout << j.mem_Name << " ";
+           std::cout << j.mem_Path + '/' + j.mem_Name << std::endl;
         }
         std::cout << std::endl;
     }
