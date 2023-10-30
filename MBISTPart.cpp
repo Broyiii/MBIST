@@ -1,9 +1,13 @@
 #include "parser.hpp"
 #include "writeInfo.hpp"
+#include "global.hpp"
+
+dataBase db;
+
 
 int main(int argc,char *argv[])
 {
-    TIME_START;
+    auto startTime = std::chrono::high_resolution_clock::now();
     std::ios::sync_with_stdio(0),std::cin.tie(0),std::cout.tie(0);
 
     WriteHead();
@@ -54,8 +58,9 @@ int main(int argc,char *argv[])
 
     Parser parser(work_dir);
     parser.GetInformationFromFile();
-    TIME_OUT;
-    parser.PrintResult((double)(____end - ____start) / 1000000);
+    auto endTime = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = endTime - startTime;
+    parser.PrintResult(duration);
     
 
     return 0;

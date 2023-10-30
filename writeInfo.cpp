@@ -31,14 +31,15 @@ void WrongUsage()
 void Parser::PrintMemInfo()
 {
     printf("Constraint Infomation:\n");
-    printf("    - Memory number:                     %0ld\n", memorys.size());
+    printf("    - Memory number:                     %0ld\n", memorysMappedByPath.size());
     printf("    - Area:                              %.4f um2\n", 1500.1);
     printf("    - Power:                             %.4f w\n", 1.5);
     printf("--------------------------------------------------------------------------\n\n");
 }
 
-void Parser::PrintResult(double running_time)
+void Parser::PrintResult(std::chrono::duration<double> duration)
 {
+    auto running_time = duration.count();
     printf("**************************************************************************\n");
     printf("*                          Partitioning Result                           *\n");
     printf("**************************************************************************\n");
