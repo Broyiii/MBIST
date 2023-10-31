@@ -50,12 +50,6 @@ int main(int argc,char *argv[])
         }
     }
 
-    // if (requiredArgNum != 3)
-    // {
-    //     WrongUsage();
-    //     return 1;
-    // }
-
     Parser parser(work_dir);
     parser.GetInformationFromFile();
     auto endTime = std::chrono::high_resolution_clock::now();

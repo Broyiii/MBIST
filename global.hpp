@@ -25,6 +25,8 @@
 
 // define memory type
 #define RAM 0
+#define ROM 1
+
 
 struct Memory
 {
@@ -33,8 +35,9 @@ struct Memory
     std::string timing_pin = "";
     std::string clk_domain = "";
 
-    std::map<std::string,int> Algorithms;
+    std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
+    std::map<std::string,float> pins;
 
 
     int up_bound = 0;
@@ -45,6 +48,8 @@ struct Memory
     int address_width = 0;
     int word_width = 0;
     float MilliWattsPerMegaHertz = 0.0;
+    float leakage_power = 0.0;
+    float dynamic_power = 0.0;
     float total_power = 0.0;
 };
 
@@ -64,6 +69,11 @@ struct dataBase
     std::vector<std::string> lib_files;
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
+
+    double power_max = 0.0;
+    double dis_max = 0.0;
+
+    
 
 };
 

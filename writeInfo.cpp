@@ -45,4 +45,13 @@ void Parser::PrintResult(std::chrono::duration<double> duration)
     printf("**************************************************************************\n");
     printf("    - Running Time = %.4f s\n", running_time);
     printf("--------------------------------------------------------------------------\n\n");
+    for (auto &k  : AfterGroupByAlgorithm)
+    {
+        std::cout << k.first << " : " << std::endl;
+        for (auto &s : k.second)
+        {
+            std::cout << "\t" << s->mem_Path + '/' + s->mem_Name << std::endl;
+        }
+        std::cout << std::endl;
+    }
 }

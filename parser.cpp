@@ -38,28 +38,96 @@ void Parser::GetAllFileNames()
     }
 }
 
-void Parser::DivByRowCol()
+void Parser::GroupByClk()
 {
     for (auto i : memorysMappedByName)
     {
         for (auto j : i.second)
         {
-            std::string numofwords = std::to_string(j->NumberOfWords);
-            std::string widthofwords = std::to_string(j->word_width);
-            std::string str = numofwords + '_' + widthofwords;
-            if (AfterDivByRowCol.find(str) != AfterDivByRowCol.end())
+            if (AfterGroupByClk.find(j->clk_domain) != AfterGroupByClk.end())
             {
-                auto it = AfterDivByRowCol.find(str);
+                auto it = AfterGroupByClk.find(j->clk_domain);
                 it->second.emplace_back(j);
             }
             else
             {
                 std::vector<Memory*> tmp {j};
-                AfterDivByRowCol.insert(std::pair<std::string,std::vector<Memory*>>(str,std::move(tmp)));
+                AfterGroupByClk.insert(std::pair<std::string,std::vector<Memory*>>(j->clk_domain,std::move(tmp)));
                 tmp.clear();
             }
         }
     }
+}
+
+void Parser::GroupByType()
+{
+    for (auto i : AfterGroupByClk)
+    {
+        for (auto j : i.second)
+        {
+            std::string clk_type = i.first + '_' + std::to_string(j->mem_type);
+            if (AfterGroupByType.find(clk_type) != AfterGroupByType.end())
+            {
+                auto it = AfterGroupByType.find(clk_type);
+                it->second.emplace_back(j);
+            }
+            else
+            {
+                std::vector<Memory*> tmp {j};
+                AfterGroupByType.insert(std::pair<std::string,std::vector<Memory*>>(clk_type,std::move(tmp)));
+                tmp.clear();
+            }
+        }
+    }
+}
+
+void Parser::GroupByAlgorithm()
+{
+    for (auto i : AfterGroupByType)
+    {
+        for (auto j : i.second)
+        {
+            if (j->Algorithms.size() > 1)
+            {
+                HaveMultiAlgorithms = true;
+                std::string clk_type_multi = i.first + "_multi";
+                if (AfterGroupByAlgorithm.find(clk_type_multi) != AfterGroupByAlgorithm.end())
+                {
+                    auto it = AfterGroupByAlgorithm.find(clk_type_multi);
+                    it->second.emplace_back(j);
+                }
+                else
+                {
+                    std::vector<Memory*> tmp {j};
+                    AfterGroupByAlgorithm.insert(std::pair<std::string,std::vector<Memory*>>(clk_type_multi,std::move(tmp)));
+                    tmp.clear();
+                }
+            }
+            else
+            {
+                std::string clk_type_multi = i.first + '_' + j->Algorithms[0];;
+                if (AfterGroupByAlgorithm.find(clk_type_multi) != AfterGroupByAlgorithm.end())
+                {
+                    auto it = AfterGroupByAlgorithm.find(clk_type_multi);
+                    it->second.emplace_back(j);
+                }
+                else
+                {
+                    std::vector<Memory*> tmp {j};
+                    AfterGroupByAlgorithm.insert(std::pair<std::string,std::vector<Memory*>>(clk_type_multi,std::move(tmp)));
+                    tmp.clear();
+                }
+            }
+
+        }
+    }
+}
+
+void Parser::GroupByHardCondition()
+{
+    GroupByClk();
+    GroupByType();
+    GroupByAlgorithm();
 }
 
 void Parser::Print()
@@ -74,7 +142,7 @@ void Parser::Print()
             std::cout << "Algorithms: ";
             for (auto &k : j->Algorithms)
             {
-                std::cout << k.first << " ";
+                std::cout << k << " ";
             }
             std::cout << std::endl;
             std::cout << "Clock_Siganls: ";
@@ -89,25 +157,7 @@ void Parser::Print()
         }
     }
     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-    for (auto i : AfterDivByRowCol)
-    {
-        std::cout << i.first << ": " << std::endl;
-        for (auto j : i.second)
-        {
-           std::cout << j->mem_Path + '/' + j->mem_Name << std::endl;
-        }
-        std::cout << std::endl;
-    }
     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-    for (auto &c : clkDomainMap)
-    {
-        std::cout << c.first << " : " << std::endl;
-        for (auto &s : c.second)
-        {
-            std::cout << "\t" << s << std::endl;
-        }
-        std::cout << std::endl;
-    }
 }
 
 void Parser::GetInformationFromFile()
@@ -117,10 +167,11 @@ void Parser::GetInformationFromFile()
 
     PrintMemInfo();
 
-    //grouping
-    DivByRowCol();
+    // grouping
+    GroupByHardCondition();
 
 
     // Show Information
     Print();
 }
+
