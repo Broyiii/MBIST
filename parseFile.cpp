@@ -132,7 +132,11 @@ void Parser::ParseDataSheet(std::string ds)
                 continue;
             }
         }
-        
+
+        for (auto &i : it->second)
+        {
+            i->total_power = power;
+        } 
     }
     else
     {
@@ -142,15 +146,9 @@ void Parser::ParseDataSheet(std::string ds)
             std::cout << "ERROR 6! No such file " << ds << std::endl;
         }
         std::string line = "";
-        std::string static_power = "";
-        std::string temp = "";
-        std::string time_unit = "";
-        bool MHZ = false;
-        
-        
-        float cycle_time = 0.0;
-        std::string cycle = "";
+        std::string static_power = "";      
         float Leakage_power = 0.0;
+        float dynamic_Power = 0.0;
         
 
         while (getline(input,line))
@@ -177,142 +175,45 @@ void Parser::ParseDataSheet(std::string ds)
                     Leakage_power = std::stof(static_power.c_str());   
                 }
             }
-            else if (line.find("Breakout per pin") != std::string::npos)
+            else if (line.find("Dynamic Power") != std::string::npos && line.find("Average") != std::string::npos)
             {
-                
                 while (line.find("--") == std::string::npos)
                 {
                     getline(input,line);
                 }
                 getline(input,line);
-                if (line.find("MHz") != std::string::npos)
-                {
-                    MHZ = true;
-                }
-                if (time_unit == "ns" && MHZ)
-                {
-                    HZ *= 1000;
-                }
                 while (line.length() != 0)
                 {
-
-                    std::string pin_name = "";
-                    std::string pin_power = "";
-                    float Dynamic_power = 0.0;
-                    int k = 0;
-                    while (line[k] == ' ' || line[k] == '\t')
+                    std::string Dynamic_Power = "";
+                    int t = line.length() - 1;
+                    while (line[t] != ' ')
                     {
-                        k++;
+                        t--;
                     }
-                    while (line[k] != ' ' && line[k] != '[')
+                    t++;
+                    while (t < line.length())
                     {
-                        pin_name += line[k];
-                        k++;
+                        Dynamic_Power += line[t];
+                        t++;
                     }
-                    if (line[k] == ' ')
+                    float tmp = std::stof(Dynamic_Power.c_str());
+                    if (tmp > dynamic_Power)
                     {
-                        while (!(line[k] >= '0' && line[k] <= '9'))
-                        {
-                            k++;
-                        }
-                        while (line[k] != '(')
-                        {
-                            pin_power += line[k];
-                            k++;
-                        }
-                        Dynamic_power = std::stof(pin_power.c_str());
-                    }
-                    else if (line[k] == '[')
-                    {
-                        while (line[k] != ']')
-                        {
-                            k++;
-                        }
-                        k++;
-                        while (!(line[k] >= '0' && line[k] <= '9'))
-                        {
-                            k++;
-                        }
-                        while (line[k] != '(')
-                        {
-                            pin_power += line[k];
-                            k++;
-                        }
-                        Dynamic_power = std::stof(pin_power.c_str());
-                    }
-                    for (auto &i : it->second)
-                    {
-                        auto iter = i->pins.find(pin_name);
-                        if (iter != i->pins.end())
-                        {
-                            if (iter->second < Dynamic_power*HZ)
-                            {
-                                iter->second = Dynamic_power*HZ;
-                            }
-                        }
-                        else
-                        {
-                            i->pins.insert(std::pair<std::string, float>(pin_name, Dynamic_power*HZ));
-                        }
+                        dynamic_Power = tmp;
                     }
                     getline(input,line);
                 }
-                for (auto &j : it->second)
-                {
-                    for (auto t : j->pins)
-                    {
-                        j->dynamic_power += t.second;
-                    }
-                    j->leakage_power = Leakage_power;
-                }
-            }
-            else if (line.find("Param. Value") != std::string::npos)
-            {
-                int v = line.find("Value");
-                v += 5;
-                while (line[v] != '(')
-                {
-                    v++;
-                }
-                v++;
-                while (line[v] != ')')
-                {
-                    time_unit += line[v];
-                    v++;
-                }
-                while (line.find("Minimum CLK cycle time") == std::string::npos)
-                {
-                    getline(input,line);
-                }
-                v = 0;
-                while (line[v] == ' ' || line[v] == '\t')
-                {
-                    v++;
-                }
-                while (!(line[v] >= '0' && line[v] <= '9'))
-                {
-                    v++;
-                }
-                while (line[v] != ' ')
-                {
-                    cycle += line[v];
-                    v++;
-                }
-                cycle_time = std::stof(cycle.c_str());
-                HZ = 1 / cycle_time;
-
+                break;
             }
         }
-        
+
+        for (auto &i : it->second)
+        {
+            i->dynamic_power = dynamic_Power;
+            i->leakage_power = Leakage_power;
+            i->total_power = i->dynamic_power + i->leakage_power;
+        }  
     }
-
-    for (auto &i : it->second)
-    {
-        i->total_power = i->dynamic_power + i->leakage_power;
-    }
-
-
-
 }
 
 void Parser::ParseDef()
@@ -604,7 +505,7 @@ void Parser::ParseLib(std::string lib)
     auto it = memorysMappedByName.find(cellname);
     for (auto &i : it->second)
     {
-        i->mem_type = (type == "ram") ? RAM : -1;
+        i->mem_type = (type == "ram") ? RAM : ROM;
         i->address_width = a;
         i->word_width = w;
         i->area = AREA;

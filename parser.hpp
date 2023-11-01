@@ -46,8 +46,7 @@ public:
 private:
 
     bool HaveMultiAlgorithms = false;
-    
-    // std::map<std::string,std::map<std::string,Memory>> memorys; // memory_name / memory_path / memory
+
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
     std::map<std::string,std::vector<Memory*>> AfterDivByRowCol;

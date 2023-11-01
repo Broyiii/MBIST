@@ -37,7 +37,6 @@ struct Memory
 
     std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
-    std::map<std::string,float> pins;
 
 
     int up_bound = 0;

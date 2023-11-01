@@ -164,12 +164,10 @@ void Parser::GetInformationFromFile()
 {
     // parser file
     GetAllFileNames();
-
     PrintMemInfo();
 
     // grouping
     GroupByHardCondition();
-
 
     // Show Information
     Print();
