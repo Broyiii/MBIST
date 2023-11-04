@@ -3,6 +3,8 @@
 
 #include "global.hpp"
 
+typedef std::map<std::string,std::set<Memory*>> grouptype;
+
 extern dataBase db;
 
 class Parser
@@ -26,6 +28,9 @@ public:
             else if ((fn.find("clk") != std::string::npos) && (fn.find(".txt") != std::string::npos))
                 db.clk_file = fn;
         }
+
+        AfterHardCondition.resize(1);
+
         
         printf("**************************************************************************\n");
         printf("*                          Partitioning Context                          *\n");
@@ -45,18 +50,13 @@ public:
 
 private:
 
-    bool HaveMultiAlgorithms = false;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
-    std::map<std::string,std::vector<Memory*>> AfterDivByRowCol;
     std::unordered_map<std::string, std::vector<std::string>> clkDomainMap;  // clk / mem_path
 
-
-
-    std::map<std::string,std::vector<Memory*>> AfterGroupByClk;
-    std::map<std::string,std::vector<Memory*>> AfterGroupByType;
-    std::map<std::string,std::vector<Memory*>> AfterGroupByAlgorithm;
+    std::vector<grouptype> AfterHardCondition;
+    std::vector<Group> AfterGroupBypower;
 
     void ParseMemList();
     void ParseDataSheet(std::string ds);
@@ -69,10 +69,17 @@ private:
     void GetAllFileNames();
 
 
-    void GroupByClk();
-    void GroupByType();
-    void GroupByAlgorithm();
+    void GroupByClk(grouptype &origin);
+    void GroupByType(grouptype &origin);
+    void GroupByAlgorithm(grouptype &origin);
+    bool IsSameGroupDealMultiAlgo(Memory* a,Group group);
+    bool IsPutInOneGroup(Memory* in,Memory* out,double &power);
     void GroupByHardCondition();
+    void GroupByConstraints();
+
+
+    void GroupByPower(grouptype &origin, std::vector<Group> &Group_Power);
+    void GroupOneBypower(std::list<Memory*> &oneset, int &id, std::vector<Group> &Group_Power);
 };
 
 

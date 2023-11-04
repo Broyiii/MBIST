@@ -43,6 +43,16 @@ int main(int argc,char *argv[])
         {
             // print detailed info
         }
+        else if (arg_str == "-p")
+        {
+            std::string tmp = argv[argIndex++];
+            db.power_max = std::stod(tmp);
+        }
+        else if (arg_str == "-l")
+        {
+            std::string tmp = argv[argIndex++];
+            db.dis_max = std::stoi(tmp);
+        }
         else
         {
             WrongUsage();

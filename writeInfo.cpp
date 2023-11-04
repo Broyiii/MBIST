@@ -22,8 +22,11 @@ void WrongUsage()
               << "\nRequired commands:\n"
               << "\t-d <work_directory>                 | input a work directory\n"
               << "\nOptional commands:\n"
+              << "\t-p <double>                         | input max power \n"
+              << "\t-l <int>                            | input max dis \n"
               << "\t-help                               | show usage info\n"
               << "\t-info <true/false>                  | print detailed info , defalut is false\n"
+              
               << std::endl;
 }
 
@@ -45,7 +48,7 @@ void Parser::PrintResult(std::chrono::duration<double> duration)
     printf("**************************************************************************\n");
     printf("    - Running Time = %.4f s\n", running_time);
     printf("--------------------------------------------------------------------------\n\n");
-    for (auto &k  : AfterGroupByAlgorithm)
+    for (auto &k  : AfterHardCondition[0])
     {
         std::cout << k.first << " : " << std::endl;
         for (auto &s : k.second)
@@ -54,4 +57,20 @@ void Parser::PrintResult(std::chrono::duration<double> duration)
         }
         std::cout << std::endl;
     }
+
+
+    int cnt = 0;
+    for (auto i : AfterGroupBypower)
+    {
+        auto it = i.Groups.begin();
+        std::cout << "Group ID: " << i.id <<  " power_sum: " << i.total_power << " Type: " << i.memType << " Algo: " << i.algo << std::endl;
+        std::cout << "group size: " << i.Groups.size() << std::endl;
+        while (it != i.Groups.end())
+        {
+            //std::cout << (*it)->mem_Path + '/' + (*it)->mem_Name << std::endl;
+            it++;
+            cnt++;
+        }
+    }
+    std::cout << "single mem: " << cnt << std::endl;
 }

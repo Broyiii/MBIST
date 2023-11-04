@@ -38,97 +38,305 @@ void Parser::GetAllFileNames()
     }
 }
 
-void Parser::GroupByClk()
+void Parser::GroupByClk(grouptype &origin)
 {
-    for (auto i : memorysMappedByName)
+    grouptype temp;
+    for (auto i : origin)
     {
         for (auto j : i.second)
         {
-            if (AfterGroupByClk.find(j->clk_domain) != AfterGroupByClk.end())
+            std::string CLK = i.first + '_' + j->clk_domain;
+            if (temp.find(CLK) != temp.end())
             {
-                auto it = AfterGroupByClk.find(j->clk_domain);
-                it->second.emplace_back(j);
+                auto it = temp.find(CLK);
+                it->second.insert(j);
             }
             else
             {
-                std::vector<Memory*> tmp {j};
-                AfterGroupByClk.insert(std::pair<std::string,std::vector<Memory*>>(j->clk_domain,std::move(tmp)));
+                std::set<Memory*> tmp {j};
+                temp.insert(std::pair<std::string,std::set<Memory*>>(CLK,std::move(tmp)));
                 tmp.clear();
             }
         }
     }
+    origin = temp;
 }
 
-void Parser::GroupByType()
+void Parser::GroupByType(grouptype &origin)
 {
-    for (auto i : AfterGroupByClk)
+    grouptype temp;
+    for (auto i : origin)
     {
         for (auto j : i.second)
         {
-            std::string clk_type = i.first + '_' + std::to_string(j->mem_type);
-            if (AfterGroupByType.find(clk_type) != AfterGroupByType.end())
+            std::string type = i.first + '_' + std::to_string(j->mem_type);
+            if (temp.find(type) != temp.end())
             {
-                auto it = AfterGroupByType.find(clk_type);
-                it->second.emplace_back(j);
+                auto it = temp.find(type);
+                it->second.insert(j);
             }
             else
             {
-                std::vector<Memory*> tmp {j};
-                AfterGroupByType.insert(std::pair<std::string,std::vector<Memory*>>(clk_type,std::move(tmp)));
+                std::set<Memory*> tmp {j};
+                temp.insert(std::pair<std::string,std::set<Memory*>>(type,std::move(tmp)));
                 tmp.clear();
             }
         }
     }
+    origin = temp;
 }
 
-void Parser::GroupByAlgorithm()
+void Parser::GroupByAlgorithm(grouptype &origin)
 {
-    for (auto i : AfterGroupByType)
+    grouptype temp;
+    for (auto i : origin)
     {
         for (auto j : i.second)
         {
             if (j->Algorithms.size() > 1)
             {
-                HaveMultiAlgorithms = true;
                 std::string clk_type_multi = i.first + "_multi";
-                if (AfterGroupByAlgorithm.find(clk_type_multi) != AfterGroupByAlgorithm.end())
+                if (temp.find(clk_type_multi) != temp.end())
                 {
-                    auto it = AfterGroupByAlgorithm.find(clk_type_multi);
-                    it->second.emplace_back(j);
+                    auto it = temp.find(clk_type_multi);
+                    it->second.insert(j);
                 }
                 else
                 {
-                    std::vector<Memory*> tmp {j};
-                    AfterGroupByAlgorithm.insert(std::pair<std::string,std::vector<Memory*>>(clk_type_multi,std::move(tmp)));
+                    std::set<Memory*> tmp {j};
+                    temp.insert(std::pair<std::string,std::set<Memory*>>(clk_type_multi,std::move(tmp)));
                     tmp.clear();
                 }
             }
             else
             {
                 std::string clk_type_multi = i.first + '_' + j->Algorithms[0];;
-                if (AfterGroupByAlgorithm.find(clk_type_multi) != AfterGroupByAlgorithm.end())
+                if (temp.find(clk_type_multi) != temp.end())
                 {
-                    auto it = AfterGroupByAlgorithm.find(clk_type_multi);
-                    it->second.emplace_back(j);
+                    auto it = temp.find(clk_type_multi);
+                    it->second.insert(j);
                 }
                 else
                 {
-                    std::vector<Memory*> tmp {j};
-                    AfterGroupByAlgorithm.insert(std::pair<std::string,std::vector<Memory*>>(clk_type_multi,std::move(tmp)));
+                    std::set<Memory*> tmp {j};
+                    temp.insert(std::pair<std::string,std::set<Memory*>>(clk_type_multi,std::move(tmp)));
                     tmp.clear();
                 }
             }
 
         }
     }
+    origin = temp;
+}
+
+bool Parser::IsSameGroupDealMultiAlgo(Memory* a,Group group)
+{
+    if (a->mem_type == group.memType && ((a->total_power + group.total_power) <= db.power_max))
+    {
+        for (auto i : a->Algorithms)
+        {
+            if (i == group.algo)
+            {
+                return true;
+                break;
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Parser::IsPutInOneGroup(Memory *in, Memory *out, double &power)
+{
+    power += out->total_power;
+    if (power <= db.power_max)
+    {
+        for (auto i : out->Algorithms)
+        {
+            for (auto j : in->Algorithms)
+            {
+                if (i == j)
+                {
+                    return true;
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void Parser::GroupByHardCondition()
 {
-    GroupByClk();
-    GroupByType();
-    GroupByAlgorithm();
+    GroupByAlgorithm(AfterHardCondition[0]);
+    GroupByClk(AfterHardCondition[0]);
+    GroupByType(AfterHardCondition[0]);
 }
+
+void Parser::GroupByConstraints()
+{
+    GroupByPower(AfterHardCondition[0],AfterGroupBypower);
+}
+
+
+
+void Parser::GroupByPower(grouptype &origin, std::vector<Group> &Group_Power)
+{
+    int id = 0;
+    std::map<std::string,std::list<Memory*>> multi;
+    std::vector<Group> left;
+
+    //deal single algorithm
+    for (auto i : origin)
+    {
+        if (i.first.find("multi") == std::string::npos)
+        {
+            std::list<Memory *> oneset;
+            double cur = 0.0;
+            for (auto j : i.second)
+            {
+                cur += j->total_power;
+                oneset.push_back(j);
+            }
+            GroupOneBypower(oneset,id,Group_Power);
+        }
+        else
+        {
+            std::list<Memory*> tmp;
+            for (auto j : i.second)
+            {
+                tmp.push_back(j);
+            }
+            tmp.sort(std::greater<Memory*>());
+            multi.insert(std::pair<std::string,std::list<Memory*>>(i.first,tmp));
+        }
+    }
+
+    //deal multi Algorithm
+    for (auto i : multi)
+    {
+        Group p;
+        auto it = i.second.front();
+        while (i.second.size())
+        {
+            auto it1 = i.second.front();
+            for (auto k : AfterGroupBypower)
+            {
+                if (IsSameGroupDealMultiAlgo(it,k))
+                {
+                    k.Groups.push_back(it);
+                    i.second.pop_front();
+                }
+            }
+            if (it1 == i.second.front())
+            {
+                p.memType = i.second.front()->mem_type;
+                p.clkDomain = i.second.front()->clk_domain;
+                p.Groups.push_back(i.second.front());
+                i.second.pop_front();
+            }
+        }
+        if (p.clkDomain != "")
+        {
+            left.push_back(p);
+        }
+    }
+    if (left.size())
+    {
+        for (auto k : left)
+        {
+            
+            int cnt = 0;
+            int size = k.Groups.size();
+            while (cnt < size)
+            {
+                Group P;
+                double cur_power = 0.0;
+                k.Groups.sort(std::greater<Memory*>());
+                if (k.Groups.front()->flag_multi)
+                {
+                    k.Groups.pop_front();
+                }
+                else
+                {
+                    auto it = k.Groups.front();
+                    cur_power += it->total_power;
+                    P.Groups.push_back(it);
+                    k.Groups.pop_front();
+                    cnt++;
+
+                    for (auto iter : k.Groups)
+                    {
+                        if (!iter->flag_multi)
+                        {
+                            if (IsPutInOneGroup(it,iter,cur_power));
+                            {
+                                P.Groups.push_back(iter);
+                                iter->flag_multi = true;
+                                cnt++;
+                            }
+                        }
+                    }
+
+                }
+                P.clkDomain = k.clkDomain;
+                P.memType = k.memType;
+                P.total_power = cur_power;
+                P.algo = "multi";
+                AfterGroupBypower.push_back(P);
+            }
+            
+        }
+    }
+    
+}
+
+void Parser::GroupOneBypower(std::list<Memory *> &oneset, int &id, std::vector<Group> &Group_Power)
+{
+    Group group;
+    double power_sum = 0.0;
+    oneset.sort(std::greater<Memory*>());
+    auto it = oneset.begin();
+    while (it != oneset.end())
+    {
+        power_sum += (*it)->total_power;
+        it++;
+    }
+
+    if (power_sum <= db.power_max && power_sum > 0)
+    {
+        group.Groups = oneset;
+        group.total_power = power_sum;
+        group.id = id;
+        group.memType = oneset.front()->mem_type;
+        group.algo = oneset.front()->Algorithms[0];
+        Group_Power.push_back(group);
+    }
+    else
+    {
+        std::list<Memory *> temp;
+        while (power_sum > db.power_max)
+        {
+            power_sum -= oneset.back()->total_power;
+            temp.push_back(oneset.back());
+            oneset.pop_back();
+        }
+        group.Groups = oneset;
+        group.total_power = power_sum;
+        group.id = id;
+        group.memType = oneset.front()->mem_type;
+        group.algo = oneset.front()->Algorithms[0];
+        Group_Power.push_back(group);
+        id++;
+        GroupOneBypower(temp, id, Group_Power);
+    }
+}
+
 
 void Parser::Print()
 {
@@ -163,11 +371,20 @@ void Parser::Print()
 void Parser::GetInformationFromFile()
 {
     // parser file
-    GetAllFileNames();
+    GetAllFileNames();std::set<Memory*> tmp_set;
+
+    for (auto it : memorysMappedByPath)
+    {  
+        tmp_set.insert(it.second);
+    }
+    AfterHardCondition[0].insert(std::pair<std::string, std::set<Memory*>>("", tmp_set));
+
     PrintMemInfo();
 
     // grouping
     GroupByHardCondition();
+
+    GroupByConstraints();
 
     // Show Information
     Print();

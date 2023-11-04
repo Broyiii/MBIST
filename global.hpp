@@ -22,10 +22,13 @@
 #include <unordered_map>
 #include <set>
 #include <chrono>
+#include <queue>
+#include <list>
 
 // define memory type
 #define RAM 0
 #define ROM 1
+
 
 
 struct Memory
@@ -50,6 +53,37 @@ struct Memory
     float leakage_power = 0.0;
     float dynamic_power = 0.0;
     float total_power = 0.0;
+    bool flag_multi = false;
+
+    
+    bool operator>(const Memory* & other) const 
+    {
+        return total_power > other->total_power;
+    }
+
+
+};
+
+class PowerCompare
+{
+    public:
+    bool operator()(Memory* v1,Memory* v2) const
+    {
+        return v1->total_power > v2->total_power;
+    }
+};
+
+class Group
+{
+    public:
+        std::string algo = "";
+        std::vector<std::string> Algos;
+        std::string clkDomain = "";
+        int memType = 0;
+        double total_power = 0.0;
+        int max_dis = 0;
+        int id;
+        std::list<Memory *> Groups;
 };
 
 struct dataBase
@@ -69,12 +103,10 @@ struct dataBase
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
 
-    double power_max = 0.0;
-    double dis_max = 0.0;
-
-    
-
+    double power_max = 300.0;
+    int dis_max = 0;
 };
+
 
 
 #endif

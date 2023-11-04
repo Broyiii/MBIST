@@ -20,7 +20,7 @@
 MemoryTemplate (spsram_64x63m4s) {
 
       CellName        : spsram_64x63m4s;
-      Algorithm       : SMarchCHKBvcd;
+      Algorithm       : qwer ssss;
       logicalPorts    : 1rw;
       NumberOfWords   : 64;
       MinHold         : 0.5;
