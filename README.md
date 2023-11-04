@@ -14,4 +14,4 @@
 
 如果需要调试，请先注释`SET(CMAKE_BUILD_TYPE "RELEASE")`以及`SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fPIC -fpermissive")`，删除`build`文件夹内所有内容，重复第3、4步。
 
-在`push`前，请首先确认实在最新版本基础上的修改，并删除`build`目录、`.vscode`目录以及其他用于测试的临时目录！
+在`push`前，请首先确认是在最新版本基础上的修改，并删除`build`目录以及其他用于测试的临时目录！

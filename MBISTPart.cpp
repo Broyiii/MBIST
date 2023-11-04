@@ -61,10 +61,10 @@ int main(int argc,char *argv[])
     }
 
     Parser parser(work_dir);
-    parser.GetInformationFromFile();
+    bool successFlag = parser.GetInformationFromFile();
     auto endTime = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = endTime - startTime;
-    parser.PrintResult(duration);
+    parser.PrintResult(duration, successFlag);
     
 
     return 0;

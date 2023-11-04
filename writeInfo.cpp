@@ -9,7 +9,7 @@ void WriteHead()
     printf("|                                                                        |\n");
     printf("|                 Author : @Broyiii,LZX11111111,Sanmu6666                |\n");
     printf("|                    Copyright (C) 2023 M3CPartioners                    |\n");
-    printf("|                      Version : 2023-10-12 (V0.01)                      |\n");
+    printf("|                      Version : 2023-11-05 (V0.10)                      |\n");
     printf("|                      Date    : %s                     |\n", tmp);
     printf("+========================================================================+\n\n");
 }
@@ -35,12 +35,12 @@ void Parser::PrintMemInfo()
 {
     printf("Constraint Infomation:\n");
     printf("    - Memory number:                     %0ld\n", memorysMappedByPath.size());
-    printf("    - Area:                              %.4f um2\n", 1500.1);
-    printf("    - Power:                             %.4f w\n", 1.5);
+    printf("    - Distance:                          %0d um\n", db.dis_max);
+    printf("    - Power:                             %.4f uA/MHz\n", db.power_max);
     printf("--------------------------------------------------------------------------\n\n");
 }
 
-void Parser::PrintResult(std::chrono::duration<double> duration)
+void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSuccess)
 {
     auto running_time = duration.count();
     printf("**************************************************************************\n");
@@ -48,29 +48,62 @@ void Parser::PrintResult(std::chrono::duration<double> duration)
     printf("**************************************************************************\n");
     printf("    - Running Time = %.4f s\n", running_time);
     printf("--------------------------------------------------------------------------\n\n");
-    for (auto &k  : AfterHardCondition[0])
+    
+    // int num = 0;
+    // for (auto &k : AfterHardCondition)
+    // {
+    //     k.first.Print(k.first);
+    //     for (auto &mem : k.second)
+    //     {
+    //         std::cout << mem->mem_Path << std::endl;
+    //         ++num;
+    //     }
+    // }
+    // std::cout << "\nnum = " << num << std::endl;
+
+    if (parseSuccess)
     {
-        std::cout << k.first << " : " << std::endl;
-        for (auto &s : k.second)
+        int cnt = 0;
+        for (auto &k : AfterGroupBypower)
         {
-            std::cout << "\t" << s->mem_Path + '/' + s->mem_Name << std::endl;
+            k.first.Print(k.first);
+            for (auto& mList : k.second)
+            {
+                // printf("==========================================================================\n");
+                printf("- total power = %.4f\n", mList.totalPower);
+                // std::cout << mList.totalPower << "=====" << std::endl;
+                for (auto& mem : mList.memList)
+                {
+                    std::cout << "    - " << mem->mem_Path << " : " << mem->dynamic_power << std::endl;
+                    ++cnt;
+                }
+                printf("\n");
+            }
         }
-        std::cout << std::endl;
+        std::cout << "single mem: " << cnt << std::endl;
     }
+    else
+    {
+        printf("Parse Error !\n");
+    }
+    
+}
 
 
-    int cnt = 0;
-    for (auto i : AfterGroupBypower)
+void Parser::WriteAnswer()
+{
+    db.outputFile = fopen(db.output_file_name.c_str(), "w");
+    int i = 0;
+    for (auto &g : AfterGroupBypower)
     {
-        auto it = i.Groups.begin();
-        std::cout << "Group ID: " << i.id <<  " power_sum: " << i.total_power << " Type: " << i.memType << " Algo: " << i.algo << std::endl;
-        std::cout << "group size: " << i.Groups.size() << std::endl;
-        while (it != i.Groups.end())
+        for (auto& mList : g.second)
         {
-            //std::cout << (*it)->mem_Path + '/' + (*it)->mem_Name << std::endl;
-            it++;
-            cnt++;
+            fprintf(db.outputFile, "controller_%0d\n", ++i);
+            for (auto mem : mList.memList)
+            {
+                fprintf(db.outputFile, "%s\n", mem->mem_Path.c_str());
+            }
+            fprintf(db.outputFile, "\n");
         }
     }
-    std::cout << "single mem: " << cnt << std::endl;
 }

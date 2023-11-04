@@ -29,7 +29,7 @@ public:
                 db.clk_file = fn;
         }
 
-        AfterHardCondition.resize(1);
+        // AfterHardCondition.resize(1);
 
         
         printf("**************************************************************************\n");
@@ -42,11 +42,10 @@ public:
         printf("--------------------------------------------------------------------------\n");
     }
 
-    void GetInformationFromFile();
+    bool GetInformationFromFile();
     void Print();
     void PrintMemInfo();
-    void PrintResult(std::chrono::duration<double> duration);
-    
+    void PrintResult(std::chrono::duration<double> duration, bool parseSuccess);    
 
 private:
 
@@ -55,8 +54,11 @@ private:
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
     std::unordered_map<std::string, std::vector<std::string>> clkDomainMap;  // clk / mem_path
 
-    std::vector<grouptype> AfterHardCondition;
-    std::vector<Group> AfterGroupBypower;
+    // std::vector<Group*> AfterGroupBypower;
+    std::unordered_map<Group, std::list<Memory*>, Group::Hash> AfterHardCondition;
+    std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupBypower;
+
+    int group_num = 0;
 
     void ParseMemList();
     void ParseDataSheet(std::string ds);
@@ -68,18 +70,11 @@ private:
     void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
     void GetAllFileNames();
 
-
-    void GroupByClk(grouptype &origin);
-    void GroupByType(grouptype &origin);
-    void GroupByAlgorithm(grouptype &origin);
-    bool IsSameGroupDealMultiAlgo(Memory* a,Group group);
-    bool IsPutInOneGroup(Memory* in,Memory* out,double &power);
     void GroupByHardCondition();
-    void GroupByConstraints();
+    bool GroupByPower();
 
+    void WriteAnswer();
 
-    void GroupByPower(grouptype &origin, std::vector<Group> &Group_Power);
-    void GroupOneBypower(std::list<Memory*> &oneset, int &id, std::vector<Group> &Group_Power);
 };
 
 
