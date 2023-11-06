@@ -40,10 +40,11 @@ struct Memory
 
     std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
+    std::set<int> conncect_nodse;
 
 
-    int up_bound = 0;
-    int low_bound = 0;
+    long long up_bound = 0;
+    long long low_bound = 0;
     int NumberOfWords = 0;
     float area = 0.0;
     int mem_type = RAM;
@@ -54,6 +55,7 @@ struct Memory
     float dynamic_power = 0.0;
     float total_power = 0.0;
     bool flag_multi = false;
+    int nodes_id;
 
     static bool compareMyClass(const Memory* v1, const Memory* v2) {
         return v1->total_power > v2->total_power;
@@ -65,16 +67,14 @@ struct Memory
     // }
 
 
-};
+    bool operator()(int v1,int v2) const
+    {
+        return v1 > v2;
+    }
 
-// class PowerCompare
-// {
-//     public:
-//     bool operator()(Memory* v1,Memory* v2) const
-//     {
-//         return v1->total_power > v2->total_power;
-//     }
-// };
+
+
+};
 
 class Group
 {
@@ -180,7 +180,9 @@ struct dataBase
     std::vector<std::string> verilog_files;
 
     double power_max = 50.0;
-    int dis_max = 0;
+    int dis_max = 300000;
+
+
 };
 
 

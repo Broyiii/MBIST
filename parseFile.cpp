@@ -224,7 +224,6 @@ void Parser::ParseDef()
         std::cout << "ERROR 1! No such file " << db.def_file << std::endl;
     }
     std::string line = "";
-
     while (getline(input, line))
     {
         int i = 2;
@@ -286,6 +285,8 @@ void Parser::ParseDef()
         {
             std::cout << "error: " << path << std::endl;
         }
+
+        //cnt++;
     }
     input.close();
 }

@@ -15,6 +15,7 @@ void Parser::GetAllFileNames()
     ParseDef();
     ParseCLK();
 
+
     for (int i = 0; i < db.lvlib_files.size(); i++)
     {
         for (auto &j : memorysMappedByName)
@@ -36,6 +37,9 @@ void Parser::GetAllFileNames()
 
         }
     }
+
+    GetNodeID();
+    BuildMatric();
 }
 
 
@@ -124,6 +128,56 @@ void Parser::Print()
     }
     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
+}
+
+void Parser::GetNodeID()
+{
+    int k = 0;
+    for (auto &i : memorysMappedByPath)
+    {
+        i.second->nodes_id = k;
+        k++;
+    }
+}
+
+void Parser::BuildMatric()
+{
+    for (auto &i : memorysMappedByPath)
+    {
+        for (auto &j : memorysMappedByPath)
+        {
+            if (j.second->nodes_id > i.second->nodes_id)
+            {
+                if (CalculateDis(i.second,j.second))
+                {
+                    i.second->conncect_nodse.insert(j.second->nodes_id);
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+}
+
+bool Parser::CalculateDis(Memory *a, Memory *b)
+{
+    long long t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
+    double dis = std::sqrt(t );
+    //long long dis = (long long)std::sqrt((a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound) );
+    if (dis <= db.dis_max)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    } 
 }
 
 bool Parser::GetInformationFromFile()

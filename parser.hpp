@@ -73,6 +73,11 @@ private:
     void GroupByHardCondition();
     bool GroupByPower();
 
+
+    void GetNodeID();
+    void BuildMatric();
+    bool CalculateDis(Memory* a,Memory* b);
+
     void WriteAnswer();
 
 };

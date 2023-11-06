@@ -1,4 +1,5 @@
 #include "writeInfo.hpp"
+#include "parser.hpp"
 
 void WriteHead()
 {
@@ -89,8 +90,7 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
     
 }
 
-
-void Parser::WriteAnswer()
+void Parser::WriteAnswer() 
 {
     db.outputFile = fopen(db.output_file_name.c_str(), "w");
     int i = 0;
@@ -107,3 +107,4 @@ void Parser::WriteAnswer()
         }
     }
 }
+
