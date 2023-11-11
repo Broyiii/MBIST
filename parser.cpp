@@ -2,7 +2,46 @@
 #include "global.hpp"
 
 extern dataBase db;
-// using namespace std;
+
+bool Parser::CheckSort(std::deque<Memory *> mems)
+{
+    logger.log("[CheckSort] Check Sort ...");
+    int tmp = -1;
+    for (auto m : mems)
+    {
+        if (tmp >= m->node_id)
+        {
+            logger.log("[CheckSort] FAIL !");
+            return false;
+        }
+        tmp = m->node_id;
+    }
+    logger.log("[CheckSort] PASS !");
+    return true;
+}
+
+bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups)
+{
+    logger.log("[SatisfyPowerCon] Check Power ...");
+    for (auto &g : groups)
+    {
+        for (auto &mems : g.second)
+        {
+            double power = 0.0;
+            for (auto &mem : mems.memList)
+            {
+                power += mem->dynamic_power;
+            }
+            if (power > db.power_max)
+            {
+                logger.log("[SatisfyPowerCon] FAIL !");
+                return false;
+            }
+        }
+    }
+    logger.log("[SatisfyPowerCon] PASS !");
+    return true;
+}
 
 void Parser::GetAllFileNames()
 {
@@ -38,17 +77,64 @@ void Parser::GetAllFileNames()
         }
     }
 
-    GetNodeID();
-    BuildMatric();
 }
 
+void Parser::GroupMultiAlgoMems(Memory *mem)
+{
+    Group g;
+    g.clkDomain = mem->clk_domain;
+    g.memType = mem->mem_type;
+
+    double avePower = -1.0;
+    std::string suitableAlgo;
+    for (auto &algo : mem->Algorithms)
+    {
+        g.Algos.emplace_back(algo);
+        auto iter = AfterHardCondition.find(g);
+        if (iter != AfterHardCondition.end())
+        {
+            double power = 0.0;
+            for (auto &i : iter->second)
+            {
+                power += i->dynamic_power;
+            }
+            power += mem->dynamic_power;
+            power = std::fmod(power, db.power_max);
+            if (power > avePower)
+            {
+                avePower = power;
+                suitableAlgo = algo;
+            }
+        }
+        else
+        {
+            logger.log("[GroupMultiAlgoMems] ERROR 5 ! Algo is " + algo);
+        }
+    }
+
+    if (avePower < 0)
+    {
+        logger.log("[GroupMultiAlgoMems] ERROR 6 ! Algo is " + mem->Algorithms[0]);
+        g.Algos.resize(1, mem->Algorithms[0]);
+        mem->Algorithms.resize(1, mem->Algorithms[0]);
+        std::deque<Memory *> tmp {mem};
+        AfterHardCondition.insert(std::pair<Group, std::deque<Memory *>>(g, std::move(tmp)));
+        return;
+    }
+
+    g.Algos.resize(1, suitableAlgo);
+    mem->Algorithms.resize(1, suitableAlgo);
+    auto iter = AfterHardCondition.find(g);
+    iter->second.push_back(mem);
+}
 
 void Parser::GroupByHardCondition()
 {
     for (auto &memorys : memorysMappedByPath)
     {
         auto &mem = memorys.second;
-        Group g(0, mem);
+
+        Group g(mem);
 
         auto iter_group = AfterHardCondition.find(g);
         if (iter_group != AfterHardCondition.end())
@@ -57,45 +143,78 @@ void Parser::GroupByHardCondition()
         }
         else
         {
-            std::list<Memory*> tmpList({mem});
-            AfterHardCondition.insert(std::pair<Group, std::list<Memory*>>(std::move(g), std::move(tmpList)));
+            std::deque<Memory*> tmpDeque({mem});
+            AfterHardCondition.insert(std::pair<Group, std::deque<Memory*>>(std::move(g), std::move(tmpDeque)));
         }
+    }
+
+    // Handle multi algo
+    Group g_multi;
+    g_multi.Algos.resize(2, "Multi");
+    auto iter = AfterHardCondition.find(g_multi);
+    if (iter != AfterHardCondition.end())
+    {
+        for (auto mem : iter->second)
+        {
+            GroupMultiAlgoMems(mem);
+        }
+        AfterHardCondition.erase(iter);
     }
 }
 
+void Parser::GroupByDistance()
+{
+    BuildMatric();
+    for (auto i : AfterHardCondition)
+    {
+        GetMaxClique(i.second);
+        AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
+        this->maxNodes.clear();
+    }
+    // PrintBK();
+}
 
 bool Parser::GroupByPower()
 {
-    for (auto &maps : AfterHardCondition)
+    for (auto groups : AfterGroupByDis)
     {
-        auto &memorys = maps.second;
-        memorys.sort(Memory::compareMyClass);
-        std::vector<GroupedMemList> groups;
-        groups.resize(1, GroupedMemList(db.power_max));
-        if (!groups[0].AddMem(memorys.front()))
+        std::vector<GroupedMemList> tmp;
+        int index = 0;
+        for (auto& memsLi : groups.second)
         {
-            printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
-            return false;
-        }
-        memorys.pop_front();
-        NEW_LOOP_FOR_MEMS:
-        for (auto &mem : memorys)
-        {
-            for (auto& memList : groups)
+            auto &mems = memsLi.memList;
+            if (!CheckSort(mems))
             {
-                if (memList.AddMem(memorys.front()))
-                {
-                    memorys.pop_front();
-                    goto NEW_LOOP_FOR_MEMS;
-                }
+                return false;
             }
-            groups.emplace_back(GroupedMemList(db.power_max, mem));
-            memorys.pop_front();
-            goto NEW_LOOP_FOR_MEMS;
+            std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+            if (mems.front()->dynamic_power > db.power_max)
+            {
+                printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
+                return false;
+            }
+            tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
+            mems.pop_front();
+            
+            NEW_LOOP_FOR_MEMS:
+            while (mems.size())
+            {
+                for (int i = index; i < tmp.size(); ++i)
+                {
+                    if (tmp[i].AddMem(mems.front()))
+                    {
+                        mems.pop_front();
+                        goto NEW_LOOP_FOR_MEMS;
+                    }
+                }
+                tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
+                mems.pop_front();
+            }
+            index = tmp.size();
         }
-
-        AfterGroupBypower.insert(std::pair<Group, std::vector<GroupedMemList>>(maps.first, std::move(groups)));
+        AfterGroupBypower.insert(std::pair<Group, std::vector<GroupedMemList>>(groups.first, std::move(tmp)));
     }
+
     return true;
 }
 
@@ -130,54 +249,31 @@ void Parser::Print()
     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
 }
 
-void Parser::GetNodeID()
-{
-    int k = 0;
-    for (auto &i : memorysMappedByPath)
-    {
-        i.second->nodes_id = k;
-        k++;
-    }
-}
 
 void Parser::BuildMatric()
 {
+    int cnt = 0;
     for (auto &i : memorysMappedByPath)
     {
-        for (auto &j : memorysMappedByPath)
+        i.second->node_id = cnt;
+        memId2memPath.insert(std::pair<int,std::string>(i.second->node_id,i.second->mem_Path));
+        cnt++;
+    }
+
+    for (auto i : AfterHardCondition)
+    {
+        for (auto mem_front = i.second.begin(); mem_front != i.second.end(); ++mem_front)
         {
-            if (j.second->nodes_id > i.second->nodes_id)
+            for (auto mem_back = std::next(mem_front); mem_back != i.second.end(); ++mem_back)
             {
-                if (CalculateDis(i.second,j.second))
+                if (db.CalculateDis(*mem_front, *mem_back))
                 {
-                    i.second->conncect_nodse.insert(j.second->nodes_id);
+                    (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
+                    (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
                 }
-                else
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                continue;
             }
         }
     }
-}
-
-bool Parser::CalculateDis(Memory *a, Memory *b)
-{
-    long long t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
-    double dis = std::sqrt(t );
-    //long long dis = (long long)std::sqrt((a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound) );
-    if (dis <= db.dis_max)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    } 
 }
 
 bool Parser::GetInformationFromFile()
@@ -189,13 +285,17 @@ bool Parser::GetInformationFromFile()
 
     // grouping
     GroupByHardCondition();
+    
+    GroupByDistance();
+
     if(!GroupByPower())
         return false;
 
-    // GroupByConstraints();
+    if(!SatisfyDisCon(AfterGroupBypower))
+        return false;
+    if (!SatisfyPowerCon(AfterGroupBypower))
+        return false;
 
-    // Show Information
-    // Print();
     WriteAnswer();
     return true;
 }

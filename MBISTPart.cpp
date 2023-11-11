@@ -1,9 +1,10 @@
 #include "parser.hpp"
 #include "writeInfo.hpp"
 #include "global.hpp"
+#include "Logger.hpp"
 
 dataBase db;
-
+Logger& logger = Logger::getInstance();
 
 int main(int argc,char *argv[])
 {

@@ -10,7 +10,7 @@ void WriteHead()
     printf("|                                                                        |\n");
     printf("|                 Author : @Broyiii,LZX11111111,Sanmu6666                |\n");
     printf("|                    Copyright (C) 2023 M3CPartioners                    |\n");
-    printf("|                      Version : 2023-11-05 (V0.10)                      |\n");
+    printf("|                      Version : 2023-11-11 (V1.00)                      |\n");
     printf("|                      Date    : %s                     |\n", tmp);
     printf("+========================================================================+\n\n");
 }
@@ -47,44 +47,44 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
     printf("**************************************************************************\n");
     printf("*                          Partitioning Result                           *\n");
     printf("**************************************************************************\n");
-    printf("    - Running Time = %.4f s\n", running_time);
+    printf("    - Totol Group Number:       %0d\n", this->groupNum);
+    printf("    - Output File:              ./%s\n", db.output_file_name.c_str());
+    printf("    - Log File:                 ./%s\n", db.log_file_name.c_str());
+    printf("    - Running Time:             %.4f s\n", running_time);
     printf("--------------------------------------------------------------------------\n\n");
-    
-    // int num = 0;
-    // for (auto &k : AfterHardCondition)
-    // {
-    //     k.first.Print(k.first);
-    //     for (auto &mem : k.second)
-    //     {
-    //         std::cout << mem->mem_Path << std::endl;
-    //         ++num;
-    //     }
-    // }
-    // std::cout << "\nnum = " << num << std::endl;
 
     if (parseSuccess)
     {
         int cnt = 0;
         for (auto &k : AfterGroupBypower)
         {
-            k.first.Print(k.first);
+            // k.first.Print(k.first);
+            logger.log("[PrintResult] ");
+            logger.log("[PrintResult] ==========================================================================");
+            logger.log("[PrintResult] Hard Condition : " + k.first.GetInfo((k.first)));
+            logger.log("[PrintResult] ==========================================================================");
             for (auto& mList : k.second)
             {
                 // printf("==========================================================================\n");
-                printf("- total power = %.4f\n", mList.totalPower);
+                logger.log("[PrintResult] - total power = " + std::to_string(mList.totalPower));
+                // printf("- total power = %.4f\n", mList.totalPower);
                 // std::cout << mList.totalPower << "=====" << std::endl;
                 for (auto& mem : mList.memList)
                 {
-                    std::cout << "    - " << mem->mem_Path << " : " << mem->dynamic_power << std::endl;
+                    // std::cout << "    - " << mem->mem_Path << " : " << mem->dynamic_power << std::endl;
+                    logger.log("[PrintResult]     - " + mem->mem_Path + " : " + std::to_string(mem->dynamic_power));
                     ++cnt;
                 }
-                printf("\n");
+                logger.log("[PrintResult] ");
+                // printf("\n");
             }
         }
-        std::cout << "single mem: " << cnt << std::endl;
+        logger.log("[PrintResult] single mem: " + std::to_string(cnt));
+        // std::cout << "single mem: " << cnt << std::endl;
     }
     else
     {
+        logger.log("[PrintResult] Parse Error !");
         printf("Parse Error !\n");
     }
     
@@ -93,12 +93,11 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
 void Parser::WriteAnswer() 
 {
     db.outputFile = fopen(db.output_file_name.c_str(), "w");
-    int i = 0;
     for (auto &g : AfterGroupBypower)
     {
         for (auto& mList : g.second)
         {
-            fprintf(db.outputFile, "controller_%0d\n", ++i);
+            fprintf(db.outputFile, "controller_%0d\n", ++this->groupNum);
             for (auto mem : mList.memList)
             {
                 fprintf(db.outputFile, "%s\n", mem->mem_Path.c_str());

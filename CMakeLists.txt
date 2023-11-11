@@ -4,7 +4,7 @@ SET(CMAKE_BUILD_TYPE "DEBUG")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -fPIC")
 #SET(CMAKE_BUILD_TYPE "RELEASE")
 #SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -fPIC -fpermissive")
-set(SOURCES MBISTPart.cpp parser.cpp writeInfo.cpp parseFile.cpp)
+set(SOURCES MBISTPart.cpp parser.cpp writeInfo.cpp parseFile.cpp BK.cpp)
 
 
 

@@ -2,14 +2,19 @@
 #define _PARSER_HPP_
 
 #include "global.hpp"
+#include "Logger.hpp"
+
 
 typedef std::map<std::string,std::set<Memory*>> grouptype;
 
 extern dataBase db;
+extern Logger& logger;
+
 
 class Parser
 {
 public:
+    Parser(){}
     Parser(std::string wd)
     {
         if (wd.back() == '/')
@@ -29,9 +34,6 @@ public:
                 db.clk_file = fn;
         }
 
-        // AfterHardCondition.resize(1);
-
-        
         printf("**************************************************************************\n");
         printf("*                          Partitioning Context                          *\n");
         printf("**************************************************************************\n");
@@ -39,26 +41,49 @@ public:
         printf("    - Work directory:                 %s\n", db.work_dir.c_str());
         printf("    - Memory list file:               %s\n", db.memorylist_file.c_str());
         printf("    - Memory def file:                %s\n", db.def_file.c_str());
+        printf("    - Memory clk file:                %s\n", db.clk_file.c_str());
         printf("--------------------------------------------------------------------------\n");
     }
+
+    int groupNum = 0;
 
     bool GetInformationFromFile();
     void Print();
     void PrintMemInfo();
-    void PrintResult(std::chrono::duration<double> duration, bool parseSuccess);    
+    void PrintResult(std::chrono::duration<double> duration, bool parseSuccess); 
+
+    std::string Id2Mem(int id)
+    {
+        return this->memId2memPath[id];
+    }
+    Memory* Str2Mem(std::string str)
+    {
+        return this->memorysMappedByPath[str];
+    }
+
+    //BK
+    void GetMaxClique(std::deque<Memory*> mems);
+    void PrintBK();
+    // std::vector<Memory*> mems;
+    std::vector<GroupedMemList> GetClique()
+    {
+        return this->maxNodes;
+    }
 
 private:
-
+    friend class BK;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
     std::unordered_map<std::string, std::vector<std::string>> clkDomainMap;  // clk / mem_path
 
-    // std::vector<Group*> AfterGroupBypower;
-    std::unordered_map<Group, std::list<Memory*>, Group::Hash> AfterHardCondition;
-    std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupBypower;
+    std::unordered_map<int,std::string> memId2memPath;
 
-    int group_num = 0;
+    // std::vector<Group*> AfterGroupBypower;
+    std::unordered_map<Group, std::deque<Memory*>, Group::Hash> AfterHardCondition;
+    std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupByDis;
+    // std::vector<std::map<int, std::vector<std::deque<int>>,rule>> AfterGroupByDis;
+    std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupBypower;
 
     void ParseMemList();
     void ParseDataSheet(std::string ds);
@@ -71,16 +96,28 @@ private:
     void GetAllFileNames();
 
     void GroupByHardCondition();
+    void GroupMultiAlgoMems(Memory *mem);
+    void GroupByDistance();
     bool GroupByPower();
-
-
-    void GetNodeID();
+    
     void BuildMatric();
-    bool CalculateDis(Memory* a,Memory* b);
 
     void WriteAnswer();
 
-};
 
+    bool SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
+
+    //BK
+    bool CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
+    void BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S);
+    std::vector<GroupedMemList> maxNodes;
+    int num;
+    bool* check;
+    std::vector<GroupedMemList> RemoveDuplicateMems();
+
+    bool SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
+    bool CheckSort(std::deque<Memory *> mems);
+
+};
 
 #endif

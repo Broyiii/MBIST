@@ -3,8 +3,10 @@
 
 #include "global.hpp"
 #include "parser.hpp"
+#include "Logger.hpp"
 
 extern dataBase db;
+extern Logger& logger;
 
 std::vector<std::string> SplitBySpace(std::string str)
 {
@@ -71,6 +73,8 @@ void Parser::ParseMemList()
             }
         }
     }
+
+    this->check = new bool[memorysMappedByPath.size()];
     input.close();
 }
 
