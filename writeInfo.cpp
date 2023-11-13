@@ -36,8 +36,21 @@ void Parser::PrintMemInfo()
 {
     printf("Constraint Infomation:\n");
     printf("    - Memory number:                     %0ld\n", memorysMappedByPath.size());
-    printf("    - Distance:                          %0d um\n", db.dis_max);
-    printf("    - Power:                             %.4f uA/MHz\n", db.power_max);
+    if (this->distanceCon)
+        printf("    - Distance:                          %0d um\n", db.dis_max);
+    else
+        printf("    - Distance:                          unlimited\n");
+    
+    if (this->powerCon)
+        printf("    - Power:                             %.4f uA/MHz\n", db.power_max);
+    else
+        printf("    - Power:                             unlimited\n");
+
+    if (this->clkCon)
+        printf("    - CLK:                               %0d different domains\n", this->clkDomainNum);
+    else   
+        printf("    - CLK:                               unlimited\n");
+    
     printf("--------------------------------------------------------------------------\n\n");
 }
 
@@ -51,7 +64,7 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
     printf("    - Output File:              ./%s\n", db.output_file_name.c_str());
     printf("    - Log File:                 ./%s\n", db.log_file_name.c_str());
     printf("    - Running Time:             %.4f s\n", running_time);
-    printf("--------------------------------------------------------------------------\n\n");
+    printf("--------------------------------------------------------------------------\n\n");    
 
     if (parseSuccess)
     {
@@ -80,13 +93,19 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
             }
         }
         logger.log("[PrintResult] single mem: " + std::to_string(cnt));
+        // printf("Parse Success !\n\n");
         // std::cout << "single mem: " << cnt << std::endl;
     }
     else
     {
         logger.log("[PrintResult] Parse Error !");
-        printf("Parse Error !\n");
+        // printf("Parse Error !\n\n");
     }
+
+    if (parseSuccess)
+        printf("----------------------- MBIST Partitioner SUCCESS ! ----------------------\n\n");
+    else
+        printf("------------------------ MBIST Partitioner WRONG ! -----------------------\n\n");
     
 }
 

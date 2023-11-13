@@ -58,10 +58,11 @@ bool Parser::CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList
         }
     }
 
-    for (int k = 0;k < num;k++)
+    for (int k = 0; k < this->memId2memPath.size(); k++)
     {
         if (check[k] == 0)
         {
+            std::cout << k << " : " << memId2memPath[k] << std::endl;
             return false;
         }
     }

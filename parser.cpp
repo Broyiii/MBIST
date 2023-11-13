@@ -43,16 +43,25 @@ bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemLis
     return true;
 }
 
-void Parser::GetAllFileNames()
+bool Parser::GetAllFileNames()
 {
-    GetFileNameFromFolder(db.work_dir + "ds/", db.ds_files);
-    GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files);
-    GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files);
-    GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files);
+    if (!GetFileNameFromFolder(db.work_dir + "ds/", db.ds_files))
+        return false;
+    if (!GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files))
+        return false;
+    if (!GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files))
+        return false;
+    if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
+        return false;
 
-    ParseMemList();
-    ParseDef();
-    ParseCLK();
+    if (!ParseMemList())
+        return false;
+
+    if (!ParseDef())
+        this->distanceCon = false;
+
+    if (!ParseCLK())
+        this->clkCon = false;
 
 
     for (int i = 0; i < db.lvlib_files.size(); i++)
@@ -64,10 +73,10 @@ void Parser::GetAllFileNames()
                 ParseLvlib(db.lvlib_files[i]);
             }
 
-            if (db.lib_files[i].find(j.first) != std::string::npos)
-            {
-                ParseLib(db.lib_files[i]);
-            }
+            // if (db.lib_files[i].find(j.first) != std::string::npos)
+            // {
+            //     ParseLib(db.lib_files[i]);
+            // }
 
             if (db.ds_files[i].find(j.first) != std::string::npos)
             {
@@ -77,13 +86,12 @@ void Parser::GetAllFileNames()
         }
     }
 
+    return true;
 }
 
 void Parser::GroupMultiAlgoMems(Memory *mem)
 {
-    Group g;
-    g.clkDomain = mem->clk_domain;
-    g.memType = mem->mem_type;
+    Group g(mem, true);
 
     double avePower = -1.0;
     std::string suitableAlgo;
@@ -135,6 +143,7 @@ void Parser::GroupByHardCondition()
         auto &mem = memorys.second;
 
         Group g(mem);
+        logger.log("[GroupByHardCondition] " + Group::GetInfo(g));
 
         auto iter_group = AfterHardCondition.find(g);
         if (iter_group != AfterHardCondition.end())
@@ -156,6 +165,7 @@ void Parser::GroupByHardCondition()
     {
         for (auto mem : iter->second)
         {
+            logger.log("[GroupByHardCondition] [Handle multi algo]" + Group::GetInfo(Group(mem)));
             GroupMultiAlgoMems(mem);
         }
         AfterHardCondition.erase(iter);
@@ -165,12 +175,29 @@ void Parser::GroupByHardCondition()
 void Parser::GroupByDistance()
 {
     BuildMatric();
-    for (auto i : AfterHardCondition)
-    {
-        GetMaxClique(i.second);
-        AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
-        this->maxNodes.clear();
+    if (distanceCon)
+    {  
+        for (auto i : AfterHardCondition)
+        {
+            GetMaxClique(i.second);
+            AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
+            this->maxNodes.clear();
+        }
     }
+    else
+    {
+        for (auto i : AfterHardCondition)
+        {
+            GroupedMemList gm(db.power_max);
+            for (auto mem : i.second)
+            {
+                gm.AddMemUnsafe(mem);
+            }
+            std::vector<GroupedMemList> tmp {GroupedMemList(std::move(gm))};
+            AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, std::move(tmp)));
+        }
+    }
+    
     // PrintBK();
 }
 
@@ -185,9 +212,10 @@ bool Parser::GroupByPower()
             auto &mems = memsLi.memList;
             if (!CheckSort(mems))
             {
-                return false;
+                std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+                // return false;
             }
-            std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+            
             if (mems.front()->dynamic_power > db.power_max)
             {
                 printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
@@ -227,7 +255,7 @@ void Parser::Print()
         std::cout << i.first << std::endl;
         for (auto &j : i.second)
         {
-            std::cout << "Path: " << j->mem_Path << " Low_limit: " << j->low_bound << " Up_limit: " << j->up_bound << " NumberOfWords: " << j->NumberOfWords << std::endl;
+            std::cout << "Path: " << j->mem_Path << " Low_limit: " << j->low_bound << " Up_limit: " << j->up_bound << " NumberOfWords: " << j->NumberofWords << std::endl;
             std::cout << "Algorithms: ";
             for (auto &k : j->Algorithms)
             {
@@ -240,8 +268,8 @@ void Parser::Print()
                 std::cout << t << " ";
             }
             std::cout << std::endl;
-            std::cout << "Area: " << j->area << " mem_type: " << j->mem_type << " MilliWattsPerMegaHertz: " << j->MilliWattsPerMegaHertz << std::endl;
-            std::cout << "Total power: " << j->total_power << std::endl;
+            std::cout << "Area: " << j->area << " mem_type: " << j->mem_type << std::endl;
+            std::cout << "Dynamic power: " << j->dynamic_power << std::endl;
             std::cout << " address_width: " << j->address_width << " word_width: " << j->word_width << "\n" << std::endl;
         }
     }
@@ -276,10 +304,40 @@ void Parser::BuildMatric()
     }
 }
 
+void Parser::OutCsvFile()
+{
+    this->groupNum = 0;
+    int cnt = 0;
+    Group p;
+    db.outcsvFile = fopen(db.output_csv_name.c_str(),"w");
+    fprintf(db.outcsvFile, "UP,Down,contronler,hard\n");
+    for (auto &i : AfterGroupBypower)
+    {
+        if (p.clkDomain != i.first.clkDomain || p.memType != p.memType || p.Algos != i.first.Algos)
+        {
+            cnt++;
+            Group p = i.first;
+        }  
+        for (auto& mList : i.second)
+        {
+            ++this->groupNum;
+            for (auto k : mList.memList)
+            {
+                fprintf(db.outcsvFile, "%lld,%lld,contronler_%0d,hard_%0d\n",k->up_bound,k->low_bound,this->groupNum,cnt);
+            }
+        }
+    }
+}
+
 bool Parser::GetInformationFromFile()
 {
     // parser file
-    GetAllFileNames();
+    if (!GetAllFileNames())
+    {
+        std::cout << "ERROR 1 ! Lack necessary files !" << std::endl;
+        logger.log("[GetInformationFromFile] ERROR ! Lack necessary files !");
+        return false;
+    }
 
     PrintMemInfo();
 
@@ -292,11 +350,16 @@ bool Parser::GetInformationFromFile()
         return false;
 
     if(!SatisfyDisCon(AfterGroupBypower))
-        return false;
+    {
+        std::cout << "ERR" << std::endl;
+    }
+        // return false;
+
     if (!SatisfyPowerCon(AfterGroupBypower))
         return false;
 
     WriteAnswer();
+    OutCsvFile();
     return true;
 }
 

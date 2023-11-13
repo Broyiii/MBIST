@@ -44,29 +44,30 @@ struct Memory
     std::string mem_Path = "";
     std::string timing_pin = "";
     std::string clk_domain = "";
+    std::string OperationSet = "";
 
     std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
 
+    double MilliWattsPerMegaHertz = -1.0;
+    double dynamic_power = -1.0;
 
     long long up_bound = 0;
     long long low_bound = 0;
-    int NumberOfWords = 0;
+    int NumberofWords = 0;
+    int NumberofBits = 0;
     float area = 0.0;
     int mem_type = RAM;
     int address_width = 0;
     int word_width = 0;
-    float MilliWattsPerMegaHertz = 0.0;
-    float leakage_power = 0.0;
-    float dynamic_power = 0.0;
-    float total_power = 0.0;
+    
     bool flag_multi = false;
     int node_id;
     std::set<int> tmp;
     std::deque<int> connectedMems;
 
     static bool compareMyClass(const Memory* v1, const Memory* v2) {
-        return v1->total_power > v2->total_power;
+        return v1->dynamic_power > v2->dynamic_power;
     }
 
     bool operator()(int v1,int v2) const
@@ -111,6 +112,7 @@ class Group
 public:
     std::vector<std::string> Algos;
     std::string clkDomain = "";
+    std::string operationSet = "";
     int memType = 0;
 
     Group() {}
@@ -120,10 +122,19 @@ public:
         {
             this->Algos = mem->Algorithms;
             this->clkDomain = mem->clk_domain;
+            this->operationSet = mem->OperationSet;
         }
         else
         {
             Algos.resize(2, "Multi");
+        }
+    }
+    Group(Memory* mem, bool GroupMulti) : memType(mem->mem_type)
+    {
+        if (GroupMulti)
+        {
+            this->clkDomain = mem->clk_domain;
+            this->operationSet = mem->OperationSet;
         }
     }
 
@@ -131,10 +142,13 @@ public:
 
     static std::string GetInfo(Group g)
     {
-        if (g.Algos.size() > 1)
-            return "Alg:Multi_clk:" + g.clkDomain + "_type:" + std::to_string(g.memType);
-        else
-            return "Alg:" + g.Algos[0] + "_clk:" + g.clkDomain + "_type:" + std::to_string(g.memType);
+        // if (g.Algos.size() > 1)
+        //     return "Alg:Multi_clk:" + g.clkDomain + "_type:" + std::to_string(g.memType);
+        // else
+        return "Alg:" + g.Algos[0] +   
+               "_clk:" + g.clkDomain + 
+               "_type:" + std::to_string(g.memType) +
+               "_opeartionSet:" + g.operationSet;
     }
 
     static void Print(Group g)
@@ -274,6 +288,8 @@ struct dataBase
     FILE* outputFile;
     std::string output_file_name = "output.txt";
     std::string log_file_name = "logfile.log";
+    std::string output_csv_name = "./plt.csv";
+    FILE* outcsvFile;
 
     std::vector<std::string> lib_names;
     

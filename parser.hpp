@@ -71,11 +71,13 @@ public:
     }
 
 private:
-    friend class BK;
+    bool distanceCon = true;
+    bool powerCon = true;
+    bool clkCon = true;
+    int clkDomainNum = 0;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
-    std::unordered_map<std::string, std::vector<std::string>> clkDomainMap;  // clk / mem_path
 
     std::unordered_map<int,std::string> memId2memPath;
 
@@ -85,15 +87,19 @@ private:
     // std::vector<std::map<int, std::vector<std::deque<int>>,rule>> AfterGroupByDis;
     std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupBypower;
 
-    void ParseMemList();
+    bool ParseMemList();
     void ParseDataSheet(std::string ds);
-    void ParseDef();
+    double ParseDS_summ(std::string ds);
+    double ParseDS_ds02(std::string ds);
+    double GetLastDouble(std::string line);
+    bool ParseDef();
     void ParseLvlib(std::string lvlib);
     void ParseLib(std::string lib);
-    void ParseCLK();
-    void ParseVerilog();
-    void GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
-    void GetAllFileNames();
+    bool ParseCLK();
+    // void ParseVerilog();
+    bool GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
+    bool GetAllFileNames();
+    std::string GetInfoFromStr(std::string &line);
 
     void GroupByHardCondition();
     void GroupMultiAlgoMems(Memory *mem);
@@ -103,6 +109,7 @@ private:
     void BuildMatric();
 
     void WriteAnswer();
+    void OutCsvFile();
 
 
     bool SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
@@ -111,7 +118,7 @@ private:
     bool CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
     void BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S);
     std::vector<GroupedMemList> maxNodes;
-    int num;
+    // int num;
     bool* check;
     std::vector<GroupedMemList> RemoveDuplicateMems();
 

@@ -8,7 +8,7 @@
             "program": "${fileDirname}/build/MBISTPart",
             "args": [
                 "-d",
-                "./testcase03/",
+                "./case/testcase02/",
                 "-l",
                 "500000"
             ],

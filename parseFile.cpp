@@ -21,12 +21,30 @@ std::vector<std::string> SplitBySpace(std::string str)
     return tokens;
 }
 
-void Parser::ParseMemList()
+std::string Parser::GetInfoFromStr(std::string &line)
+{
+    std::string res;
+    size_t pos = line.find(":");
+    while (++pos < line.size())
+    {
+        if (line[pos] == ';')
+            break;
+        else if (line[pos] == ' ')
+            continue;
+        else
+            res += line[pos];
+    }
+    return res;
+}
+
+bool Parser::ParseMemList()
 {
     std::ifstream input(db.memorylist_file);
     if (!input.is_open())
     {
         std::cout << "ERROR 0! No such file " << db.memorylist_file << std::endl;
+        logger.log("[ParseMemList] ERROR 0! No such file " + db.memorylist_file);
+        return false;
     }
     std::string line = "";
 
@@ -36,7 +54,7 @@ void Parser::ParseMemList()
 
     while (getline(input, line))
     {
-        if (line.empty())
+        if (line.empty() || line.find("totally") != std::string::npos)
             continue;
             
         if (line.find(':') != std::string::npos)
@@ -75,14 +93,98 @@ void Parser::ParseMemList()
     }
 
     this->check = new bool[memorysMappedByPath.size()];
+    // std::cout << "num = " << memorysMappedByPath.size() << std::endl;
     input.close();
+    return true;
+}
+
+double Parser::GetLastDouble(std::string line)
+{
+    std::string power_rev;
+    for (auto it = line.rbegin(); it != line.rend(); ++it)
+    {
+        if (*it != ' ')
+        {
+            power_rev += *it;
+        }
+        else
+        {
+            if (!power_rev.empty())
+                break;
+            else
+                continue;
+        }
+    }
+    std::string power_str(power_rev.rbegin(),power_rev.rend());
+    return std::stod(power_str);
+}
+
+double Parser::ParseDS_summ(std::string ds)
+{
+    std::ifstream input(ds);
+    if (!input.is_open())
+    {
+        std::cout << "ERROR 5! No such file " << ds << std::endl;
+        logger.log("[ParseDataSheet] ERROR 5! No such file " + ds);
+    }
+    std::string line = "";
+
+    while (getline(input,line))
+    {
+        if (line.find("Power") != std::string::npos)
+        {
+            do {
+                getline(input,line);
+                return GetLastDouble(line);
+            } while (line.empty());            
+        }
+    }
+
+    return -1.0;
+}
+
+double Parser::ParseDS_ds02(std::string ds)
+{
+    std::ifstream input(ds);
+    if (!input.is_open())
+    {
+        std::cout << "ERROR 5! No such file " << ds << std::endl;
+        logger.log("[ParseDataSheet] ERROR 5! No such file " + ds);
+    }
+
+    std::string line = "";
+
+    while (getline(input,line))
+    {
+        if (line.find("Dynamic Power") != std::string::npos)
+        {
+            while (getline(input,line))
+            {
+                if (line.find("------") != std::string::npos)
+                    break;
+            }
+            double max_dy_power = -1.0;
+            while (getline(input,line))
+            {
+                if (line.empty())
+                    continue;
+                if (line.find("Standby Mode") != std::string::npos)
+                    break;
+                
+                double dy_power = GetLastDouble(line);
+                max_dy_power = dy_power > max_dy_power ? dy_power : max_dy_power;
+            }
+
+            return max_dy_power;
+        }
+    }
+    return -1.0;
 }
 
 void Parser::ParseDataSheet(std::string ds)
 {
     std::string cellname = "";
-    int HZ = 0;
-    float power = 0.0;
+    double power = 0.0;
     for (auto i : memorysMappedByName)
     {
         if (ds.find(i.first) != std::string::npos)
@@ -92,140 +194,36 @@ void Parser::ParseDataSheet(std::string ds)
         }
     }
     auto it = memorysMappedByName.find(cellname);
+    auto mem = *(it->second).begin();
+    if (mem->dynamic_power > 0)
+    {
+        return;
+    }
 
 
     if (ds.find(".summ") != std::string::npos)
     {
-        std::ifstream input(ds);
-        if (!input.is_open())
-        {
-            std::cout << "ERROR 5! No such file " << ds << std::endl;
-        }
-        std::string line = "";
-        std::string allpower = "";
-
-
-        while (getline(input,line))
-        {
-            if (line.find("Power(mW/MHz)") != std::string::npos)
-            {
-                getline(input,line);
-                int i = 0;
-                while (i < line.length())
-                {
-                    if (i >= line.length())
-                    {
-                        break;
-                    }
-                    
-                    int i = line.length() - 1;
-                    while (line[i] != ' ')
-                    {
-                        i--;
-                    }
-                    i++;
-
-                    allpower += line[i];
-                    i++;
-                }
-
-                power = std::stof(allpower.c_str());
-            }
-            else
-            {
-                continue;
-            }
-        }
-
-        for (auto &i : it->second)
-        {
-            i->total_power = power;
-        } 
+        power = ParseDS_summ(ds);
     }
     else
     {
-        std::ifstream input(ds);
-        if (!input.is_open())
-        {
-            std::cout << "ERROR 6! No such file " << ds << std::endl;
-        }
-        std::string line = "";
-        std::string static_power = "";      
-        float Leakage_power = 0.0;
-        float dynamic_Power = 0.0;
-        
-
-        while (getline(input,line))
-        {
-            if (line.find("Leakage Current") != std::string::npos)
-            {
-                int t = line.find('t');
-                t += 2;
-                if (line[t] == '=')
-                {
-                    continue;
-                }
-                else
-                {
-                    while (line[t] == ' ')
-                    {
-                        t++;
-                    }
-                    while (line[t] != '(')
-                    {
-                        static_power += line[t];
-                        t++;
-                    }
-                    Leakage_power = std::stof(static_power.c_str());   
-                }
-            }
-            else if (line.find("Dynamic Power") != std::string::npos && line.find("Average") != std::string::npos)
-            {
-                while (line.find("--") == std::string::npos)
-                {
-                    getline(input,line);
-                }
-                getline(input,line);
-                while (line.length() != 0)
-                {
-                    std::string Dynamic_Power = "";
-                    int t = line.length() - 1;
-                    while (line[t] != ' ')
-                    {
-                        t--;
-                    }
-                    t++;
-                    while (t < line.length())
-                    {
-                        Dynamic_Power += line[t];
-                        t++;
-                    }
-                    float tmp = std::stof(Dynamic_Power.c_str());
-                    if (tmp > dynamic_Power)
-                    {
-                        dynamic_Power = tmp;
-                    }
-                    getline(input,line);
-                }
-                break;
-            }
-        }
-
-        for (auto &i : it->second)
-        {
-            i->dynamic_power = dynamic_Power;
-            i->leakage_power = Leakage_power;
-            i->total_power = i->dynamic_power + i->leakage_power;
-        }  
+        power = ParseDS_ds02(ds);
     }
+
+    for (auto &i : it->second)
+    {
+        i->dynamic_power = power;
+    }  
 }
 
-void Parser::ParseDef()
+bool Parser::ParseDef()
 {
     std::ifstream input(db.def_file);
     if (!input.is_open())
     {
         std::cout << "ERROR 1! No such file " << db.def_file << std::endl;
+        logger.log("[ParseDef] ERROR 1! No such file " + db.def_file);
+        return false;
     }
     std::string line = "";
     while (getline(input, line))
@@ -288,11 +286,13 @@ void Parser::ParseDef()
         else
         {
             std::cout << "error: " << path << std::endl;
+            logger.log("[ParseDef] ERROR 1! No such mem " + path);
         }
 
         //cnt++;
     }
     input.close();
+    return true;
 }
 
 void Parser::ParseLvlib(std::string lvlib)
@@ -302,129 +302,85 @@ void Parser::ParseLvlib(std::string lvlib)
     if (!input.is_open())
     {
         std::cout << "ERROR 2! No such file " << lvlib << std::endl;
+        logger.log("[ParseLvlib] ERROR 2! No such file " + lvlib);
     }
-    std::string line = "";
 
-    std::string cellname = "";
-    float mwmhz = 0.0;
-    int cnt = 0;
+    std::string line;
+    std::set<Memory *> mems;
 
     while (getline(input, line))
     {
-        cnt++;
-        if (line.find("Algorithm") != std::string::npos)
+        if (line.find("CellName") != std::string::npos)
         {
-            int t = line.find(':');
-            t += 2;
-            std::string str = "";
-            auto it = memorysMappedByName.find(cellname);
-            // std::cout << cellname << std::endl;
-            while (t < line.length())
+            std::string cellname = GetInfoFromStr(line);
+            auto iter = memorysMappedByName.find(cellname);
+            if (iter != memorysMappedByName.end())
+                mems = iter->second;
+
+            while (getline(input, line))
             {
-                if (t >= line.length())
+                if (line.find("Algorithm") != std::string::npos)
                 {
-                    break;
-                }
-                if (line[t] == ' ' || line[t] == ';')
-                {
-                    for (auto &i : it->second)
+                    auto line_vec = SplitBySpace(line);
+                    int index;
+                    for (index = 0; index < line_vec.size(); ++index)
                     {
-                        //i->Algorithms.insert(std::pair<std::string, int>(str, 1));
-                        i->Algorithms.emplace_back(str);
+                        if (line_vec[index].find(":") != std::string::npos)
+                            break;
                     }
-                    str = "";
-                    t++;
-                    continue;
+                    std::vector<std::string> algos;
+                    for (++index; index < line_vec.size(); ++index)
+                    {
+                        if (line_vec[index].find(";") == std::string::npos)
+                            algos.emplace_back(line_vec[index]);
+                        else if (line_vec[index].size() == 1)
+                            break;
+                        else
+                        {
+                            line_vec[index].pop_back();
+                            algos.emplace_back(line_vec[index]);
+                        }
+                    }
+                    for (auto mem : mems)
+                    {
+                        mem->Algorithms = algos;
+                    }
                 }
-                else
+                else if (line.find("NumberofWords") != std::string::npos)
                 {
-                    str += line[t];
-                    t++;
-                    continue;
+                    int words = std::stoi(GetInfoFromStr(line));
+                    for (auto mem : mems)
+                    {
+                        mem->NumberofWords = words;
+                    }
                 }
-            }
-        }
-        else if (line.find("NumberOfWords") != std::string::npos)
-        {
-            auto it = memorysMappedByName.find(cellname);
-            int t = line.find(':');
-            t += 2;
-            std::string str = "";
-            while (line[t] != ';')
-            {
-                str += line[t];
-                t++;
-            }
-            int words = std::stoi(str.c_str());
-            for (auto &i : it->second)
-            {
-                i->NumberOfWords = words;
-            }
-        }
-        else if (line.find("CellName") != std::string::npos)
-        {
-            int t = line.find(':');
-            t += 2;
-            while (line[t] != ';')
-            {
-                cellname += line[t];
-                t++;
-            }
-        }
-        else if (line.find("MilliWattsPerMegaHertz") != std::string::npos)
-        {
-            int t = line.find(':');
-            t += 2;
-            std::string MwMHz = "";
-            auto it = memorysMappedByName.find(cellname);
-            while (line[t] != ';')
-            {
-                MwMHz += line[t];
-                t++;
-            }
-            mwmhz = std::stof(MwMHz.c_str());
-            for (auto &i : it->second)
-            {
-                i->MilliWattsPerMegaHertz = mwmhz;
-            }
-        }
-        else if (line.find("Port (") != std::string::npos || line.find("port (") != std::string::npos)
-        {
-            std::string str = "";
-            while (line.find('}') == std::string::npos)
-            {
-                str += line;
-                getline(input,line);
-            }
-            if (str.find("Function: Clock") != std::string::npos)
-            {
-                std::string clock = "";
-                int t = str.find('(');
-                t++;
-                while (str[t] == ' ')
+                else if (line.find("NumberofBits") != std::string::npos)
                 {
-                    t++;
+                    int bits = std::stoi(GetInfoFromStr(line));
+                    for (auto mem : mems)
+                    {
+                        mem->NumberofBits = bits;
+                    }
                 }
-                while (str[t] != ' ' && str[t] != ')')
+                else if (line.find("MilliWattsPerMegaHertz") != std::string::npos)
                 {
-                    clock += str[t];
-                    t++;
+                    double power = std::stod(GetInfoFromStr(line));
+                    for (auto mem : mems)
+                    {
+                        // mem->MilliWattsPerMegaHertz = std::stod(GetInfoFromStr(line));
+                        mem->dynamic_power = power;
+                    }
                 }
-                auto it = memorysMappedByName.find(cellname);
-                for (auto &i : it->second)
+                else if (line.find("OperationSet") != std::string::npos)
                 {
-                    i->Clock_Siganls.push_back(clock);
+                    for (auto mem : mems)
+                    {
+                        mem->OperationSet = GetInfoFromStr(line);
+                    }
                 }
             }
-            else
-            {
-                continue;
-            }
         }
-        else
-        {
-            continue;
-        }
+
     }
     input.close();
 }
@@ -436,6 +392,7 @@ void Parser::ParseLib(std::string lib)
     if (!input.is_open())
     {
         std::cout << "ERROR 3! No such file " << lib << std::endl;
+        logger.log("[ParseLib] ERROR 3! No such file " + lib);
     }
     std::string line = "";
     std::string cellname = "";
@@ -457,6 +414,10 @@ void Parser::ParseLib(std::string lib)
             while (line[t] != ' ')
             {
                 cellname += line[t];
+                // if (cellname.empty())
+                // {
+                //     std::cout << line << std::endl;
+                // }
                 t++;
             }
             continue;
@@ -508,29 +469,38 @@ void Parser::ParseLib(std::string lib)
     }
 
     auto it = memorysMappedByName.find(cellname);
-    for (auto &i : it->second)
+    if (it != memorysMappedByName.end())
     {
-        i->mem_type = (type == "ram") ? RAM : ROM;
-        i->address_width = a;
-        i->word_width = w;
-        i->area = AREA;
+        for (auto &i : it->second)
+        {
+            i->mem_type = (type == "ram") ? RAM : ROM;
+            i->address_width = a;
+            i->word_width = w;
+            i->area = AREA;
+        }
+    }
+    else
+    {
+        std::cout << cellname << " not found in memorysMappedByName" << std::endl;
+        logger.log("[ParseLib] ERROR ! [" + cellname + "] not found in memorysMappedByName");
     }
 
     input.close();
 }
 
-void Parser::ParseCLK()
+bool Parser::ParseCLK()
 {
     std::ifstream input(db.clk_file);
 
     if (!input.is_open())
     {
         std::cout << "ERROR 3! No such file " << db.clk_file << std::endl;
+        logger.log("[ParseCLK] ERROR 3! No such file " + db.clk_file);
+        return false;
     }
 
     std::string line = "";
     std::string clk;
-    decltype(this->clkDomainMap.find(clk)) iter;
     getline(input, line);  // skip the first line
     while (getline(input, line))
     {
@@ -549,33 +519,27 @@ void Parser::ParseCLK()
         {
             size_t pos1 = line.find(':');
             clk = line.substr(0, pos1);
+            ++this->clkDomainNum;
         }
         else if (line.find("/") != std::string::npos)  // may not have "/"
         {
-            iter = this->clkDomainMap.find(clk);
             auto it = memorysMappedByPath.find(line);
             it->second->clk_domain = clk;
-            if (iter != this->clkDomainMap.end())
-            {
-                iter->second.emplace_back(line);
-            }
-            else
-            {
-                std::vector<std::string> tmp(1, line);
-                this->clkDomainMap.insert(std::pair<std::string, std::vector<std::string>>(clk, std::move(tmp)));
-            }
         }
     }
+    input.close();
+    return true;
 }
 
-void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &filenames)
+bool Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &filenames)
 {
     DIR *pDir;
     struct dirent *ptr;
     if (!(pDir = opendir(path.c_str())))
     {
-        std::cout << "Folder doesn't Exist!" << std::endl;
-        return;
+        std::cout << "Folder doesn't Exist!" << path << std::endl;
+        logger.log("[GetFileNameFromFolder] Folder doesn't Exist!" + path);
+        return false;
     }
     while ((ptr = readdir(pDir)) != 0)
     {
@@ -585,6 +549,7 @@ void Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &f
         }
     }
     closedir(pDir);
+    return true;
 }
 
 #endif
