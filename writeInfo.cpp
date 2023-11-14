@@ -119,7 +119,7 @@ void Parser::WriteAnswer()
             fprintf(db.outputFile, "controller_%0d\n", ++this->groupNum);
             for (auto mem : mList.memList)
             {
-                fprintf(db.outputFile, "%s %s\n", mem->mem_Path.c_str(), mem->mem_Name.c_str());
+                fprintf(db.outputFile, "%s/%s\n", mem->mem_Path.c_str(), mem->mem_Name.c_str());
             }
             fprintf(db.outputFile, "\n");
         }
