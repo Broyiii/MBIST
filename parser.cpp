@@ -73,10 +73,10 @@ bool Parser::GetAllFileNames()
                 ParseLvlib(db.lvlib_files[i]);
             }
 
-            // if (db.lib_files[i].find(j.first) != std::string::npos)
-            // {
-            //     ParseLib(db.lib_files[i]);
-            // }
+            if (db.lib_files[i].find(j.first) != std::string::npos)
+            {
+                ParseLib(db.lib_files[i]);
+            }
 
             if (db.ds_files[i].find(j.first) != std::string::npos)
             {
@@ -180,7 +180,10 @@ void Parser::GroupByDistance()
         for (auto i : AfterHardCondition)
         {
             GetMaxClique(i.second);
-            AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
+            if (!db.BKfuntion)
+                AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
+            else
+                AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems_t()));
             this->maxNodes.clear();
         }
     }
@@ -247,35 +250,35 @@ bool Parser::GroupByPower()
 }
 
 
-void Parser::Print()
-{
-    std::cout << "\nmemory size = " << memorysMappedByPath.size() << std::endl;
-    for (auto i : memorysMappedByName)
-    {
-        std::cout << i.first << std::endl;
-        for (auto &j : i.second)
-        {
-            std::cout << "Path: " << j->mem_Path << " Low_limit: " << j->low_bound << " Up_limit: " << j->up_bound << " NumberOfWords: " << j->NumberofWords << std::endl;
-            std::cout << "Algorithms: ";
-            for (auto &k : j->Algorithms)
-            {
-                std::cout << k << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "Clock_Siganls: ";
-            for (auto t : j->Clock_Siganls)
-            {
-                std::cout << t << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "Area: " << j->area << " mem_type: " << j->mem_type << std::endl;
-            std::cout << "Dynamic power: " << j->dynamic_power << std::endl;
-            std::cout << " address_width: " << j->address_width << " word_width: " << j->word_width << "\n" << std::endl;
-        }
-    }
-    std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-    std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-}
+// void Parser::Print()
+// {
+//     std::cout << "\nmemory size = " << memorysMappedByPath.size() << std::endl;
+//     for (auto i : memorysMappedByName)
+//     {
+//         std::cout << i.first << std::endl;
+//         for (auto &j : i.second)
+//         {
+//             std::cout << "Path: " << j->mem_Path << " Low_limit: " << j->low_bound << " Up_limit: " << j->up_bound << " NumberOfWords: " << j->NumberofWords << std::endl;
+//             std::cout << "Algorithms: ";
+//             for (auto &k : j->Algorithms)
+//             {
+//                 std::cout << k << " ";
+//             }
+//             std::cout << std::endl;
+//             std::cout << "Clock_Siganls: ";
+//             for (auto t : j->Clock_Siganls)
+//             {
+//                 std::cout << t << " ";
+//             }
+//             std::cout << std::endl;
+//             std::cout << "Area: " << j->area << " mem_type: " << j->mem_type << std::endl;
+//             std::cout << "Dynamic power: " << j->dynamic_power << std::endl;
+//             std::cout << " address_width: " << j->address_width << " word_width: " << j->word_width << "\n" << std::endl;
+//         }
+//     }
+//     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
+//     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
+// }
 
 
 void Parser::BuildMatric()

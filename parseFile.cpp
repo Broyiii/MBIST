@@ -346,20 +346,18 @@ void Parser::ParseLvlib(std::string lvlib)
                         mem->Algorithms = algos;
                     }
                 }
-                else if (line.find("NumberofWords") != std::string::npos)
+                else if (line.find("MemoryType") != std::string::npos)
                 {
-                    int words = std::stoi(GetInfoFromStr(line));
                     for (auto mem : mems)
                     {
-                        mem->NumberofWords = words;
+                        mem->mem_type = GetInfoFromStr(line);
                     }
                 }
-                else if (line.find("NumberofBits") != std::string::npos)
+                else if (line.find("ogicalPorts") != std::string::npos)  // logicalPorts & LogicalPorts
                 {
-                    int bits = std::stoi(GetInfoFromStr(line));
                     for (auto mem : mems)
                     {
-                        mem->NumberofBits = bits;
+                        mem->logicalPorts = GetInfoFromStr(line);
                     }
                 }
                 else if (line.find("MilliWattsPerMegaHertz") != std::string::npos)
@@ -378,11 +376,133 @@ void Parser::ParseLvlib(std::string lvlib)
                         mem->OperationSet = GetInfoFromStr(line);
                     }
                 }
+                else if (line.find("ShadowRead") != std::string::npos)
+                {
+                    for (auto mem : mems)
+                    {
+                        mem->ShadowRead = GetInfoFromStr(line);
+                    }
+                }
+                else if (line.find("ShadowWrite") != std::string::npos)
+                {
+                    for (auto mem : mems)
+                    {
+                        mem->ShadowWrite = GetInfoFromStr(line);
+                    }
+                }
+                else if (line.find("ShadowWriteOK") != std::string::npos)
+                {
+                    for (auto mem : mems)
+                    {
+                        mem->ShadowWriteOK = GetInfoFromStr(line);
+                    }
+                }
+                else if (line.find("WriteOutOfRange") != std::string::npos)
+                {
+                    for (auto mem : mems)
+                    {
+                        mem->WriteOutOfRange = GetInfoFromStr(line);
+                    }
+                }
+                else if (line.find("LogicalAddressMaP") != std::string::npos)
+                {
+                    bool breakFlag = false;
+                    std::map<int, std::string> tmp_map;  // <Address[id], map_addr[id]>
+                    do {
+                        std::string addrMapLine;
+                        do {
+                            getline(input, line);
+                            if (line.find("}") != std::string::npos)
+                            {
+                                breakFlag = true;
+                                break;
+                            }
+                            addrMapLine += line;
+                        } while (addrMapLine.find(";") == std::string::npos);
+
+                        if (breakFlag)
+                            break;
+
+                        size_t pos = 0;
+                        AddrMap map_addr = GetLogicalAddressMaPInfoUtil(addrMapLine, pos);
+                        map_addr.Print();
+                        while (addrMapLine[pos] != ':')
+                        {
+                            ++pos;
+                        } ++pos;
+                        AddrMap addr = GetLogicalAddressMaPInfoUtil(addrMapLine, pos);
+                        if (addr.name != "Address")
+                        {
+                            logger.log("[ParseLvlib] [LogicalAddressMaP] ERROR ! Name not Address !");
+                        }
+                        addr.Print();
+                        
+                        for (int addr_id = addr.down; addr_id <= addr.up; ++addr_id)
+                        {
+                            int offset = addr_id - addr.down;
+                            tmp_map.insert(std::pair<int, std::string>(addr_id, map_addr.GetName(offset)));
+                        }
+                    } while (true);
+                    
+                    std::vector<std::string> tmp(tmp_map.size());
+                    for (int id = 0; id < tmp_map.size(); ++id)
+                    {
+                        auto iter = tmp_map.find(id);
+                        if (iter != tmp_map.end())
+                        {
+                            tmp[id] = iter->second;
+                        }
+                        else
+                        {
+                            logger.log("[ParseLvlib] [LogicalAddressMaP] ERROR ! No such id [ " + std::to_string(id) + " ] !");
+                        }
+                    }
+                    for (auto mem : mems)
+                    {
+                        mem->LogicalAddressMap = tmp;
+                    }
+                }
+                
             }
         }
 
     }
     input.close();
+}
+
+AddrMap Parser::GetLogicalAddressMaPInfoUtil(std::string &line, size_t &pos)
+{
+    std::string map_addr = "";
+    // get map_addr name
+    while (line[pos] != '[')
+    {
+        auto c = line[pos++];
+        if (c == ' ') 
+            continue;
+        map_addr += c;
+    } ++pos;
+    // get map_addr id
+    std::string up_str = "";
+    std::string down_str = "";
+    while (line[pos] != ':')
+    {
+        auto c = line[pos++];
+        if (c == ' ') 
+            continue;
+        else if (c == ']')
+        {
+            return AddrMap(map_addr, std::stoi(up_str), std::stoi(up_str));
+        }
+        up_str += c;
+    } ++pos;
+    while (line[pos] != ']')
+    {
+        auto c = line[pos++];
+        if (c == ' ') 
+            continue;
+        down_str += c;
+    } ++pos;
+    return AddrMap(map_addr, std::stoi(up_str), std::stoi(down_str));
 }
 
 void Parser::ParseLib(std::string lib)
@@ -393,98 +513,51 @@ void Parser::ParseLib(std::string lib)
     {
         std::cout << "ERROR 3! No such file " << lib << std::endl;
         logger.log("[ParseLib] ERROR 3! No such file " + lib);
+        return;
     }
-    std::string line = "";
-    std::string cellname = "";
-    std::string type = "";
-    std::string a_width = "";
-    std::string w_width = "";
-    std::string Area = "";
-    std::string timing_pin = "";
-    int a = 0;
-    int w = 0;
-    float AREA = 0.0;
 
+    std::string line;
     while (getline(input, line))
     {
         if (line.find("cell ( ") != std::string::npos)
         {
-            int t = line.find('(');
-            t += 2;
-            while (line[t] != ' ')
+            std::string cellname;
+            for (size_t pos = line.find("(") + 1; line[pos] != ')'; ++ pos)
             {
-                cellname += line[t];
-                // if (cellname.empty())
-                // {
-                //     std::cout << line << std::endl;
-                // }
-                t++;
+                if (line[pos] == ' ')
+                    continue;
+                cellname += line[pos];
             }
-            continue;
-        }
-        else if (line.find("memory () {") != std::string::npos)
-        {
-            getline(input, line);
-            int t = line.find(':');
-            t += 2;
-            while (line[t] != ' ')
+            std::set<Memory *> mems;
+            auto iter = memorysMappedByName.find(cellname);
+            if (iter != memorysMappedByName.end())
+                mems = iter->second;
+            else
             {
-                type += line[t];
-                t++;
+                logger.log("[ParseLib] ERROR ! No such mem " + cellname);
+                goto ParseLibEnd;
             }
-            getline(input, line);
-            t = line.find(':');
-            t += 2;
-            while (line[t] != ' ')
+
+            if ((*mems.begin())->mem_type.empty())
             {
-                a_width += line[t];
-                t++;
+                while (getline(input, line))
+                {
+                    if (line.find("type") != std::string::npos)
+                    {
+                        for (auto mem : mems)
+                        {
+                            mem->mem_type = GetInfoFromStr(line);
+                        }
+                        goto ParseLibEnd;
+                    }
+                }
             }
-            getline(input, line);
-            t = line.find(':');
-            t += 2;
-            while (line[t] != ' ')
-            {
-                w_width += line[t];
-                t++;
-            }
-            a = atoi(a_width.c_str());
-            w = atoi(w_width.c_str());
-        }
-        else if (line.find("area : ") != std::string::npos)
-        {
-            int t = line.find(':');
-            t += 2;
-            while (line[t] != ' ')
-            {
-                Area += line[t];
-                t++;
-            }
-            AREA = std::stof(Area.c_str());
-        }
-        else
-        {
-            continue;
+            else
+                goto ParseLibEnd;
         }
     }
 
-    auto it = memorysMappedByName.find(cellname);
-    if (it != memorysMappedByName.end())
-    {
-        for (auto &i : it->second)
-        {
-            i->mem_type = (type == "ram") ? RAM : ROM;
-            i->address_width = a;
-            i->word_width = w;
-            i->area = AREA;
-        }
-    }
-    else
-    {
-        std::cout << cellname << " not found in memorysMappedByName" << std::endl;
-        logger.log("[ParseLib] ERROR ! [" + cellname + "] not found in memorysMappedByName");
-    }
-
+    ParseLibEnd:
     input.close();
 }
 

@@ -1,9 +1,10 @@
 #ifndef _LOGGER_HPP_
 #define _LOGGER_HPP_
 
-#include "global.hpp"
+// #include "global.hpp"
 
-extern dataBase db;
+
+// extern dataBase db;
 
 class Logger {
 public:
@@ -24,7 +25,7 @@ public:
 
 private:
     Logger() {
-        logFile.open(db.log_file_name, std::ios::out);
+        logFile.open("./logfile.log", std::ios::out);
     }
 
     ~Logger() {

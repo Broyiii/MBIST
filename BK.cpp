@@ -117,6 +117,7 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
     while (1)
     {
         GroupedMemList maxList;
+        // find the max Clique
         for (auto &i : this->maxNodes)
         {
             // i.Print();
@@ -143,6 +144,63 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
         }
     }
     return res;
+}
+
+std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t()
+{
+    std::vector<GroupedMemList> res;
+    std::unordered_map<Memory*, std::vector<int>> DuplicateMems;  // <mem, group id>
+    // int maxSize = 0;
+    // while (1)
+    {
+        GroupedMemList maxList;
+        // find the max Clique
+        for (int index = 0; index < this->maxNodes.size(); ++index)
+        {
+            auto &mems = this->maxNodes[index];
+            for (auto mem : mems.memList)
+            {
+                auto iter = DuplicateMems.find(mem);
+                if (iter != DuplicateMems.end())
+                {
+                    iter->second.emplace_back(index);
+                }
+                else
+                {
+                    DuplicateMems.insert(std::pair<Memory*, std::vector<int>>(mem, std::vector<int>(1, index)));
+                }
+            }
+        }
+        
+        for (auto &i : DuplicateMems)
+        {
+            auto mem = i.first;
+            double maxPower = -1.0;
+            int maxID = -1;
+            if (i.second.size() == 1)
+                continue;
+            for (int index : i.second)
+            {
+                if (this->maxNodes[index].totalPower > maxPower)
+                {
+                    maxPower = this->maxNodes[index].totalPower;
+                    if (maxID > -1)
+                    {
+                        if (!this->maxNodes[index].DelteMem(mem))
+                            logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
+                    }
+                    maxID = index;
+                }
+                else
+                {
+                    if (!this->maxNodes[index].DelteMem(mem))
+                        logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
+                }
+            }
+        }
+    }
+    // return res;
+    return this->maxNodes;
 }
 
 void Parser::PrintBK()

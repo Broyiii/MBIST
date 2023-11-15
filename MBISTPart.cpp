@@ -54,6 +54,14 @@ int main(int argc,char *argv[])
             std::string tmp = argv[argIndex++];
             db.dis_max = std::stoi(tmp);
         }
+        else if (arg_str == "-f")
+        {
+            std::string tmp = argv[argIndex++];
+            if (tmp == "1")
+                db.BKfuntion = true;
+            else
+                db.BKfuntion = false;
+        }
         else
         {
             WrongUsage();

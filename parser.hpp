@@ -100,6 +100,7 @@ private:
     bool GetFileNameFromFolder(std::string path, std::vector<std::string>& filenames);
     bool GetAllFileNames();
     std::string GetInfoFromStr(std::string &line);
+    AddrMap GetLogicalAddressMaPInfoUtil(std::string &line, size_t &pos);
 
     void GroupByHardCondition();
     void GroupMultiAlgoMems(Memory *mem);
@@ -121,6 +122,7 @@ private:
     // int num;
     bool* check;
     std::vector<GroupedMemList> RemoveDuplicateMems();
+    std::vector<GroupedMemList> RemoveDuplicateMems_t();
 
     bool SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
     bool CheckSort(std::deque<Memory *> mems);

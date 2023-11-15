@@ -24,11 +24,11 @@
 #include <deque>
 #include <mutex>
 
-
+#include "Logger.hpp"
 // define memory type
-#define RAM 0
-#define ROM 1
-
+// #define RAM 0
+// #define ROM 1
+extern Logger& logger;
 
 class rule{
 public:
@@ -37,14 +37,38 @@ public:
     }
 };
 
+struct AddrMap
+{
+    std::string name;
+    int up;
+    int down;
+    AddrMap(std::string n, int u, int d) : name(n), up(u), down(d) {}
+    ~AddrMap() {}
+
+    std::string GetName(int offset)
+    {
+        return this->name + "[" + std::to_string(this->down + offset) + "]";
+    }
+    void Print()
+    {
+        // printf("%s : [%0d : %0d]\n", name.c_str(), up, down);
+        logger.log(name + " : [" + std::to_string(up) + " : " + std::to_string(down) + "]");
+    }
+};
+
 
 struct Memory
 {
     std::string mem_Name = "";
     std::string mem_Path = "";
-    std::string timing_pin = "";
+    std::string mem_type = "";
     std::string clk_domain = "";
     std::string OperationSet = "";
+    std::string logicalPorts = "";
+    std::string ShadowRead = "";
+    std::string ShadowWrite = "";
+    std::string ShadowWriteOK = "";
+    std::string WriteOutOfRange = "";
 
     std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
@@ -54,17 +78,17 @@ struct Memory
 
     long long up_bound = 0;
     long long low_bound = 0;
-    int NumberofWords = 0;
-    int NumberofBits = 0;
-    float area = 0.0;
-    int mem_type = RAM;
-    int address_width = 0;
-    int word_width = 0;
+    
+    std::vector<std::string> LogicalAddressMap;
     
     bool flag_multi = false;
     int node_id;
     std::set<int> tmp;
     std::deque<int> connectedMems;
+
+    bool operator==(const Memory* other) const {
+        return this->mem_Path == other->mem_Path;
+    }
 
     static bool compareMyClass(const Memory* v1, const Memory* v2) {
         return v1->dynamic_power > v2->dynamic_power;
@@ -93,13 +117,18 @@ struct Memory
         std::set_intersection(this->connectedMems.begin(), this->connectedMems.end(), 
                               S.begin(), S.end(), std::inserter(mid, mid.begin()));
 
-
         std::deque<int> res;
         std::set_difference(S.begin(),S.end(),
                             mid.begin(),mid.end(),std::back_inserter(res));
 
         return res;
     }
+
+    struct Hash {
+        std::size_t operator()(const Memory* obj) const {
+            return std::hash<std::string>()(obj->mem_Path);
+        }
+    };
 };
 
 // bool id_cmp(Memory* a,Memory* b)
@@ -113,28 +142,44 @@ public:
     std::vector<std::string> Algos;
     std::string clkDomain = "";
     std::string operationSet = "";
-    int memType = 0;
+    std::string memType = "";
+    std::string logicalPorts = "";
+    std::string ShadowRead = "";
+    std::string ShadowWrite = "";
+    std::string ShadowWriteOK = "";
+    std::string WriteOutOfRange = "";
+    
+    std::vector<std::string> LogicalAddressMap;
 
     Group() {}
-    Group(Memory* mem) : memType(mem->mem_type)
+    Group(Memory* mem)
     {
         if (mem->Algorithms.size() == 1)
         {
+            this->memType = mem->mem_type;
             this->Algos = mem->Algorithms;
             this->clkDomain = mem->clk_domain;
             this->operationSet = mem->OperationSet;
+            this->LogicalAddressMap = mem->LogicalAddressMap;
+            this->logicalPorts = mem->logicalPorts;
+            this->ShadowRead = mem->ShadowRead;
+            this->ShadowWrite = mem->ShadowWrite;
+            this->ShadowWriteOK = mem->ShadowWriteOK;
+            this->WriteOutOfRange = mem->WriteOutOfRange;
         }
         else
         {
             Algos.resize(2, "Multi");
         }
     }
-    Group(Memory* mem, bool GroupMulti) : memType(mem->mem_type)
+    Group(Memory* mem, bool GroupMulti)
     {
         if (GroupMulti)
         {
+            this->memType = mem->mem_type;
             this->clkDomain = mem->clk_domain;
             this->operationSet = mem->OperationSet;
+            this->LogicalAddressMap = mem->LogicalAddressMap;
         }
     }
 
@@ -142,20 +187,28 @@ public:
 
     static std::string GetInfo(Group g)
     {
-        // if (g.Algos.size() > 1)
-        //     return "Alg:Multi_clk:" + g.clkDomain + "_type:" + std::to_string(g.memType);
-        // else
-        return "Alg:" + g.Algos[0] +   
-               "_clk:" + g.clkDomain + 
-               "_type:" + std::to_string(g.memType) +
-               "_opeartionSet:" + g.operationSet;
+        std::string res =   "\nAlg: " + g.Algos[0] +   
+                            "\nclk: " + g.clkDomain + 
+                            "\ntype: " + g.memType +
+                            "\nopeartionSet: " + g.operationSet +
+                            "\nlogicalPorts: " + g.logicalPorts +
+                            "\nShadowRead: " + g.ShadowRead +
+                            "\nShadowWrite: " + g.ShadowWrite +
+                            "\nShadowWriteOK: " + g.ShadowWriteOK +
+                            "\nWriteOutOfRange: " + g.WriteOutOfRange +
+                            "\nLogicalAddressMap: ";
+        for (auto str : g.LogicalAddressMap)
+        {
+            res += (str + ",");
+        }
+        return res;
     }
 
     static void Print(Group g)
     {
         printf("\n");
         printf("==========================================================================\n");
-        std::cout << "Hard Condition : " << g.GetInfo(g) << std::endl;
+        std::cout << "Hard Condition : " << Group::GetInfo(g) << std::endl;
         printf("==========================================================================\n");
     }
 
@@ -172,7 +225,7 @@ public:
 
     struct Hash {
         std::size_t operator()(const Group& obj) const {
-            return std::hash<std::string>()(obj.GetInfo(obj));
+            return std::hash<std::string>()(Group::GetInfo(obj));
         }
     };
 
@@ -220,6 +273,21 @@ struct GroupedMemList
     {
         this->memList.push_back(mem);
         this->totalPower += mem->dynamic_power;
+    }
+
+    bool DelteMem(Memory* mem)
+    {
+        auto iter = std::find(this->memList.begin(), this->memList.end(), mem);
+        if (iter != this->memList.end())
+        {
+            this->totalPower -= mem->dynamic_power;
+            this->memList.erase(iter);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     GroupedMemList RemoveDuplicate(GroupedMemList maxList)
@@ -297,6 +365,8 @@ struct dataBase
     std::vector<std::string> lib_files;
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
+
+    bool BKfuntion = false;
 
     double power_max = 50.0;
     int dis_max = 300000;
