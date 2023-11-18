@@ -32,6 +32,8 @@ public:
                 db.def_file = fn;
             else if ((fn.find("clk") != std::string::npos) && (fn.find(".txt") != std::string::npos))
                 db.clk_file = fn;
+            else if (fn.find(".spec") != std::string::npos)
+                db.spec_file = fn;
         }
 
         printf("**************************************************************************\n");
@@ -42,6 +44,7 @@ public:
         printf("    - Memory list file:               %s\n", db.memorylist_file.c_str());
         printf("    - Memory def file:                %s\n", db.def_file.c_str());
         printf("    - Memory clk file:                %s\n", db.clk_file.c_str());
+        printf("    - Memory spec file:               %s\n", db.spec_file.c_str());
         printf("--------------------------------------------------------------------------\n");
     }
 
@@ -93,6 +96,7 @@ private:
     double ParseDS_ds02(std::string ds);
     double GetLastDouble(std::string line);
     bool ParseDef();
+    void ParseSpec();
     void ParseLvlib(std::string lvlib);
     void ParseLib(std::string lib);
     bool ParseCLK();

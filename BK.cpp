@@ -83,12 +83,30 @@ void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S
 
     while (!P.empty())
     {
-        int nodeID = *P.begin();
+        int nodeID = 0;
+        int size = 0;
+        for (auto i : P)
+        {
+            if (memorysMappedByPath[memId2memPath[i]]->connectedMems.size() > size)
+            {
+                nodeID = i;
+                size = memorysMappedByPath[memId2memPath[i]]->connectedMems.size();
+            }
+        }
         std::deque<int> R_new = R;
         R_new.push_back(nodeID);
         BronKerbosh(R_new, memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P), memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(S));
         S.push_back(nodeID);
-        P.pop_front();
+        auto it = P.begin();
+        while (it != P.end())
+        {
+            if (*it == nodeID)
+            {
+                break;
+            }
+            it++;
+        }
+        P.erase(it);
         if (!P.empty())
         {
             P = memorysMappedByPath[memId2memPath[nodeID]]->FindDifference(P);

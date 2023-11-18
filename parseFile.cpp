@@ -295,6 +295,57 @@ bool Parser::ParseDef()
     return true;
 }
 
+void Parser::ParseSpec()
+{
+    std::ifstream input(db.spec_file);
+
+    if (!input.is_open())
+    {
+        std::cout << "ERROR 10! No such file " << db.spec_file << std::endl;
+        logger.log("[ParseLvlib] ERROR 2! No such file " + db.spec_file);
+    }
+
+    std::string line;
+
+    while (getline(input,line))
+    {
+        if (line.find("max_distance") != std::string::npos)
+        {
+            int t = line.find('=');
+            t++;
+            while (line[t] == ' ')
+            {
+                t++;
+            }
+            std::string dis = "";
+            while (line[t] != ';')
+            {
+                dis += line[t];
+                t++;
+            }
+            db.dis_max = std::stoi(dis.c_str());
+        }
+        else if (line.find("max_dynamic_power") != std::string::npos)
+        {
+            int t = line.find('=');
+            t++;
+            while (line[t] == ' ')
+            {
+                t++;
+            }
+            std::string power = "";
+            while (line[t] != ';')
+            {
+                power += line[t];
+                t++;
+            }
+            db.power_max = std::stod(power.c_str());
+        }
+
+    }
+    input.close();
+}
+
 void Parser::ParseLvlib(std::string lvlib)
 {
     std::ifstream input(lvlib);

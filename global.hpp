@@ -25,9 +25,7 @@
 #include <mutex>
 
 #include "Logger.hpp"
-// define memory type
-// #define RAM 0
-// #define ROM 1
+
 extern Logger& logger;
 
 class rule{
@@ -131,10 +129,6 @@ struct Memory
     };
 };
 
-// bool id_cmp(Memory* a,Memory* b)
-// {
-//     return a->node_id > b->node_id;
-// }
 
 class Group
 {
@@ -352,6 +346,7 @@ struct dataBase
     std::string verilog_file;                                   // verilog inputfile
     std::string lib_file;                                       // lib input file
     std::string clk_file;
+    std::string spec_file;
 
     FILE* outputFile;
     std::string output_file_name = "output.txt";
@@ -368,8 +363,8 @@ struct dataBase
 
     bool BKfuntion = false;
 
-    double power_max = 50.0;
-    int dis_max = 300000;
+    double power_max = 0.0;
+    int dis_max = 0;
 
     bool CalculateDis(Memory *a, Memory *b)
     {

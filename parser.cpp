@@ -54,6 +54,8 @@ bool Parser::GetAllFileNames()
     if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
         return false;
 
+    ParseSpec();
+
     if (!ParseMemList())
         return false;
 
@@ -62,6 +64,7 @@ bool Parser::GetAllFileNames()
 
     if (!ParseCLK())
         this->clkCon = false;
+    
 
 
     for (int i = 0; i < db.lvlib_files.size(); i++)

@@ -7,10 +7,10 @@ if (Multiple Power Domains)
   Power Domain | xxx;
 
 if (DEF File Exists)
-  max_distance = xxx;
+  max_distance = 300000;
 
 Dynamical Test Power:
-  max_dynamic_power = xxx;
+  max_dynamic_power = 50.0;
 
 Memory Type: SRAM | ROM;
 

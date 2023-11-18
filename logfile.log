@@ -1,0 +1,1356 @@
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [GroupByHardCondition] 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] FAIL !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [CheckSort] Check Sort ...
+[2023-11-18 11:40:30] [CheckSort] PASS !
+[2023-11-18 11:40:30] [SatisfyDisCon] Check Distance Constraints ...
+[2023-11-18 11:40:30] [SatisfyDisCon] FAIL ! Lack nodes !
+[2023-11-18 11:40:30] [SatisfyPowerCon] Check Power ...
+[2023-11-18 11:40:30] [SatisfyPowerCon] PASS !
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] Hard Condition : 
+Alg: SMarchCHKBvcd
+clk: clk_ahb
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.042000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i83/mem_block_i46 : 0.021000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i83/mem_block_i47 : 0.021000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.005000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i34/block_i26/mem_block_i88 : 0.005000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] Hard Condition : 
+Alg: SMarchCHKBvcd
+clk: clk_test
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.018000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i34/block_i26/mem_block_i88 : 0.005000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i111/block_i105/mem_block_i55 : 0.005000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i34/block_i105/mem_block_i74 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i39/block_i105/mem_block_i13 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.006000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i34/block_i33/mem_block_i119 : 0.006000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i77/block_i39/block_i26/mem_block_i13 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] Hard Condition : 
+Alg: SMarchCHKBvcd
+clk: clk_a5
+type: ram
+opeartionSet: syncWR
+logicalPorts: 1rw
+ShadowRead: 
+ShadowWrite: 
+ShadowWriteOK: 
+WriteOutOfRange: 
+LogicalAddressMap: 
+[2023-11-18 11:40:30] [PrintResult] ==========================================================================
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.059000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i43 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i22 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i41 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i45 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i69 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i98 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i118 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i44 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i101 : 0.002000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i42 : 0.002000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i63 : 0.002000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.040000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i76 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i51 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i62 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i36 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i102 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i66 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i87 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i4 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i7 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i82 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.025000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i86 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i80 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i35 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i60 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i117 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.028000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i50 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i107 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i9 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i93 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i64 : 0.002000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.021000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i8 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i61 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i79 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i23 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.048000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i10 : 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i104 : 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i6 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i37 : 0.007000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.022000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i49 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i94 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i110 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i116 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.012000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i75 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i18 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i92 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.025000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i97 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i14 : 0.007000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i103 : 0.009000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.025000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i3 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i59 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i89 : 0.007000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.013000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i27 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i54 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.013000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i28 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i78 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.008000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i73 : 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i67 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.026000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i72 : 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i68 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i16 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i53 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i40 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i38 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i5 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i112 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i91 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i24 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i81 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.004000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i32/block_i99/mem_block_i56 : 0.004000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i70/block_i90/mem_block_i1 : 0.009000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i19 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.009000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i31/block_i90/mem_block_i71 : 0.009000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i20/block_i90/mem_block_i114 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i65 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] - total power = 0.017000
+[2023-11-18 11:40:30] [PrintResult]     - top/block_i58/block_i29/block_i106/block_i17/block_i85/block_i108/block_i95/block_i25/block_i90/mem_block_i48 : 0.017000
+[2023-11-18 11:40:30] [PrintResult] 
+[2023-11-18 11:40:30] [PrintResult] single mem: 85
