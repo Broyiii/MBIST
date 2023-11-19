@@ -336,6 +336,16 @@ struct GroupedMemList
     }
 };
 
+struct DuplicateMem 
+{
+    Memory* mem; 
+    std::vector<int> groupIDs;
+    static bool ComparePower(const DuplicateMem v1, const DuplicateMem v2)
+    {
+        return v1.mem->dynamic_power > v2.mem->dynamic_power;
+    }
+};
+
 
 struct dataBase
 {
@@ -364,13 +374,14 @@ struct dataBase
     bool BKfuntion = false;
 
     double power_max = 0.0;
-    int dis_max = 0;
+    long long dis_max = 0;
 
     bool CalculateDis(Memory *a, Memory *b)
     {
         long long t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
-        double dis = std::sqrt(t);
-        return (dis <= dis_max);
+        // double dis = std::sqrt(t);
+        logger.log("[CalculateDis] " + std::to_string(t) + " : " + std::to_string(dis_max) + " : " + std::to_string(t <= dis_max));
+        return (t <= dis_max);
     }
 
 

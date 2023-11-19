@@ -82,7 +82,8 @@ private:
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
 
-    std::unordered_map<int,std::string> memId2memPath;
+    // std::unordered_map<int,std::string> memId2memPath;
+    std::vector<std::string> memId2memPath;
 
     // std::vector<Group*> AfterGroupBypower;
     std::unordered_map<Group, std::deque<Memory*>, Group::Hash> AfterHardCondition;
@@ -110,6 +111,7 @@ private:
     void GroupMultiAlgoMems(Memory *mem);
     void GroupByDistance();
     bool GroupByPower();
+    std::vector<GroupedMemList> GroupOneListByPower(std::vector<GroupedMemList> memsGroup);
     
     void BuildMatric();
 
@@ -127,9 +129,13 @@ private:
     bool* check;
     std::vector<GroupedMemList> RemoveDuplicateMems();
     std::vector<GroupedMemList> RemoveDuplicateMems_t();
+    std::vector<GroupedMemList> RemoveDuplicateMems_for_DFS(std::vector<DuplicateMem> &DuplicateMems, std::vector<GroupedMemList> res);
 
     bool SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
     bool CheckSort(std::deque<Memory *> mems);
+
+    std::vector<GroupedMemList> ViolentSearch();
+    void DFS(int num, std::vector<GroupedMemList> groups, std::vector<DuplicateMem> &RestMems, int &minGroupNum, std::vector<GroupedMemList> &minGroup);
 
 };
 

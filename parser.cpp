@@ -54,7 +54,7 @@ bool Parser::GetAllFileNames()
     if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
         return false;
 
-    ParseSpec();
+    // ParseSpec();
 
     if (!ParseMemList())
         return false;
@@ -175,6 +175,131 @@ void Parser::GroupByHardCondition()
     }
 }
 
+std::vector<GroupedMemList> Parser::ViolentSearch()
+{
+    std::vector<GroupedMemList> res(this->maxNodes.size());
+    std::unordered_map<Memory*, std::vector<int>> DuplicateMems;  // <mem, group id>
+
+    for (int index = 0; index < this->maxNodes.size(); ++index)
+    {
+        auto mems = this->maxNodes[index];
+        for (auto mem : mems.memList)
+        {
+            auto iter = DuplicateMems.find(mem);
+            if (iter != DuplicateMems.end())
+            {
+                iter->second.emplace_back(index);
+            }
+            else
+            {
+                DuplicateMems.insert(std::pair<Memory*, std::vector<int>>(mem, std::vector<int>(1, index)));
+            }
+        }
+    }
+    
+    std::vector<DuplicateMem> RestMems;
+    for (auto iter : DuplicateMems)
+    {
+        if (iter.second.size() == 1)
+        {
+            res[iter.second[0]].AddMemUnsafe(iter.first);
+        }
+        else
+        {
+            RestMems.emplace_back(DuplicateMem{iter.first, iter.second});
+        }
+    }
+
+    std::sort(RestMems.begin(), RestMems.end(), DuplicateMem::ComparePower);
+    std::vector<DuplicateMem> AfterRestMems;
+    for (auto iter = RestMems.begin(); iter != RestMems.end(); ++iter)  // from big power mem to small power mem
+    {
+        bool flagPutIntoVec = false;
+        for (auto id : iter->groupIDs)
+        {
+            std::vector<double> restPower(1, db.power_max);
+            for (auto mem : res[id].memList)
+            {
+                bool flag = true;
+                for (auto &p : restPower)
+                {
+                    if (p >= mem->dynamic_power)
+                    {
+                        p -= mem->dynamic_power;
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    restPower.emplace_back(db.power_max - mem->dynamic_power);
+                }
+            }
+            if (restPower[restPower.size() - 1] >= iter->mem->dynamic_power)
+            {
+                res[id].AddMemUnsafe(iter->mem);
+                flagPutIntoVec = true;
+                break;
+            }
+        }
+        if (!flagPutIntoVec)
+        {
+            AfterRestMems.emplace_back(*iter);
+        }
+    }
+
+    if (AfterRestMems.size() > 12)
+        return RemoveDuplicateMems_for_DFS(AfterRestMems, res);
+    int minGroupNum = INT32_MAX;
+    std::vector<GroupedMemList> minGroup;
+    DFS(0, res, AfterRestMems, minGroupNum, minGroup);
+    return minGroup;
+}
+
+std::vector<GroupedMemList> Parser::RemoveDuplicateMems_for_DFS(std::vector<DuplicateMem> &DuplicateMems, std::vector<GroupedMemList> res)
+{    
+    for (auto &i : DuplicateMems)
+    {
+        auto mem = i.mem;
+        double maxPower = -1.0;
+        int maxIndex = -1;
+        for (int index : i.groupIDs)
+        {
+            double modPower = std::fmod(res[index].totalPower + mem->dynamic_power, db.power_max);
+            if (modPower > maxPower)
+            {
+                maxPower = modPower;
+                maxIndex = index;
+            }
+        }
+        res[maxIndex].AddMemUnsafe(mem);
+    }
+    return res;
+}
+
+void Parser::DFS(int num, std::vector<GroupedMemList> groups, std::vector<DuplicateMem> &RestMems, int &minGroupNum, std::vector<GroupedMemList> &minGroup)
+{
+    // printf("num = %0d\n", num);
+    if (num == RestMems.size())
+    {
+        auto tmp = GroupOneListByPower(groups);
+        int thisGroupSize = tmp.size();
+        if (thisGroupSize < minGroupNum)
+        {
+            minGroupNum = thisGroupSize;
+            minGroup = tmp;
+        }
+        return;
+    }
+
+    for (auto id : RestMems[num].groupIDs)
+    {
+        groups[id].AddMemUnsafe(RestMems[num].mem);
+        DFS(num+1, groups, RestMems, minGroupNum, minGroup);
+        groups[id].DelteMem(RestMems[num].mem);
+    }
+}
+
 void Parser::GroupByDistance()
 {
     BuildMatric();
@@ -183,10 +308,17 @@ void Parser::GroupByDistance()
         for (auto i : AfterHardCondition)
         {
             GetMaxClique(i.second);
-            if (!db.BKfuntion)
-                AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems()));
+            auto iter = AfterGroupByDis.find(i.first);
+            if (iter == AfterGroupByDis.end())
+            {
+                if (!db.BKfuntion)
+                    AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, RemoveDuplicateMems_t()));
+                else
+                    AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, ViolentSearch()));
+            }
             else
-                AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(Group(this->maxNodes[0].memList[0]), RemoveDuplicateMems_t()));
+                logger.log("[GroupByDistance] ERROR ! This group is existed !");
+
             this->maxNodes.clear();
         }
     }
@@ -207,45 +339,53 @@ void Parser::GroupByDistance()
     // PrintBK();
 }
 
+std::vector<GroupedMemList> Parser::GroupOneListByPower(std::vector<GroupedMemList> memsGroup)
+{
+    std::vector<GroupedMemList> tmp;
+    int index = 0;
+    for (auto& memsLi : memsGroup)
+    {
+        auto &mems = memsLi.memList;
+        if (!CheckSort(mems))
+        {
+            std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+            // return false;
+        }
+        
+        if (mems.front()->dynamic_power > db.power_max)
+        {
+            printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
+            return {};
+        }
+        tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
+        mems.pop_front();
+        
+        NEW_LOOP_FOR_MEMS:
+        while (mems.size())
+        {
+            for (int i = index; i < tmp.size(); ++i)
+            {
+                if (tmp[i].AddMem(mems.front()))
+                {
+                    mems.pop_front();
+                    goto NEW_LOOP_FOR_MEMS;
+                }
+            }
+            tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
+            mems.pop_front();
+        }
+        index = tmp.size();
+    }
+    return tmp;
+}
+
 bool Parser::GroupByPower()
 {
     for (auto groups : AfterGroupByDis)
     {
-        std::vector<GroupedMemList> tmp;
-        int index = 0;
-        for (auto& memsLi : groups.second)
-        {
-            auto &mems = memsLi.memList;
-            if (!CheckSort(mems))
-            {
-                std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
-                // return false;
-            }
-            
-            if (mems.front()->dynamic_power > db.power_max)
-            {
-                printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
-                return false;
-            }
-            tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
-            mems.pop_front();
-            
-            NEW_LOOP_FOR_MEMS:
-            while (mems.size())
-            {
-                for (int i = index; i < tmp.size(); ++i)
-                {
-                    if (tmp[i].AddMem(mems.front()))
-                    {
-                        mems.pop_front();
-                        goto NEW_LOOP_FOR_MEMS;
-                    }
-                }
-                tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
-                mems.pop_front();
-            }
-            index = tmp.size();
-        }
+        auto tmp = GroupOneListByPower(groups.second);
+        if (tmp.empty())
+            return false;
         AfterGroupBypower.insert(std::pair<Group, std::vector<GroupedMemList>>(groups.first, std::move(tmp)));
     }
 
@@ -290,7 +430,8 @@ void Parser::BuildMatric()
     for (auto &i : memorysMappedByPath)
     {
         i.second->node_id = cnt;
-        memId2memPath.insert(std::pair<int,std::string>(i.second->node_id,i.second->mem_Path));
+        // memId2memPath.insert(std::pair<int,std::string>(i.second->node_id,i.second->mem_Path));
+        memId2memPath.emplace_back(i.second->mem_Path);
         cnt++;
     }
 
@@ -352,12 +493,14 @@ bool Parser::GetInformationFromFile()
     
     GroupByDistance();
 
-    if(!GroupByPower())
-        return false;
+    // if (!db.BKfuntion)
+        if(!GroupByPower())
+            return false;
 
     if(!SatisfyDisCon(AfterGroupBypower))
     {
-        std::cout << "ERR" << std::endl;
+        std::cout << "ERROR ! Do not satisfy distance constraint !" << std::endl;
+        return false;
     }
         // return false;
 

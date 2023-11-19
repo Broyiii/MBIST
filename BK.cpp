@@ -62,8 +62,14 @@ bool Parser::CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList
     {
         if (check[k] == 0)
         {
-            std::cout << k << " : " << memId2memPath[k] << std::endl;
-            return false;
+            std::cout << k << " : " << memId2memPath[k] << " : " << memorysMappedByPath[memId2memPath[k]]->connectedMems.size() << " : ";
+            for (auto id : memorysMappedByPath[memId2memPath[k]]->connectedMems)
+            {
+                std::cout << id << ", ";
+            }
+            std::cout << std::endl;
+            logger.log("[CheckLackNodes] ERROR ! " + memId2memPath[k] + " : " + std::to_string(memorysMappedByPath[memId2memPath[k]]->connectedMems.size()));
+            // return false;
         }
     }
     return true;
@@ -83,30 +89,42 @@ void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S
 
     while (!P.empty())
     {
-        int nodeID = 0;
-        int size = 0;
-        for (auto i : P)
-        {
-            if (memorysMappedByPath[memId2memPath[i]]->connectedMems.size() > size)
-            {
-                nodeID = i;
-                size = memorysMappedByPath[memId2memPath[i]]->connectedMems.size();
-            }
-        }
+        int nodeID = *(P.begin());
+        // int maxsize = -1;
+        // for (auto it = P.begin(); it != P.end(); ++it)
+        // {
+        //     int i = *it;
+        //     auto iter = memorysMappedByPath.find(memId2memPath[i]);
+        //     if (iter != memorysMappedByPath.end())
+        //     {
+        //         int tmpsize = iter->second->connectedMems.size();
+        //         bool flag = (tmpsize > maxsize);
+        //         if (flag)
+        //         {
+        //             nodeID = i;
+        //             maxsize = iter->second->connectedMems.size();
+        //         }
+        //     }
+        //     else
+        //     {
+        //         logger.log("[BronKerbosh] ERROR ! No such mem in memorysMappedByPath");
+        //     }
+        // }
         std::deque<int> R_new = R;
+        // if (nodeID == -1)
+        // {
+        //     logger.log("[BronKerbosh] ERROR ! nodeID = -1 !");
+            // nodeID = *(P.begin());
+        // }
         R_new.push_back(nodeID);
+        auto P_new = memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P);
         BronKerbosh(R_new, memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P), memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(S));
         S.push_back(nodeID);
-        auto it = P.begin();
-        while (it != P.end())
-        {
-            if (*it == nodeID)
-            {
-                break;
-            }
-            it++;
-        }
-        P.erase(it);
+        auto it = std::find(P.begin(), P.end(), nodeID);
+        if (it != P.end())
+            P.erase(it);
+        else
+            logger.log("ERROR ! No such node " + std::to_string(nodeID) + " in deque P !");
         if (!P.empty())
         {
             P = memorysMappedByPath[memId2memPath[nodeID]]->FindDifference(P);
@@ -167,57 +185,54 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
 std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t()
 {
     std::vector<GroupedMemList> res;
+    // std::vector<DuplicateMem> DuplicateMems;
     std::unordered_map<Memory*, std::vector<int>> DuplicateMems;  // <mem, group id>
-    // int maxSize = 0;
-    // while (1)
+    GroupedMemList maxList;
+    // find the max Clique
+    for (int index = 0; index < this->maxNodes.size(); ++index)
     {
-        GroupedMemList maxList;
-        // find the max Clique
-        for (int index = 0; index < this->maxNodes.size(); ++index)
+        auto &mems = this->maxNodes[index];
+        for (auto mem : mems.memList)
         {
-            auto &mems = this->maxNodes[index];
-            for (auto mem : mems.memList)
+            auto iter = DuplicateMems.find(mem);
+            if (iter != DuplicateMems.end())
             {
-                auto iter = DuplicateMems.find(mem);
-                if (iter != DuplicateMems.end())
-                {
-                    iter->second.emplace_back(index);
-                }
-                else
-                {
-                    DuplicateMems.insert(std::pair<Memory*, std::vector<int>>(mem, std::vector<int>(1, index)));
-                }
+                iter->second.emplace_back(index);
             }
-        }
-        
-        for (auto &i : DuplicateMems)
-        {
-            auto mem = i.first;
-            double maxPower = -1.0;
-            int maxID = -1;
-            if (i.second.size() == 1)
-                continue;
-            for (int index : i.second)
+            else
             {
-                if (this->maxNodes[index].totalPower > maxPower)
-                {
-                    maxPower = this->maxNodes[index].totalPower;
-                    if (maxID > -1)
-                    {
-                        if (!this->maxNodes[index].DelteMem(mem))
-                            logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
-                    }
-                    maxID = index;
-                }
-                else
-                {
-                    if (!this->maxNodes[index].DelteMem(mem))
-                        logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
-                }
+                DuplicateMems.insert(std::pair<Memory*, std::vector<int>>(mem, std::vector<int>(1, index)));
             }
         }
     }
-    // return res;
+    
+    for (auto &i : DuplicateMems)
+    {
+        auto mem = i.first;
+        double maxPower = -1.0;
+        int maxID = -1;
+        if (i.second.size() == 1)
+            continue;
+        for (int index : i.second)
+        {
+            double modPower = std::fmod(this->maxNodes[index].totalPower, db.power_max);
+            if (modPower > maxPower)
+            {
+                maxPower = modPower;
+                if (maxID > -1)
+                {
+                    if (!this->maxNodes[index].DelteMem(mem))
+                        logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
+                }
+                maxID = index;
+            }
+            else
+            {
+                if (!this->maxNodes[index].DelteMem(mem))
+                    logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
+            }
+        }
+    }
     return this->maxNodes;
 }
 

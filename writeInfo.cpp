@@ -10,7 +10,7 @@ void WriteHead()
     printf("|                                                                        |\n");
     printf("|                 Author : @Broyiii,LZX11111111,Sanmu6666                |\n");
     printf("|                    Copyright (C) 2023 M3CPartioners                    |\n");
-    printf("|                      Version : 2023-11-11 (V1.00)                      |\n");
+    printf("|                      Version : 2023-11-20 (V1.00)                      |\n");
     printf("|                      Date    : %s                     |\n", tmp);
     printf("+========================================================================+\n\n");
 }
@@ -37,12 +37,12 @@ void Parser::PrintMemInfo()
     printf("Constraint Infomation:\n");
     printf("    - Memory number:                     %0ld\n", memorysMappedByPath.size());
     if (this->distanceCon)
-        printf("    - Distance:                          %0d um\n", db.dis_max);
+        printf("    - Distance:                          %lld\n", db.dis_max);
     else
         printf("    - Distance:                          unlimited\n");
     
     if (this->powerCon)
-        printf("    - Power:                             %.4f uA/MHz\n", db.power_max);
+        printf("    - Power:                             %.4f\n", db.power_max);
     else
         printf("    - Power:                             unlimited\n");
 
@@ -52,23 +52,14 @@ void Parser::PrintMemInfo()
         printf("    - CLK:                               unlimited\n");
     
     printf("--------------------------------------------------------------------------\n\n");
+    db.dis_max *= db.dis_max;
 }
 
 void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSuccess)
 {
-    auto running_time = duration.count();
-    printf("**************************************************************************\n");
-    printf("*                          Partitioning Result                           *\n");
-    printf("**************************************************************************\n");
-    printf("    - Totol Group Number:       %0d\n", this->groupNum);
-    printf("    - Output File:              ./%s\n", db.output_file_name.c_str());
-    printf("    - Log File:                 ./%s\n", db.log_file_name.c_str());
-    printf("    - Running Time:             %.4f s\n", running_time);
-    printf("--------------------------------------------------------------------------\n\n");    
-
+    int cnt = 0;
     if (parseSuccess)
     {
-        int cnt = 0;
         for (auto &k : AfterGroupBypower)
         {
             // k.first.Print(k.first);
@@ -101,6 +92,18 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
         logger.log("[PrintResult] Parse Error !");
         // printf("Parse Error !\n\n");
     }
+
+    auto running_time = duration.count();
+    printf("**************************************************************************\n");
+    printf("*                          Partitioning Result                           *\n");
+    printf("**************************************************************************\n");
+    printf("    - Totol Group Number:       %0d\n", this->groupNum);
+    printf("    - Totol Memory Number:      %0d\n", cnt);
+    printf("    - Output File:              ./%s\n", db.output_file_name.c_str());
+    printf("    - Log File:                 ./%s\n", db.log_file_name.c_str());
+    printf("    - Running Time:             %.4f s\n", running_time);
+    printf("--------------------------------------------------------------------------\n\n");    
+
 
     if (parseSuccess)
         printf("----------------------- MBIST Partitioner SUCCESS ! ----------------------\n\n");

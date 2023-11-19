@@ -49,11 +49,11 @@ int main(int argc,char *argv[])
             std::string tmp = argv[argIndex++];
             db.power_max = std::stod(tmp);
         }
-        // else if (arg_str == "-l")
-        // {
-        //     std::string tmp = argv[argIndex++];
-        //     db.dis_max = std::stoi(tmp);
-        // }
+        else if (arg_str == "-l")
+        {
+            std::string tmp = argv[argIndex++];
+            db.dis_max = std::stoll(tmp);
+        }
         else if (arg_str == "-f")
         {
             std::string tmp = argv[argIndex++];

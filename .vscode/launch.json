@@ -9,8 +9,12 @@
             "args": [
                 "-d",
                 "./case/testcase03/",
-                // "-l",
-                // "500000"
+                "-l",
+                "500000",
+                "-p",
+                "0.05",
+                "-f",
+                "1"
             ],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",

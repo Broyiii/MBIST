@@ -323,7 +323,7 @@ void Parser::ParseSpec()
                 dis += line[t];
                 t++;
             }
-            db.dis_max = std::stoi(dis.c_str());
+            db.dis_max = std::stoll(dis.c_str());
         }
         else if (line.find("max_dynamic_power") != std::string::npos)
         {
