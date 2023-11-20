@@ -3,6 +3,7 @@
 
 #include "global.hpp"
 #include "Logger.hpp"
+#include "genetic.hpp"
 
 
 typedef std::map<std::string,std::set<Memory*>> grouptype;
@@ -78,6 +79,8 @@ private:
     bool powerCon = true;
     bool clkCon = true;
     int clkDomainNum = 0;
+
+    Population *population;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems

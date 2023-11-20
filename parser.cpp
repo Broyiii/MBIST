@@ -248,8 +248,14 @@ std::vector<GroupedMemList> Parser::ViolentSearch()
         }
     }
 
-    if (AfterRestMems.size() > 12)
-        return RemoveDuplicateMems_for_DFS(AfterRestMems, res);
+    if (AfterRestMems.size() > 10)
+    {
+        population = new Population(AfterRestMems, res);
+        auto tmp = population->DoGenetic(50);
+        population->~Population();
+        return tmp;
+        // return RemoveDuplicateMems_for_DFS(AfterRestMems, res);
+    }
     int minGroupNum = INT32_MAX;
     std::vector<GroupedMemList> minGroup;
     DFS(0, res, AfterRestMems, minGroupNum, minGroup);
@@ -505,7 +511,10 @@ bool Parser::GetInformationFromFile()
         // return false;
 
     if (!SatisfyPowerCon(AfterGroupBypower))
+    {
+        std::cout << "ERROR ! Do not satisfy power constraint !" << std::endl;
         return false;
+    }
 
     WriteAnswer();
     OutCsvFile();
