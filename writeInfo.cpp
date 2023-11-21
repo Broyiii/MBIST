@@ -24,9 +24,11 @@ void WrongUsage()
               << "\t-d <work_directory>                 | input a work directory\n"
               << "\nOptional commands:\n"
               << "\t-p <double>                         | input max power \n"
-              << "\t-l <int>                            | input max dis \n"
+              << "\t-l <long long>                      | input max distance \n"
+              << "\t-b <int>                            | input max design heirarchical distance \n"
+              << "\t-f <1/0>                            | fast mode, default is 0 \n"
               << "\t-help                               | show usage info\n"
-              << "\t-info <true/false>                  | print detailed info , defalut is false\n"
+              << "\t-log <1/0>                          | generate log file , defalut is false\n"
               
               << std::endl;
 }
@@ -39,7 +41,7 @@ void Parser::PrintMemInfo()
     if (this->distanceCon)
         printf("    - Distance:                          %lld\n", db.dis_max);
     else
-        printf("    - Distance:                          unlimited\n");
+        printf("    - Block:                             %0d\n", db.block_max);
     
     if (this->powerCon)
         printf("    - Power:                             %.4f\n", db.power_max);
@@ -75,6 +77,12 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
                 // std::cout << mList.totalPower << "=====" << std::endl;
                 for (auto& mem : mList.memList)
                 {
+                    std::string block = "";
+                    for (auto &b : mem->Block)
+                    {
+                        block += (b + "/");
+                    }
+                    logger.log("[PrintResult]     - " + block);
                     // std::cout << "    - " << mem->mem_Path << " : " << mem->dynamic_power << std::endl;
                     logger.log("[PrintResult]     - " + mem->mem_Path + " : " + std::to_string(mem->dynamic_power));
                     ++cnt;

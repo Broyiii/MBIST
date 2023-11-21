@@ -68,6 +68,7 @@ bool Parser::ParseMemList()
             Memory *m = new Memory;
             m->mem_Path = line;
             m->mem_Name = name;
+            m->GetBlock();
 
             auto it_path = memorysMappedByPath.find(m->mem_Path);
             if (it_path != memorysMappedByPath.end())
@@ -119,8 +120,11 @@ double Parser::GetLastDouble(std::string line)
     return std::stod(power_str);
 }
 
-double Parser::ParseDS_summ(std::string ds)
+void Parser::ParseDS_summ(std::string ds, double &power, double &width, double &height)
 {
+    power = -2.0;
+    width = -2.0;
+    height = -2.0;
     std::ifstream input(ds);
     if (!input.is_open())
     {
@@ -135,16 +139,26 @@ double Parser::ParseDS_summ(std::string ds)
         {
             do {
                 getline(input,line);
-                return GetLastDouble(line);
+                power = GetLastDouble(line);
             } while (line.empty());            
         }
+        else if (line.find("Width") != std::string::npos)
+        {
+            do {
+                getline(input,line);
+                auto str_vec = SplitBySpace(line);
+                width = std::stod(str_vec[str_vec.size()-2]);
+                height = std::stod(str_vec[str_vec.size()-1]);
+            } while (line.empty());   
+        }
     }
-
-    return -1.0;
 }
 
-double Parser::ParseDS_ds02(std::string ds)
+void Parser::ParseDS_ds02(std::string ds, double &power, double &width, double &height)
 {
+    power = -3.0;
+    width = -3.0;
+    height = -3.0;
     std::ifstream input(ds);
     if (!input.is_open())
     {
@@ -156,7 +170,43 @@ double Parser::ParseDS_ds02(std::string ds)
 
     while (getline(input,line))
     {
-        if (line.find("Dynamic Power") != std::string::npos)
+        // ds version 1
+        if (line.find("Memory Area") != std::string::npos)
+        {
+            size_t pos = line.find(":");
+            ++pos;
+            std::string str = "";
+            for (; pos < line.size(); ++pos)
+            {
+                if (line[pos] == ' ')
+                    continue;
+                else if (line[pos] == 'x')
+                {
+                    width = std::stod(str);
+                    str.clear();
+                    continue;
+                }
+                else if (line[pos] == '=')
+                    break;
+                else
+                    str += line[pos];
+            }
+            height = std::stod(str);
+            str.clear();
+            power = -1.0;
+            return;
+        }
+        // ds version 2
+        if (line.find("1. Area") != std::string::npos)
+        {
+            do { 
+                getline(input,line);
+            } while (line.find(".") == std::string::npos);
+            auto str_vec = SplitBySpace(line);
+            width = std::stod(str_vec[1]);
+            height = std::stod(str_vec[3]);
+        }
+        else if (line.find("Dynamic Power") != std::string::npos)
         {
             while (getline(input,line))
             {
@@ -169,22 +219,48 @@ double Parser::ParseDS_ds02(std::string ds)
                 if (line.empty())
                     continue;
                 if (line.find("Standby Mode") != std::string::npos)
-                    break;
+                    return;
                 
                 double dy_power = GetLastDouble(line);
                 max_dy_power = dy_power > max_dy_power ? dy_power : max_dy_power;
             }
 
-            return max_dy_power;
+            power = max_dy_power;
         }
     }
-    return -1.0;
+    // return -1.0;
+}
+
+void Parser::ParseSUMM(std::string ds)
+{
+    std::string cellname = "";
+    for (auto i : memorysMappedByName)
+    {
+        if (ds.find(i.first) != std::string::npos)
+        {
+            cellname = i.first;
+            break;
+        }
+    }
+    auto it = memorysMappedByName.find(cellname);
+
+    double power, width, height;
+    ParseDS_summ(ds, power, width, height);
+
+    for (auto &i : it->second)
+    {
+        i->width = width;
+        i->height = height;
+        if (i->dynamic_power < 0)
+            i->dynamic_power = power;
+        
+
+    }  
 }
 
 void Parser::ParseDataSheet(std::string ds)
 {
     std::string cellname = "";
-    double power = 0.0;
     for (auto i : memorysMappedByName)
     {
         if (ds.find(i.first) != std::string::npos)
@@ -195,24 +271,22 @@ void Parser::ParseDataSheet(std::string ds)
     }
     auto it = memorysMappedByName.find(cellname);
     auto mem = *(it->second).begin();
-    if (mem->dynamic_power > 0)
+    if ((mem->dynamic_power > 0) && (mem->width > 0) && (mem->height > 0))
     {
         return;
     }
 
-
-    if (ds.find(".summ") != std::string::npos)
-    {
-        power = ParseDS_summ(ds);
-    }
-    else
-    {
-        power = ParseDS_ds02(ds);
-    }
+    double power, width, height;
+    ParseDS_ds02(ds, power, width, height);
 
     for (auto &i : it->second)
     {
-        i->dynamic_power = power;
+        if (i->width < 0)
+            i->width = width;
+        if (i->height < 0)
+            i->height = height;
+        if (i->dynamic_power < 0)  
+            i->dynamic_power = power;
     }  
 }
 
@@ -221,8 +295,8 @@ bool Parser::ParseDef()
     std::ifstream input(db.def_file);
     if (!input.is_open())
     {
-        std::cout << "ERROR 1! No such file " << db.def_file << std::endl;
-        logger.log("[ParseDef] ERROR 1! No such file " + db.def_file);
+        std::cout << "WARNING ! No def file " << db.def_file << std::endl;
+        logger.log("[ParseDef] WARNING ! No def file " + db.def_file);
         return false;
     }
     std::string line = "";
@@ -277,11 +351,35 @@ bool Parser::ParseDef()
             low = num1;
         }
 
+        // get direct
+        while (line[k] != ')')
+            ++k;
+        ++k;
+        while (line[k] != ' ')
+            ++k;
+        std::string dir = "";
+        while (line[k] != '+')
+        {
+            if (line[k] == ' ')
+            {
+                ++k;
+                continue;
+            }
+            dir += line[k];
+            ++k;
+
+            if ((dir.find("W") != std::string::npos) || (dir.find("E") != std::string::npos))
+            {
+                std::cout << "11111" << std::endl;
+            }
+        }
+
         auto it_path = memorysMappedByPath.find(path);
         if (it_path != memorysMappedByPath.end())
         {
             it_path->second->up_bound = up;
             it_path->second->low_bound = low;
+            it_path->second->direct = dir;
         }
         else
         {
@@ -311,6 +409,8 @@ void Parser::ParseSpec()
     {
         if (line.find("max_distance") != std::string::npos)
         {
+            if ((db.dis_max > 0) || (!this->distanceCon))
+                continue;
             int t = line.find('=');
             t++;
             while (line[t] == ' ')
@@ -325,8 +425,44 @@ void Parser::ParseSpec()
             }
             db.dis_max = std::stoll(dis.c_str());
         }
+        else if (line.find("UNITS_DISTANCE_MICRONS") != std::string::npos)
+        {
+            if (!this->distanceCon)
+                continue;
+            size_t pos = line.find("=");
+            std::string str = "";
+            for (++pos; pos < line.size(); ++pos)
+            {
+                if (line[pos] == ' ')
+                    continue;
+                else if (line[pos] == ';')
+                    break;
+                else
+                    str += line[pos];
+            }
+            db.distance_unit = std::stoi(str);
+        }
+        else if (line.find("max_design_heirarchical_distance") != std::string::npos)
+        {
+            if ((db.inputBlock > 0) || (this->distanceCon))
+                continue;
+            size_t pos = line.find("=");
+            std::string str = "";
+            for (++pos; pos < line.size(); ++pos)
+            {
+                if (line[pos] == ' ')
+                    continue;
+                else if (line[pos] == ';')
+                    break;
+                else
+                    str += line[pos];
+            }
+            db.block_max = std::stoi(str);
+        }
         else if (line.find("max_dynamic_power") != std::string::npos)
         {
+            if (db.power_max > 0)
+                continue;
             int t = line.find('=');
             t++;
             while (line[t] == ' ')
@@ -618,8 +754,8 @@ bool Parser::ParseCLK()
 
     if (!input.is_open())
     {
-        std::cout << "ERROR 3! No such file " << db.clk_file << std::endl;
-        logger.log("[ParseCLK] ERROR 3! No such file " + db.clk_file);
+        std::cout << "WARNING ! No clk file " << db.clk_file << std::endl;
+        logger.log("[ParseCLK] WARNING ! No clk file " + db.clk_file);
         return false;
     }
 
@@ -661,7 +797,7 @@ bool Parser::GetFileNameFromFolder(std::string path, std::vector<std::string> &f
     struct dirent *ptr;
     if (!(pDir = opendir(path.c_str())))
     {
-        std::cout << "Folder doesn't Exist!" << path << std::endl;
+        // std::cout << "Folder doesn't Exist!" << path << std::endl;
         logger.log("[GetFileNameFromFolder] Folder doesn't Exist!" + path);
         return false;
     }

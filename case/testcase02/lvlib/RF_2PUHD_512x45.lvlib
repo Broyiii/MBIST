@@ -27,7 +27,7 @@
    LogicalPorts:  1R1W;
    NumberofWords:  512;
    NumberofBits :  45;
-   Algorithm:  SMarchCHKBvcd ss ;
+   Algorithm:  SMarchCHKBvcd ;
    BitGrouping : 1;
    OperationSet: SyncWRvcd;
    MinHold:  0.637;

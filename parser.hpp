@@ -96,8 +96,9 @@ private:
 
     bool ParseMemList();
     void ParseDataSheet(std::string ds);
-    double ParseDS_summ(std::string ds);
-    double ParseDS_ds02(std::string ds);
+    void ParseSUMM(std::string ds);
+    void ParseDS_summ(std::string ds, double &power, double &width, double &height);
+    void ParseDS_ds02(std::string ds, double &power, double &width, double &height);
     double GetLastDouble(std::string line);
     bool ParseDef();
     void ParseSpec();
@@ -139,6 +140,21 @@ private:
 
     std::vector<GroupedMemList> ViolentSearch();
     void DFS(int num, std::vector<GroupedMemList> groups, std::vector<DuplicateMem> &RestMems, int &minGroupNum, std::vector<GroupedMemList> &minGroup);
+
+    void PrintMems()
+    {
+        for (auto &mem : this->memorysMappedByPath)
+        {
+            logger.log("[PrintMems] =======================================");
+            logger.log("[PrintMems] Name   : " + mem.second->mem_Name);
+            logger.log("[PrintMems] Path   : " + mem.second->mem_Path);
+            logger.log("[PrintMems] Area   : " + std::to_string(mem.second->width) + " x " + std::to_string(mem.second->height));
+            logger.log("[PrintMems] Power  : " + std::to_string(mem.second->dynamic_power));
+            logger.log("[PrintMems] Direct : " + mem.second->direct);
+            logger.log("[PrintMems] Pos    : " + std::to_string(mem.second->up_bound) + ", " + std::to_string(mem.second->low_bound));
+            logger.log("[PrintMems] =======================================");
+        }
+    }
 
 };
 

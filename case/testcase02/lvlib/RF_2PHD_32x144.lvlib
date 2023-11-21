@@ -21,7 +21,7 @@
 /*                      * Tessent MemoryBIST Model *                  */
 
    MemoryTemplate ( RF_2PHD_32x144 ) {
-   CellName:      RF_2PHD_32x144 ;
+   CellName:      RF_2PHD_32x144;
    MemoryType:    SRAM;
 
    LogicalPorts:  1R1W;

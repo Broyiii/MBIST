@@ -54,6 +54,12 @@ int main(int argc,char *argv[])
             std::string tmp = argv[argIndex++];
             db.dis_max = std::stoll(tmp);
         }
+        else if (arg_str == "-b")
+        {
+            std::string tmp = argv[argIndex++];
+            db.block_max = std::stoi(tmp);
+            db.inputBlock = true;
+        }
         else if (arg_str == "-f")
         {
             std::string tmp = argv[argIndex++];

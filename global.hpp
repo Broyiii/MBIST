@@ -67,15 +67,20 @@ struct Memory
     std::string ShadowWrite = "";
     std::string ShadowWriteOK = "";
     std::string WriteOutOfRange = "";
+    std::string direct = "";
 
     std::vector<std::string> Algorithms;
     std::vector<std::string> Clock_Siganls;
+    std::vector<std::string> Block;
 
     double MilliWattsPerMegaHertz = -1.0;
     double dynamic_power = -1.0;
 
     long long up_bound = 0;
     long long low_bound = 0;
+
+    double width = 0.0;
+    double height = 0.0;
     
     std::vector<std::string> LogicalAddressMap;
     
@@ -95,6 +100,72 @@ struct Memory
     bool operator()(int v1,int v2) const
     {
         return v1 > v2;
+    }
+
+    void GetBlock()
+    {
+        if (this->mem_Path.empty())
+        {
+            std::cout << "ERROR ! Such mem has no path !" << std::endl;
+            return;
+        }
+        std::string b = "";
+        for (auto &c : this->mem_Path)
+        {
+            if (c != '/')
+            {
+                b += c;
+            }
+            else
+            {
+                this->Block.push_back(b);
+                b.clear();
+            }
+        }
+        if (!b.empty())
+        {
+            this->Block.push_back(b);
+        }
+    }
+
+    void AdjustPositionByDirect(int distance_unit)
+    {
+        if (this->direct == "N")
+            return;
+        else if (this->direct == "S")
+        {
+            this->up_bound -= (long long)(this->width * distance_unit);
+            this->low_bound -= (long long)(this->height * distance_unit);
+        }
+        else if (this->direct == "W")
+        {
+            this->up_bound -= (long long)(this->width * distance_unit);
+        }
+        else if (this->direct == "E")
+        {
+            this->low_bound -= (long long)(this->height * distance_unit);
+        }
+        else if (this->direct == "FN")
+        {
+            this->up_bound -= (long long)(this->width * distance_unit);
+        }
+        else if (this->direct == "FS")
+        {
+            this->low_bound -= (long long)(this->height * distance_unit);
+        }
+        else if (this->direct == "FW")
+        {
+            return;
+        }
+        else if (this->direct == "FE")
+        {
+            this->up_bound -= (long long)(this->width * distance_unit);
+            this->low_bound -= (long long)(this->height * distance_unit);
+        }
+        else
+        {
+            std::cout << "ERROR ! No such direct " << this->direct << std::endl;
+        }
     }
 
     std::deque<int> FindBothNeigbor(std::deque<int> P)
@@ -363,10 +434,14 @@ struct dataBase
     std::string log_file_name = "logfile.log";
     std::string output_csv_name = "./plt.csv";
     FILE* outcsvFile;
+    
+    int distance_unit = 1000;
+    bool inputBlock = false;
 
     std::vector<std::string> lib_names;
     
     std::vector<std::string> ds_files; 
+    std::vector<std::string> summ_files; 
     std::vector<std::string> lib_files;
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
@@ -375,6 +450,7 @@ struct dataBase
 
     double power_max = 0.0;
     long long dis_max = 0;
+    int block_max = 1;
 
     bool CalculateDis(Memory *a, Memory *b)
     {
@@ -384,6 +460,19 @@ struct dataBase
         return (t <= dis_max);
     }
 
+    bool CalculateBlockCon(Memory *a, Memory *b)
+    {
+        if ((a->Block.size() < this->block_max) || (b->Block.size() < this->block_max))
+            return false;
+        for (int index = 0; index < this->block_max; ++index)
+        {
+            if (a->Block[index] != b->Block[index])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
 };
 

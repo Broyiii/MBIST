@@ -46,19 +46,28 @@ bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemLis
 bool Parser::GetAllFileNames()
 {
     if (!GetFileNameFromFolder(db.work_dir + "ds/", db.ds_files))
-        return false;
-    if (!GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files))
-        return false;
-    if (!GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files))
-        return false;
-    if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
-        return false;
+        std::cout << "WARNING ! No ds directory !" << std::endl;
+        // return false;
+    if (!GetFileNameFromFolder(db.work_dir + "summ/", db.summ_files))
+        std::cout << "WARNING ! No summ directory !" << std::endl;
 
-    // ParseSpec();
+    if (!GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files))
+        std::cout << "WARNING ! No lib directory !" << std::endl;
+
+    if (!GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files))
+        std::cout << "WARNING ! No lvlib directory !" << std::endl;
+
+    if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
+        std::cout << "WARNING ! No verilog directory !" << std::endl;
+
 
     if (!ParseMemList())
         return false;
 
+    if (db.inputBlock)
+        this->distanceCon = false;
+    if (db.dis_max > 0)
+        this->distanceCon = true;
     if (!ParseDef())
         this->distanceCon = false;
 
@@ -75,19 +84,52 @@ bool Parser::GetAllFileNames()
             {
                 ParseLvlib(db.lvlib_files[i]);
             }
+        }
+    }
 
+    for (int i = 0; i < db.lib_files.size(); i++)
+    {
+        for (auto &j : memorysMappedByName)
+        {
             if (db.lib_files[i].find(j.first) != std::string::npos)
             {
                 ParseLib(db.lib_files[i]);
             }
+        }
+    }
 
+    for (int i = 0; i < db.summ_files.size(); i++)
+    {
+        for (auto &j : memorysMappedByName)
+        {
+            if (db.summ_files[i].find(j.first) != std::string::npos)
+            {
+                ParseSUMM(db.summ_files[i]);
+            }
+        }
+    }
+
+    for (int i = 0; i < db.ds_files.size(); i++)
+    {
+        for (auto &j : memorysMappedByName)
+        {
             if (db.ds_files[i].find(j.first) != std::string::npos)
             {
                 ParseDataSheet(db.ds_files[i]);
             }
-
         }
     }
+
+    ParseSpec();
+
+    this->PrintMems();
+
+    for (auto &mem : this->memorysMappedByPath)
+    {
+        mem.second->AdjustPositionByDirect(db.distance_unit);
+    }
+
+    this->PrintMems();
 
     return true;
 }
@@ -309,7 +351,7 @@ void Parser::DFS(int num, std::vector<GroupedMemList> groups, std::vector<Duplic
 void Parser::GroupByDistance()
 {
     BuildMatric();
-    if (distanceCon)
+    // if (distanceCon)
     {  
         for (auto i : AfterHardCondition)
         {
@@ -328,19 +370,19 @@ void Parser::GroupByDistance()
             this->maxNodes.clear();
         }
     }
-    else
-    {
-        for (auto i : AfterHardCondition)
-        {
-            GroupedMemList gm(db.power_max);
-            for (auto mem : i.second)
-            {
-                gm.AddMemUnsafe(mem);
-            }
-            std::vector<GroupedMemList> tmp {GroupedMemList(std::move(gm))};
-            AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, std::move(tmp)));
-        }
-    }
+    // else
+    // {
+    //     for (auto i : AfterHardCondition)
+    //     {
+    //         GroupedMemList gm(db.power_max);
+    //         for (auto mem : i.second)
+    //         {
+    //             gm.AddMemUnsafe(mem);
+    //         }
+    //         std::vector<GroupedMemList> tmp {GroupedMemList(std::move(gm))};
+    //         AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, std::move(tmp)));
+    //     }
+    // }
     
     // PrintBK();
 }
@@ -435,25 +477,47 @@ void Parser::BuildMatric()
     int cnt = 0;
     for (auto &i : memorysMappedByPath)
     {
-        i.second->node_id = cnt;
-        // memId2memPath.insert(std::pair<int,std::string>(i.second->node_id,i.second->mem_Path));
+        i.second->node_id = cnt++;
         memId2memPath.emplace_back(i.second->mem_Path);
-        cnt++;
     }
 
-    for (auto i : AfterHardCondition)
+    if (this->distanceCon)
     {
-        for (auto mem_front = i.second.begin(); mem_front != i.second.end(); ++mem_front)
+        for (auto i : AfterHardCondition)
         {
-            for (auto mem_back = std::next(mem_front); mem_back != i.second.end(); ++mem_back)
+            for (auto mem_front = i.second.begin(); mem_front != i.second.end(); ++mem_front)
             {
-                if (db.CalculateDis(*mem_front, *mem_back))
+                for (auto mem_back = std::next(mem_front); mem_back != i.second.end(); ++mem_back)
                 {
-                    (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
-                    (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                    if (db.CalculateDis(*mem_front, *mem_back))
+                    {
+                        (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
+                        (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                    }
                 }
             }
         }
+    }
+    else if (db.block_max > 0)
+    {
+        for (auto i : AfterHardCondition)
+        {
+            for (auto mem_front = i.second.begin(); mem_front != i.second.end(); ++mem_front)
+            {
+                for (auto mem_back = std::next(mem_front); mem_back != i.second.end(); ++mem_back)
+                {
+                    if (db.CalculateBlockCon(*mem_front, *mem_back))
+                    {
+                        (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
+                        (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        std::cout << "No dis and block constraint ! " << std::endl;
     }
 }
 

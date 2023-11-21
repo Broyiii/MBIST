@@ -32,10 +32,21 @@ bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>
             {
                 for (auto mem_back = std::next(mem_front); mem_back != j.memList.end(); ++mem_back)
                 {
-                    if (!db.CalculateDis(*mem_front, *mem_back))
+                    if (this->distanceCon)
+                    {   
+                        if (!db.CalculateDis(*mem_front, *mem_back))
+                        {
+                            logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
+                            return false;
+                        }
+                    }
+                    else
                     {
-                        logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
-                        return false;
+                        if (!db.CalculateBlockCon(*mem_front, *mem_back))
+                        {
+                            logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
+                            return false;
+                        }
                     }
                 }
             }
