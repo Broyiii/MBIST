@@ -65,15 +65,6 @@ public:
         return this->memorysMappedByPath[str];
     }
 
-    //BK
-    void GetMaxClique(std::deque<Memory*> mems);
-    void PrintBK();
-    // std::vector<Memory*> mems;
-    std::vector<GroupedMemList> GetClique()
-    {
-        return this->maxNodes;
-    }
-
 private:
     bool distanceCon = true;
     bool powerCon = true;
@@ -126,19 +117,22 @@ private:
     bool SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
 
     //BK
+    //BK
+    std::vector<GroupedMemList> GetMaxClique(std::deque<Memory*> mems);
+    void PrintBK();
     bool CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
-    void BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S);
-    std::vector<GroupedMemList> maxNodes;
+    void BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S, std::vector<GroupedMemList> &maxNodes);
+    // std::vector<GroupedMemList> maxNodes;
     // int num;
     bool* check;
-    std::vector<GroupedMemList> RemoveDuplicateMems();
-    std::vector<GroupedMemList> RemoveDuplicateMems_t();
+    std::vector<GroupedMemList> RemoveDuplicateMems(std::vector<GroupedMemList> &maxNodes);
+    std::vector<GroupedMemList> RemoveDuplicateMems_t(std::vector<GroupedMemList> &maxNodes);
     std::vector<GroupedMemList> RemoveDuplicateMems_for_DFS(std::vector<DuplicateMem> &DuplicateMems, std::vector<GroupedMemList> res);
 
     bool SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
     bool CheckSort(std::deque<Memory *> mems);
 
-    std::vector<GroupedMemList> ViolentSearch();
+    std::vector<GroupedMemList> ViolentSearch(std::vector<GroupedMemList> &maxNodes);
     void DFS(int num, std::vector<GroupedMemList> groups, std::vector<DuplicateMem> &RestMems, int &minGroupNum, std::vector<GroupedMemList> &minGroup);
 
     void PrintMems()

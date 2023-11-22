@@ -295,7 +295,7 @@ bool Parser::ParseDef()
     std::ifstream input(db.def_file);
     if (!input.is_open())
     {
-        std::cout << "WARNING ! No def file " << db.def_file << std::endl;
+        // std::cout << "WARNING ! No def file " << db.def_file << std::endl;
         logger.log("[ParseDef] WARNING ! No def file " + db.def_file);
         return false;
     }
@@ -427,8 +427,8 @@ void Parser::ParseSpec()
         }
         else if (line.find("UNITS_DISTANCE_MICRONS") != std::string::npos)
         {
-            if (!this->distanceCon)
-                continue;
+            // if (!this->distanceCon)
+            //     continue;
             size_t pos = line.find("=");
             std::string str = "";
             for (++pos; pos < line.size(); ++pos)
@@ -754,7 +754,7 @@ bool Parser::ParseCLK()
 
     if (!input.is_open())
     {
-        std::cout << "WARNING ! No clk file " << db.clk_file << std::endl;
+        // std::cout << "WARNING ! No clk file " << db.clk_file << std::endl;
         logger.log("[ParseCLK] WARNING ! No clk file " + db.clk_file);
         return false;
     }

@@ -86,7 +86,7 @@ bool Parser::CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList
     return true;
 }
 
-void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S)
+void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S, std::vector<GroupedMemList> &maxNodes)
 {
     if (P.empty() && S.empty())
     {
@@ -101,35 +101,10 @@ void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S
     while (!P.empty())
     {
         int nodeID = *(P.begin());
-        // int maxsize = -1;
-        // for (auto it = P.begin(); it != P.end(); ++it)
-        // {
-        //     int i = *it;
-        //     auto iter = memorysMappedByPath.find(memId2memPath[i]);
-        //     if (iter != memorysMappedByPath.end())
-        //     {
-        //         int tmpsize = iter->second->connectedMems.size();
-        //         bool flag = (tmpsize > maxsize);
-        //         if (flag)
-        //         {
-        //             nodeID = i;
-        //             maxsize = iter->second->connectedMems.size();
-        //         }
-        //     }
-        //     else
-        //     {
-        //         logger.log("[BronKerbosh] ERROR ! No such mem in memorysMappedByPath");
-        //     }
-        // }
         std::deque<int> R_new = R;
-        // if (nodeID == -1)
-        // {
-        //     logger.log("[BronKerbosh] ERROR ! nodeID = -1 !");
-            // nodeID = *(P.begin());
-        // }
         R_new.push_back(nodeID);
         auto P_new = memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P);
-        BronKerbosh(R_new, memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P), memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(S));
+        BronKerbosh(R_new, memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(P), memorysMappedByPath[memId2memPath[nodeID]]->FindBothNeigbor(S), maxNodes);
         S.push_back(nodeID);
         auto it = std::find(P.begin(), P.end(), nodeID);
         if (it != P.end())
@@ -143,21 +118,24 @@ void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S
     }
 }
 
-void Parser::GetMaxClique(std::deque<Memory*> mems)
+std::vector<GroupedMemList> Parser::GetMaxClique(std::deque<Memory*> mems)
 {
     std::deque<int> R = {};
     std::deque<int> P = {};
     std::deque<int> S = {};
-    CheckSort(mems);
+    if (!CheckSort(mems))
+        printf("ERROR ! [GetMaxClique] Sort Wrong !\n");
+    
     for (auto m : mems)
     {
         P.push_back(m->node_id);
     }
-
-    BronKerbosh(R, P, S);
+    std::vector<GroupedMemList> maxNodes;
+    BronKerbosh(R, P, S, maxNodes);
+    return maxNodes;
 }
 
-std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
+std::vector<GroupedMemList> Parser::RemoveDuplicateMems(std::vector<GroupedMemList> &maxNodes)
 {
     std::vector<GroupedMemList> res;
     // int maxSize = 0;
@@ -165,7 +143,7 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
     {
         GroupedMemList maxList;
         // find the max Clique
-        for (auto &i : this->maxNodes)
+        for (auto &i : maxNodes)
         {
             // i.Print();
             if (i.memList.size() > maxList.memList.size())
@@ -181,7 +159,7 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
         // maxList.Print();
         res.emplace_back(maxList);
 
-        for (auto &i : this->maxNodes)
+        for (auto &i : maxNodes)
         {
             if (i.memList.size() != 0)
             {
@@ -193,16 +171,16 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems()
     return res;
 }
 
-std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t()
+std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t(std::vector<GroupedMemList> &maxNodes)
 {
     std::vector<GroupedMemList> res;
     // std::vector<DuplicateMem> DuplicateMems;
     std::unordered_map<Memory*, std::vector<int>> DuplicateMems;  // <mem, group id>
     GroupedMemList maxList;
     // find the max Clique
-    for (int index = 0; index < this->maxNodes.size(); ++index)
+    for (int index = 0; index < maxNodes.size(); ++index)
     {
-        auto &mems = this->maxNodes[index];
+        auto &mems = maxNodes[index];
         for (auto mem : mems.memList)
         {
             auto iter = DuplicateMems.find(mem);
@@ -226,25 +204,25 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t()
             continue;
         for (int index : i.second)
         {
-            double modPower = std::fmod(this->maxNodes[index].totalPower, db.power_max);
+            double modPower = std::fmod(maxNodes[index].totalPower, db.power_max);
             if (modPower > maxPower)
             {
                 maxPower = modPower;
                 if (maxID > -1)
                 {
-                    if (!this->maxNodes[index].DelteMem(mem))
+                    if (!maxNodes[index].DelteMem(mem))
                         logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
                 }
                 maxID = index;
             }
             else
             {
-                if (!this->maxNodes[index].DelteMem(mem))
+                if (!maxNodes[index].DelteMem(mem))
                     logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
             }
         }
     }
-    return this->maxNodes;
+    return maxNodes;
 }
 
 void Parser::PrintBK()

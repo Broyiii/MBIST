@@ -435,7 +435,7 @@ struct dataBase
     std::string output_csv_name = "./plt.csv";
     FILE* outcsvFile;
     
-    int distance_unit = 1000;
+    int distance_unit = -1;
     bool inputBlock = false;
 
     std::vector<std::string> lib_names;
@@ -446,7 +446,7 @@ struct dataBase
     std::vector<std::string> lvlib_files;
     std::vector<std::string> verilog_files;
 
-    bool BKfuntion = false;
+    int BKfuntion = 0;
 
     double power_max = 0.0;
     long long dis_max = 0;
@@ -462,17 +462,29 @@ struct dataBase
 
     bool CalculateBlockCon(Memory *a, Memory *b)
     {
-        if ((a->Block.size() < this->block_max) || (b->Block.size() < this->block_max))
-            return false;
-        for (int index = 0; index < this->block_max; ++index)
+        int bigSize = a->Block.size();
+        int smallSize = b->Block.size();
+        if (bigSize < smallSize)
         {
-            if (a->Block[index] != b->Block[index])
+            std::swap(bigSize, smallSize);
+        }
+
+        int sameBlockNum = 0;
+        for (int index = 0; index < smallSize; ++index)
+        {
+            if (a->Block[index] == b->Block[index])
             {
-                return false;
+                ++sameBlockNum;
+            }
+            else
+            {
+                break;
             }
         }
-        return true;
+
+        return ((bigSize - sameBlockNum) <= this->block_max);
     }
+
 
 };
 

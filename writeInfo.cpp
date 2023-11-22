@@ -8,9 +8,8 @@ void WriteHead()
     printf("|                                                                        |\n");
     printf("|                            MBIST Partitioner                           |\n");
     printf("|                                                                        |\n");
-    printf("|                 Author : @Broyiii,LZX11111111,Sanmu6666                |\n");
-    printf("|                    Copyright (C) 2023 M3CPartioners                    |\n");
-    printf("|                      Version : 2023-11-20 (V1.00)                      |\n");
+    printf("|                      Author  : eda230702                               |\n");
+    printf("|                      Version : 2023-11-21  (V1.00)                     |\n");
     printf("|                      Date    : %s                     |\n", tmp);
     printf("+========================================================================+\n\n");
 }
@@ -21,14 +20,16 @@ void WrongUsage()
     std::cerr << "Usage:\n"
               << "\t./MBISTPart [-command] <parameter>\n"
               << "\nRequired commands:\n"
-              << "\t-d <work_directory>                 | input a work directory\n"
+              << "\t-d <work_directory>             | input a work directory\n"
               << "\nOptional commands:\n"
-              << "\t-p <double>                         | input max power \n"
-              << "\t-l <long long>                      | input max distance \n"
-              << "\t-b <int>                            | input max design heirarchical distance \n"
-              << "\t-f <1/0>                            | fast mode, default is 0 \n"
-              << "\t-help                               | show usage info\n"
-              << "\t-log <1/0>                          | generate log file , defalut is false\n"
+              << "\t-p <double>                     | input max power \n"
+              << "\t-l <long long>                  | input max distance \n"
+              << "\t-b <int>                        | input max design heirarchical distance \n"
+              << "\t-f <0/1/2>                      | fast mode , defalut is auto choose by memory number \n"
+              << "\t                                | \tbig number means the faster running time and the worse result \n"
+              << "\t-log <1/0>                      | generate log file , defalut is false\n"
+              << "\t-check <1/0>                    | check if the results are correct , defalut is false\n"
+              << "\t-help                           | show usage info\n"
               
               << std::endl;
 }
@@ -37,21 +38,28 @@ void WrongUsage()
 void Parser::PrintMemInfo()
 {
     printf("Constraint Infomation:\n");
-    printf("    - Memory number:                     %0ld\n", memorysMappedByPath.size());
+    printf("    - Memory Number:                  %0ld\n", memorysMappedByPath.size());
+    printf("    - Units Distance Microns:         %0d\n", db.distance_unit);
     if (this->distanceCon)
-        printf("    - Distance:                          %lld\n", db.dis_max);
+    {
+        printf("    - Physical Distance:              %lld\n", db.dis_max);
+        printf("    - Heirarchical Distance:          unlimited\n");
+    }
     else
-        printf("    - Block:                             %0d\n", db.block_max);
+    {
+        printf("    - Physical Distance:              unlimited\n");
+        printf("    - Heirarchical Distance:          %0d\n", db.block_max);
+    }
     
     if (this->powerCon)
-        printf("    - Power:                             %.4f\n", db.power_max);
+        printf("    - Power:                          %.4f\n", db.power_max);
     else
-        printf("    - Power:                             unlimited\n");
+        printf("    - Power:                          unlimited\n");
 
     if (this->clkCon)
-        printf("    - CLK:                               %0d different domains\n", this->clkDomainNum);
+        printf("    - CLK:                            %0d different domains\n", this->clkDomainNum);
     else   
-        printf("    - CLK:                               unlimited\n");
+        printf("    - CLK:                            unlimited\n");
     
     printf("--------------------------------------------------------------------------\n\n");
     db.dis_max *= db.dis_max;
@@ -77,12 +85,12 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
                 // std::cout << mList.totalPower << "=====" << std::endl;
                 for (auto& mem : mList.memList)
                 {
-                    std::string block = "";
-                    for (auto &b : mem->Block)
-                    {
-                        block += (b + "/");
-                    }
-                    logger.log("[PrintResult]     - " + block);
+                    // std::string block = "";
+                    // for (auto &b : mem->Block)
+                    // {
+                    //     block += (b + "/");
+                    // }
+                    // logger.log("[PrintResult]     - " + block);
                     // std::cout << "    - " << mem->mem_Path << " : " << mem->dynamic_power << std::endl;
                     logger.log("[PrintResult]     - " + mem->mem_Path + " : " + std::to_string(mem->dynamic_power));
                     ++cnt;
@@ -105,11 +113,20 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
     printf("**************************************************************************\n");
     printf("*                          Partitioning Result                           *\n");
     printf("**************************************************************************\n");
-    printf("    - Totol Group Number:       %0d\n", this->groupNum);
-    printf("    - Totol Memory Number:      %0d\n", cnt);
-    printf("    - Output File:              ./%s\n", db.output_file_name.c_str());
-    printf("    - Log File:                 ./%s\n", db.log_file_name.c_str());
-    printf("    - Running Time:             %.4f s\n", running_time);
+    if (parseSuccess)
+    {  
+        printf("    - Totol Group Number:             %0d\n", this->groupNum);
+        printf("    - Totol Memory Number:            %0d\n", cnt);
+        printf("    - Output File:                    ./%s\n", db.output_file_name.c_str());
+    }
+    else
+    {
+        printf("    - Totol Group Number:             WRONG\n");
+        printf("    - Totol Memory Number:            WRONG\n");
+        printf("    - Output File:                    WRONG\n");
+    }
+    printf("    - Log File:                       ./%s\n", db.log_file_name.c_str());
+    printf("    - Running Time:                   %.4f s\n", running_time);
     printf("--------------------------------------------------------------------------\n\n");    
 
 

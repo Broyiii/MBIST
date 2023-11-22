@@ -58,5 +58,5 @@ if __name__ == '__main__' :
     if (len(sys.argv) != 2):
         print("Usage:\n\tpython3 plt.py <input csv file>")
     else:
-        print("Start M3CPlot !")
+        print("Start MBISTPlot !")
         main(sys.argv[1])

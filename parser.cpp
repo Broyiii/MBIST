@@ -46,19 +46,20 @@ bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemLis
 bool Parser::GetAllFileNames()
 {
     if (!GetFileNameFromFolder(db.work_dir + "ds/", db.ds_files))
-        std::cout << "WARNING ! No ds directory !" << std::endl;
+        logger.log("WARNING ! No ds directory !");
+        // std::cout << "WARNING ! No ds directory !" << std::endl;
         // return false;
     if (!GetFileNameFromFolder(db.work_dir + "summ/", db.summ_files))
-        std::cout << "WARNING ! No summ directory !" << std::endl;
+        logger.log("WARNING ! No summ directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files))
-        std::cout << "WARNING ! No lib directory !" << std::endl;
+        logger.log("WARNING ! No lib directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files))
-        std::cout << "WARNING ! No lvlib directory !" << std::endl;
+        logger.log("WARNING ! No lvlib directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
-        std::cout << "WARNING ! No verilog directory !" << std::endl;
+        logger.log("WARNING ! No verilog directory !");
 
 
     if (!ParseMemList())
@@ -121,13 +122,6 @@ bool Parser::GetAllFileNames()
     }
 
     ParseSpec();
-
-    this->PrintMems();
-
-    for (auto &mem : this->memorysMappedByPath)
-    {
-        mem.second->AdjustPositionByDirect(db.distance_unit);
-    }
 
     this->PrintMems();
 
@@ -217,14 +211,14 @@ void Parser::GroupByHardCondition()
     }
 }
 
-std::vector<GroupedMemList> Parser::ViolentSearch()
+std::vector<GroupedMemList> Parser::ViolentSearch(std::vector<GroupedMemList> &maxNodes)
 {
-    std::vector<GroupedMemList> res(this->maxNodes.size());
+    std::vector<GroupedMemList> res(maxNodes.size());
     std::unordered_map<Memory*, std::vector<int>> DuplicateMems;  // <mem, group id>
 
-    for (int index = 0; index < this->maxNodes.size(); ++index)
+    for (int index = 0; index < maxNodes.size(); ++index)
     {
-        auto mems = this->maxNodes[index];
+        auto mems = maxNodes[index];
         for (auto mem : mems.memList)
         {
             auto iter = DuplicateMems.find(mem);
@@ -293,7 +287,7 @@ std::vector<GroupedMemList> Parser::ViolentSearch()
     if (AfterRestMems.size() > 10)
     {
         population = new Population(AfterRestMems, res);
-        auto tmp = population->DoGenetic(50);
+        auto tmp = population->DoGenetic(20);
         population->~Population();
         return tmp;
         // return RemoveDuplicateMems_for_DFS(AfterRestMems, res);
@@ -351,39 +345,29 @@ void Parser::DFS(int num, std::vector<GroupedMemList> groups, std::vector<Duplic
 void Parser::GroupByDistance()
 {
     BuildMatric();
-    // if (distanceCon)
-    {  
-        for (auto i : AfterHardCondition)
-        {
-            GetMaxClique(i.second);
-            auto iter = AfterGroupByDis.find(i.first);
-            if (iter == AfterGroupByDis.end())
-            {
-                if (!db.BKfuntion)
-                    AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, RemoveDuplicateMems_t()));
-                else
-                    AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, ViolentSearch()));
-            }
-            else
-                logger.log("[GroupByDistance] ERROR ! This group is existed !");
 
-            this->maxNodes.clear();
+    for (auto i : AfterHardCondition)
+    {
+        auto maxNodes = GetMaxClique(i.second);
+        auto iter = AfterGroupBypower.find(i.first);
+        if (iter == AfterGroupBypower.end())
+        {
+            if (db.BKfuntion == 0)
+                AfterGroupBypower.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, ViolentSearch(maxNodes)));
+            else if (db.BKfuntion == 1)
+            {
+                AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, RemoveDuplicateMems_t(maxNodes)));
+                GroupByPower();
+            }
+            else if (db.BKfuntion == 2)
+            {
+                // TODO::
+            }
         }
+        else
+            logger.log("[GroupByDistance] ERROR ! This group is existed !");
     }
-    // else
-    // {
-    //     for (auto i : AfterHardCondition)
-    //     {
-    //         GroupedMemList gm(db.power_max);
-    //         for (auto mem : i.second)
-    //         {
-    //             gm.AddMemUnsafe(mem);
-    //         }
-    //         std::vector<GroupedMemList> tmp {GroupedMemList(std::move(gm))};
-    //         AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(i.first, std::move(tmp)));
-    //     }
-    // }
-    
+
     // PrintBK();
 }
 
@@ -402,7 +386,8 @@ std::vector<GroupedMemList> Parser::GroupOneListByPower(std::vector<GroupedMemLi
         
         if (mems.front()->dynamic_power > db.power_max)
         {
-            printf("ERR CODE 4, Single mem's power is bigger than max power !\n");
+            printf("ERROR ! Memoery [ %s ] power is bigger than max power ! power = %.4f\n\n", mems.front()->mem_Name.c_str(), mems.front()->dynamic_power);
+            logger.log("ERROR ! Memoery [ " + mems.front()->mem_Name + " ] power is bigger than max power ! power = " + std::to_string(mems.front()->dynamic_power));
             return {};
         }
         tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
@@ -439,38 +424,6 @@ bool Parser::GroupByPower()
 
     return true;
 }
-
-
-// void Parser::Print()
-// {
-//     std::cout << "\nmemory size = " << memorysMappedByPath.size() << std::endl;
-//     for (auto i : memorysMappedByName)
-//     {
-//         std::cout << i.first << std::endl;
-//         for (auto &j : i.second)
-//         {
-//             std::cout << "Path: " << j->mem_Path << " Low_limit: " << j->low_bound << " Up_limit: " << j->up_bound << " NumberOfWords: " << j->NumberofWords << std::endl;
-//             std::cout << "Algorithms: ";
-//             for (auto &k : j->Algorithms)
-//             {
-//                 std::cout << k << " ";
-//             }
-//             std::cout << std::endl;
-//             std::cout << "Clock_Siganls: ";
-//             for (auto t : j->Clock_Siganls)
-//             {
-//                 std::cout << t << " ";
-//             }
-//             std::cout << std::endl;
-//             std::cout << "Area: " << j->area << " mem_type: " << j->mem_type << std::endl;
-//             std::cout << "Dynamic power: " << j->dynamic_power << std::endl;
-//             std::cout << " address_width: " << j->address_width << " word_width: " << j->word_width << "\n" << std::endl;
-//         }
-//     }
-//     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-//     std::cout << "------------------------------------------------------------------------------------------------" << std::endl;
-// }
-
 
 void Parser::BuildMatric()
 {
@@ -558,21 +511,33 @@ bool Parser::GetInformationFromFile()
 
     PrintMemInfo();
 
+    for (auto &i : this->memorysMappedByName)
+    {
+        if ((*i.second.begin())->dynamic_power > db.power_max)
+        {
+            printf("ERROR ! Memoery [ %s ] power is bigger than max power ! power = %.4f\n\n", (*i.second.begin())->mem_Name.c_str(), (*i.second.begin())->dynamic_power);
+            logger.log("ERROR ! Memoery [ " + (*i.second.begin())->mem_Name + " ] power is bigger than max power ! power = " + std::to_string((*i.second.begin())->dynamic_power));
+            return false;
+        }
+        if (this->distanceCon)
+        {
+            for (auto &mem : i.second)
+            {
+                mem->AdjustPositionByDirect(db.distance_unit);
+            }
+        }
+    }
+
     // grouping
     GroupByHardCondition();
     
     GroupByDistance();
-
-    // if (!db.BKfuntion)
-        if(!GroupByPower())
-            return false;
 
     if(!SatisfyDisCon(AfterGroupBypower))
     {
         std::cout << "ERROR ! Do not satisfy distance constraint !" << std::endl;
         return false;
     }
-        // return false;
 
     if (!SatisfyPowerCon(AfterGroupBypower))
     {

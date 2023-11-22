@@ -63,10 +63,17 @@ int main(int argc,char *argv[])
         else if (arg_str == "-f")
         {
             std::string tmp = argv[argIndex++];
-            if (tmp == "1")
-                db.BKfuntion = true;
-            else
-                db.BKfuntion = false;
+            db.BKfuntion = std::stoi(tmp);
+        }
+        else if (arg_str == "-log")
+        {
+            std::string tmp = argv[argIndex++];
+            // TODO::
+        }
+        else if (arg_str == "-check")
+        {
+            std::string tmp = argv[argIndex++];
+            // TODO::
         }
         else
         {
