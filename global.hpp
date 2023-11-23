@@ -23,6 +23,9 @@
 #include <chrono>
 #include <deque>
 #include <mutex>
+#include <thread>
+#include <condition_variable>
+#include <atomic>
 
 #include "Logger.hpp"
 
@@ -437,6 +440,7 @@ struct dataBase
     
     int distance_unit = -1;
     bool inputBlock = false;
+    int threadNum = 0;
 
     std::vector<std::string> lib_names;
     

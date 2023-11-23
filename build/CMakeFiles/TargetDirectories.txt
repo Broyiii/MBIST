@@ -1,3 +1,0 @@
-/home/jing/project/eda2023/MBIST/build/CMakeFiles/MBISTPart.dir
-/home/jing/project/eda2023/MBIST/build/CMakeFiles/edit_cache.dir
-/home/jing/project/eda2023/MBIST/build/CMakeFiles/rebuild_cache.dir

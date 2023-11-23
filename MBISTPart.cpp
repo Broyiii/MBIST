@@ -65,6 +65,11 @@ int main(int argc,char *argv[])
             std::string tmp = argv[argIndex++];
             db.BKfuntion = std::stoi(tmp);
         }
+        else if (arg_str == "-t")
+        {
+            std::string tmp = argv[argIndex++];
+            db.threadNum = std::stoi(tmp);
+        }
         else if (arg_str == "-log")
         {
             std::string tmp = argv[argIndex++];

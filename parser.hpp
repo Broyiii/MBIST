@@ -4,6 +4,7 @@
 #include "global.hpp"
 #include "Logger.hpp"
 #include "genetic.hpp"
+#include "thread.hpp"
 
 
 typedef std::map<std::string,std::set<Memory*>> grouptype;
@@ -23,6 +24,9 @@ public:
         else
             db.work_dir = wd + "/";
         
+        if (db.threadNum > 0)
+            threadpool = new ThreadPool(db.threadNum);
+
         std::vector<std::string> filenames;
         GetFileNameFromFolder(db.work_dir, filenames);
         for (auto &fn : filenames)
@@ -71,7 +75,9 @@ private:
     bool clkCon = true;
     int clkDomainNum = 0;
 
+
     Population *population;
+    ThreadPool *threadpool;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
@@ -107,6 +113,9 @@ private:
     void GroupByDistance();
     bool GroupByPower();
     std::vector<GroupedMemList> GroupOneListByPower(std::vector<GroupedMemList> memsGroup);
+
+    static void GroupThread(Parser* thisParser, std::pair<const Group, std::deque<Memory *>> &groupHard);
+    void GroupUtil(std::pair<const Group, std::deque<Memory *>> &groupHard);
     
     void BuildMatric();
 
@@ -116,7 +125,6 @@ private:
 
     bool SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
 
-    //BK
     //BK
     std::vector<GroupedMemList> GetMaxClique(std::deque<Memory*> mems);
     void PrintBK();

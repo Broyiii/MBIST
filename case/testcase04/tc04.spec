@@ -10,7 +10,7 @@ if (DEF File Exists)
   UNITS_DISTANCE_MICRONS = 1000;
   max_distance = 500000;
 else
-  max_design_heirarchical_distance = 3;
+  max_design_hierarchical_distance = 3;
 
 Dynamical Test Power:
   max_dynamic_power = 0.05;

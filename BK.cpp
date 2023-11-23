@@ -80,7 +80,7 @@ bool Parser::CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList
             }
             std::cout << std::endl;
             logger.log("[CheckLackNodes] ERROR ! " + memId2memPath[k] + " : " + std::to_string(memorysMappedByPath[memId2memPath[k]]->connectedMems.size()));
-            // return false;
+            return false;
         }
     }
     return true;

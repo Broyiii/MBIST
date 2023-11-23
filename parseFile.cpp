@@ -442,7 +442,7 @@ void Parser::ParseSpec()
             }
             db.distance_unit = std::stoi(str);
         }
-        else if (line.find("max_design_heirarchical_distance") != std::string::npos)
+        else if (line.find("max_design_hierarchical_distance") != std::string::npos)
         {
             if ((db.inputBlock > 0) || (this->distanceCon))
                 continue;

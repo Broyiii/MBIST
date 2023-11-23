@@ -9,7 +9,7 @@ void WriteHead()
     printf("|                            MBIST Partitioner                           |\n");
     printf("|                                                                        |\n");
     printf("|                      Author  : eda230702                               |\n");
-    printf("|                      Version : 2023-11-21  (V1.00)                     |\n");
+    printf("|                      Version : 2023-11-23  (V1.00)                     |\n");
     printf("|                      Date    : %s                     |\n", tmp);
     printf("+========================================================================+\n\n");
 }
@@ -27,6 +27,7 @@ void WrongUsage()
               << "\t-b <int>                        | input max design heirarchical distance \n"
               << "\t-f <0/1/2>                      | fast mode , defalut is auto choose by memory number \n"
               << "\t                                | \tbig number means the faster running time and the worse result \n"
+              << "\t-t <int>                        | multi thread , threads number = [-t] + 1 , defalut is 0\n"
               << "\t-log <1/0>                      | generate log file , defalut is false\n"
               << "\t-check <1/0>                    | check if the results are correct , defalut is false\n"
               << "\t-help                           | show usage info\n"
