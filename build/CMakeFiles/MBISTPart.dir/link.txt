@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -O3 -fPIC -fpermissive -static -pthread CMakeFiles/MBISTPart.dir/MBISTPart.cpp.o CMakeFiles/MBISTPart.dir/parser.cpp.o CMakeFiles/MBISTPart.dir/writeInfo.cpp.o CMakeFiles/MBISTPart.dir/parseFile.cpp.o CMakeFiles/MBISTPart.dir/BK.cpp.o CMakeFiles/MBISTPart.dir/genetic.cpp.o -o MBISTPart  -lstdc++fs 
