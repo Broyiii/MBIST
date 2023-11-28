@@ -157,6 +157,11 @@ void Parser::PrintResult(std::chrono::duration<double> duration, bool parseSucce
 
 void Parser::WriteAnswer() 
 {
+    std::string dir = "./output/";
+    if (access(dir.c_str(), 0) != F_OK)
+    {
+        mkdir(dir.c_str(), S_IRWXU);
+    }
     db.outputFile = fopen(db.output_file_name.c_str(), "w");
     for (auto &g : AfterGroupBypower)
     {

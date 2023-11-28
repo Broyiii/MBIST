@@ -26,6 +26,7 @@
 #include <thread>
 #include <condition_variable>
 #include <atomic>
+#include <sys/stat.h>
 
 #include "Logger.hpp"
 

@@ -520,6 +520,11 @@ void Parser::BuildMatric()
 
 void Parser::OutCsvFile()
 {
+    std::string dir = "./plt/";
+    if (access(dir.c_str(), 0) != F_OK)
+    {
+        mkdir(dir.c_str(), S_IRWXU);
+    }
     this->groupNum = 0;
     int cnt = 0;
     Group p;
