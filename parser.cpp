@@ -7,24 +7,24 @@ std::mutex mtx;
 
 bool Parser::CheckSort(std::deque<Memory *> mems)
 {
-    logger.log("[CheckSort] Check Sort ...");
+    if (db.logFlag) logger.log("[CheckSort] Check Sort ...");
     int tmp = -1;
     for (auto m : mems)
     {
         if (tmp >= m->node_id)
         {
-            logger.log("[CheckSort] FAIL !");
+            if (db.logFlag) logger.log("[CheckSort] FAIL !");
             return false;
         }
         tmp = m->node_id;
     }
-    logger.log("[CheckSort] PASS !");
+    if (db.logFlag) logger.log("[CheckSort] PASS !");
     return true;
 }
 
 bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups)
 {
-    logger.log("[SatisfyPowerCon] Check Power ...");
+    if (db.logFlag) logger.log("[SatisfyPowerCon] Check Power ...");
     for (auto &g : groups)
     {
         for (auto &mems : g.second)
@@ -36,32 +36,32 @@ bool Parser::SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemLis
             }
             if (power > db.power_max)
             {
-                logger.log("[SatisfyPowerCon] FAIL !");
+                if (db.logFlag) logger.log("[SatisfyPowerCon] FAIL !");
                 return false;
             }
         }
     }
-    logger.log("[SatisfyPowerCon] PASS !");
+    if (db.logFlag) logger.log("[SatisfyPowerCon] PASS !");
     return true;
 }
 
 bool Parser::GetAllFileNames()
 {
     if (!GetFileNameFromFolder(db.work_dir + "ds/", db.ds_files))
-        logger.log("WARNING ! No ds directory !");
+        if (db.logFlag) logger.log("WARNING ! No ds directory !");
         // std::cout << "WARNING ! No ds directory !" << std::endl;
         // return false;
     if (!GetFileNameFromFolder(db.work_dir + "summ/", db.summ_files))
-        logger.log("WARNING ! No summ directory !");
+        if (db.logFlag) logger.log("WARNING ! No summ directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "lib/", db.lib_files))
-        logger.log("WARNING ! No lib directory !");
+        if (db.logFlag) logger.log("WARNING ! No lib directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "lvlib/", db.lvlib_files))
-        logger.log("WARNING ! No lvlib directory !");
+        if (db.logFlag) logger.log("WARNING ! No lvlib directory !");
 
     if (!GetFileNameFromFolder(db.work_dir + "verilog/", db.verilog_files))
-        logger.log("WARNING ! No verilog directory !");
+        if (db.logFlag) logger.log("WARNING ! No verilog directory !");
 
 
     if (!ParseMemList())
@@ -125,7 +125,7 @@ bool Parser::GetAllFileNames()
 
     ParseSpec();
 
-    this->PrintMems();
+    if (db.logFlag) this->PrintMems();
 
     return true;
 }
@@ -157,13 +157,13 @@ void Parser::GroupMultiAlgoMems(Memory *mem)
         }
         else
         {
-            logger.log("[GroupMultiAlgoMems] ERROR 5 ! Algo is " + algo);
+            if (db.logFlag) logger.log("[GroupMultiAlgoMems] ERROR 5 ! Algo is " + algo);
         }
     }
 
     if (avePower < 0)
     {
-        logger.log("[GroupMultiAlgoMems] ERROR 6 ! Algo is " + mem->Algorithms[0]);
+        if (db.logFlag) logger.log("[GroupMultiAlgoMems] ERROR 6 ! Algo is " + mem->Algorithms[0]);
         g.Algos.resize(1, mem->Algorithms[0]);
         mem->Algorithms.resize(1, mem->Algorithms[0]);
         std::deque<Memory *> tmp {mem};
@@ -184,7 +184,7 @@ void Parser::GroupByHardCondition()
         auto &mem = memorys.second;
 
         Group g(mem);
-        logger.log("[GroupByHardCondition] " + Group::GetInfo(g));
+        if (db.logFlag) logger.log("[GroupByHardCondition] " + Group::GetInfo(g));
 
         auto iter_group = AfterHardCondition.find(g);
         if (iter_group != AfterHardCondition.end())
@@ -206,7 +206,7 @@ void Parser::GroupByHardCondition()
     {
         for (auto mem : iter->second)
         {
-            logger.log("[GroupByHardCondition] [Handle multi algo]" + Group::GetInfo(Group(mem)));
+            if (db.logFlag) logger.log("[GroupByHardCondition] [Handle multi algo]" + Group::GetInfo(Group(mem)));
             GroupMultiAlgoMems(mem);
         }
         AfterHardCondition.erase(iter);
@@ -288,16 +288,19 @@ std::vector<GroupedMemList> Parser::ViolentSearch(std::vector<GroupedMemList> &m
     // auto AfterRestMems = RestMems;
 
     // if (AfterRestMems.size() > 10)
-    if (RestMems.size() > 10)
+    if (RestMems.size() > 15)
     {
-        // printf("Genetic, size = %0ld\n", RestMems.size());
+        if (db.logFlag) logger.log("Genetic, size = " + std::to_string(RestMems.size()));
+        Population *population;
         population = new Population(RestMems, res);
-        auto tmp = population->DoGenetic(20);
+        int geneticTime = RestMems.size() * 100;
+        if (db.logFlag) logger.log("geneticTime = " + std::to_string(geneticTime));
+        auto tmp = population->DoGenetic(geneticTime);
         population->~Population();
         return tmp;
         // return RemoveDuplicateMems_for_DFS(RestMems, res);
     }
-    // printf("DFS, size = %0ld\n", RestMems.size());
+    if (db.logFlag) logger.log("DFS, size = " + std::to_string(RestMems.size()));
     int minGroupNum = INT32_MAX;
     std::vector<GroupedMemList> minGroup;
     DFS(0, res, RestMems, minGroupNum, minGroup);
@@ -367,7 +370,7 @@ void Parser::GroupThread(Parser* thisParser, std::pair<const Group, std::deque<M
         }
     }
     else
-        logger.log("[GroupByDistance] ERROR ! This group is existed !");
+        if (db.logFlag) logger.log("[GroupByDistance] ERROR ! This group is existed !");
     ++runOver;
 }
 
@@ -390,7 +393,7 @@ void Parser::GroupUtil(std::pair<const Group, std::deque<Memory *>> &groupHard)
         }
     }
     else
-        logger.log("[GroupByDistance] ERROR ! This group is existed !");
+        if (db.logFlag) logger.log("[GroupByDistance] ERROR ! This group is existed !");
 }
 
 void Parser::GroupByDistance()
@@ -426,7 +429,7 @@ std::vector<GroupedMemList> Parser::GroupOneListByPower(std::vector<GroupedMemLi
         if (mems.front()->dynamic_power > db.power_max)
         {
             printf("ERROR ! Memoery [ %s ] power is bigger than max power ! power = %.4f\n\n", mems.front()->mem_Name.c_str(), mems.front()->dynamic_power);
-            logger.log("ERROR ! Memoery [ " + mems.front()->mem_Name + " ] power is bigger than max power ! power = " + std::to_string(mems.front()->dynamic_power));
+            if (db.logFlag) logger.log("ERROR ! Memoery [ " + mems.front()->mem_Name + " ] power is bigger than max power ! power = " + std::to_string(mems.front()->dynamic_power));
             return {};
         }
         tmp.emplace_back(GroupedMemList(db.power_max, mems.front()));
@@ -492,7 +495,7 @@ void Parser::BuildMatric()
             }
         }
     }
-    else if (db.block_max > 0)
+    else if (db.block_max >= 0)
     {
         for (auto i : AfterHardCondition)
         {
@@ -546,7 +549,7 @@ bool Parser::GetInformationFromFile()
     if (!GetAllFileNames())
     {
         std::cout << "ERROR 1 ! Lack necessary files !" << std::endl;
-        logger.log("[GetInformationFromFile] ERROR ! Lack necessary files !");
+        if (db.logFlag) logger.log("[GetInformationFromFile] ERROR ! Lack necessary files !");
         return false;
     }
 
@@ -557,7 +560,7 @@ bool Parser::GetInformationFromFile()
         if ((*i.second.begin())->dynamic_power > db.power_max)
         {
             printf("ERROR ! Memoery [ %s ] power is bigger than max power ! power = %.4f\n\n", (*i.second.begin())->mem_Name.c_str(), (*i.second.begin())->dynamic_power);
-            logger.log("ERROR ! Memoery [ " + (*i.second.begin())->mem_Name + " ] power is bigger than max power ! power = " + std::to_string((*i.second.begin())->dynamic_power));
+            if (db.logFlag) logger.log("ERROR ! Memoery [ " + (*i.second.begin())->mem_Name + " ] power is bigger than max power ! power = " + std::to_string((*i.second.begin())->dynamic_power));
             return false;
         }
         if (this->distanceCon)
@@ -574,20 +577,26 @@ bool Parser::GetInformationFromFile()
     
     GroupByDistance();
 
-    if(!SatisfyDisCon(AfterGroupBypower))
+    if (db.checkFlag)
     {
-        std::cout << "ERROR ! Do not satisfy distance constraint !" << std::endl;
-        return false;
-    }
+        if(!SatisfyDisCon(AfterGroupBypower))
+        {
+            std::cout << "ERROR ! Do not satisfy distance constraint !" << std::endl;
+            return false;
+        }
 
-    if (!SatisfyPowerCon(AfterGroupBypower))
-    {
-        std::cout << "ERROR ! Do not satisfy power constraint !" << std::endl;
-        return false;
+        if (!SatisfyPowerCon(AfterGroupBypower))
+        {
+            std::cout << "ERROR ! Do not satisfy power constraint !" << std::endl;
+            return false;
+        }
     }
 
     WriteAnswer();
-    OutCsvFile();
+
+    if (db.pltFlag)
+        OutCsvFile();
+    
     return true;
 }
 

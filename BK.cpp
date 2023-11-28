@@ -5,10 +5,10 @@ extern Logger& logger;
 
 bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups)
 {
-    logger.log("[SatisfyDisCon] Check Distance Constraints ...");
+    if (db.logFlag) logger.log("[SatisfyDisCon] Check Distance Constraints ...");
     if (!CheckLackNodes(groups))
     {
-        logger.log("[SatisfyDisCon] FAIL ! Lack nodes !");
+        if (db.logFlag) logger.log("[SatisfyDisCon] FAIL ! Lack nodes !");
         return false;
     }
     for (auto i : groups)
@@ -23,7 +23,7 @@ bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>
                 Group gm(mem);
                 if (g != gm)
                 {
-                    logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Hard Condition !");
+                    if (db.logFlag) logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Hard Condition !");
                     return false;
                 }
             }
@@ -36,7 +36,7 @@ bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>
                     {   
                         if (!db.CalculateDis(*mem_front, *mem_back))
                         {
-                            logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
+                            if (db.logFlag) logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
                             return false;
                         }
                     }
@@ -44,7 +44,7 @@ bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>
                     {
                         if (!db.CalculateBlockCon(*mem_front, *mem_back))
                         {
-                            logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
+                            if (db.logFlag) logger.log("[SatisfyDisCon] FAIL ! Not Satisfy Distance Condition !");
                             return false;
                         }
                     }
@@ -52,7 +52,7 @@ bool Parser::SatisfyDisCon(std::unordered_map<Group, std::vector<GroupedMemList>
             }
         }
     }
-    logger.log("[SatisfyDisCon] PASS !");
+    if (db.logFlag) logger.log("[SatisfyDisCon] PASS !");
     return true;
 }
 
@@ -79,7 +79,7 @@ bool Parser::CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList
                 std::cout << id << ", ";
             }
             std::cout << std::endl;
-            logger.log("[CheckLackNodes] ERROR ! " + memId2memPath[k] + " : " + std::to_string(memorysMappedByPath[memId2memPath[k]]->connectedMems.size()));
+            if (db.logFlag) logger.log("[CheckLackNodes] ERROR ! " + memId2memPath[k] + " : " + std::to_string(memorysMappedByPath[memId2memPath[k]]->connectedMems.size()));
             return false;
         }
     }
@@ -110,7 +110,7 @@ void Parser::BronKerbosh(std::deque<int> R, std::deque<int> P, std::deque<int> S
         if (it != P.end())
             P.erase(it);
         else
-            logger.log("ERROR ! No such node " + std::to_string(nodeID) + " in deque P !");
+            if (db.logFlag) logger.log("ERROR ! No such node " + std::to_string(nodeID) + " in deque P !");
         if (!P.empty())
         {
             P = memorysMappedByPath[memId2memPath[nodeID]]->FindDifference(P);
@@ -211,14 +211,14 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems_t(std::vector<GroupedMem
                 if (maxID > -1)
                 {
                     if (!maxNodes[index].DelteMem(mem))
-                        logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
+                        if (db.logFlag) logger.log("[RemoveDuplicateMems_t] ERROR 1 ! No such mem " + mem->mem_Path);
                 }
                 maxID = index;
             }
             else
             {
                 if (!maxNodes[index].DelteMem(mem))
-                    logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
+                    if (db.logFlag) logger.log("[RemoveDuplicateMems_t] ERROR 2 ! No such mem " + mem->mem_Path);
             }
         }
     }

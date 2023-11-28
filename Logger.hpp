@@ -25,7 +25,7 @@ public:
 
 private:
     Logger() {
-        logFile.open("./logfile.log", std::ios::out);
+        logFile.open("./log/logfile.log", std::ios::out);
     }
 
     ~Logger() {

@@ -53,7 +53,7 @@ struct AddrMap
     void Print()
     {
         // printf("%s : [%0d : %0d]\n", name.c_str(), up, down);
-        logger.log(name + " : [" + std::to_string(up) + " : " + std::to_string(down) + "]");
+        // logger.log(name + " : [" + std::to_string(up) + " : " + std::to_string(down) + "]");
     }
 };
 
@@ -433,14 +433,18 @@ struct dataBase
     std::string spec_file;
 
     FILE* outputFile;
-    std::string output_file_name = "output.txt";
-    std::string log_file_name = "logfile.log";
-    std::string output_csv_name = "./plt.csv";
+    std::string output_file_name = "./output/";
+    std::string log_file_name = "./log/";
+    std::string output_csv_name = "./plt/plt_";
     FILE* outcsvFile;
     
     int distance_unit = -1;
     bool inputBlock = false;
     int threadNum = 0;
+    bool ManhattanDis = false;
+    bool checkFlag = false;
+    bool logFlag = false;
+    bool pltFlag = false;
 
     std::vector<std::string> lib_names;
     
@@ -458,9 +462,21 @@ struct dataBase
 
     bool CalculateDis(Memory *a, Memory *b)
     {
-        long long t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
+        long long t;
+        if (!ManhattanDis)
+            t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
+        else
+        {
+            long long tmp_x = a->up_bound - b->up_bound;
+            long long tmp_y = a->low_bound - b->low_bound;
+            if (tmp_x < 0) 
+                tmp_x = -tmp_x;
+            if (tmp_y < 0) 
+                tmp_y = -tmp_y;
+            t = tmp_x + tmp_y;
+        }
         // double dis = std::sqrt(t);
-        logger.log("[CalculateDis] " + std::to_string(t) + " : " + std::to_string(dis_max) + " : " + std::to_string(t <= dis_max));
+        if (logFlag) logger.log("[CalculateDis] " + std::to_string(t) + " : " + std::to_string(dis_max) + " : " + std::to_string(t <= dis_max));
         return (t <= dis_max);
     }
 
@@ -486,7 +502,7 @@ struct dataBase
             }
         }
 
-        return ((bigSize - sameBlockNum) <= this->block_max);
+        return ((bigSize - sameBlockNum - 1) <= this->block_max);
     }
 
 

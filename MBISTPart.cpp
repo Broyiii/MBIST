@@ -70,15 +70,29 @@ int main(int argc,char *argv[])
             std::string tmp = argv[argIndex++];
             db.threadNum = std::stoi(tmp);
         }
+        else if (arg_str == "-m")
+        {
+            std::string tmp = argv[argIndex++];
+            if (tmp == "1")
+                db.ManhattanDis = true;
+        }
         else if (arg_str == "-log")
         {
             std::string tmp = argv[argIndex++];
-            // TODO::
+            if (tmp == "1")
+                db.logFlag = true;
+        }
+        else if (arg_str == "-plt")
+        {
+            std::string tmp = argv[argIndex++];
+            if (tmp == "1")
+                db.pltFlag = true;
         }
         else if (arg_str == "-check")
         {
             std::string tmp = argv[argIndex++];
-            // TODO::
+            if (tmp == "1")
+                db.checkFlag = true;
         }
         else
         {

@@ -24,6 +24,21 @@ public:
         else
             db.work_dir = wd + "/";
         
+        // get output dir
+        std::string tmp = "";
+        size_t pos = db.work_dir.size() - 2;
+        while (db.work_dir[pos] != '/')
+            --pos;
+        for (++pos; pos < db.work_dir.size() - 2; ++pos)
+        {
+            db.output_file_name += db.work_dir[pos];
+            // db.log_file_name += db.work_dir[pos];
+            db.output_csv_name += db.work_dir[pos];
+        }
+        db.output_file_name += "_memlist.group";
+        // db.log_file_name += ".log";
+        db.output_csv_name += ".csv";
+
         if (db.threadNum > 0)
             threadpool = new ThreadPool(db.threadNum);
 
@@ -45,11 +60,27 @@ public:
         printf("*                          Partitioning Context                          *\n");
         printf("**************************************************************************\n");
         printf("Partition Parameters:\n");
-        printf("    - Work directory:                 %s\n", db.work_dir.c_str());
-        printf("    - Memory list file:               %s\n", db.memorylist_file.c_str());
-        printf("    - Memory def file:                %s\n", db.def_file.c_str());
-        printf("    - Memory clk file:                %s\n", db.clk_file.c_str());
-        printf("    - Memory spec file:               %s\n", db.spec_file.c_str());
+        printf("    - Work Directory:                 %s\n", db.work_dir.c_str());
+        printf("    - Memory List File:               %s\n", db.memorylist_file.c_str());
+        printf("    - Memory Def File:                %s\n", db.def_file.c_str());
+        printf("    - Memory Clk File:                %s\n", db.clk_file.c_str());
+        printf("    - Memory Spec File:               %s\n", db.spec_file.c_str());
+        printf("--------------------------------------------------------------------------\n");
+        printf("Input Parameters:\n");
+        printf("    - Fast Mode:                      %0d\n", db.BKfuntion);
+        printf("    - Threads:                        %0d\n", db.threadNum + 1);
+        if (db.logFlag)
+            printf("    - Output Log File:                true\n");
+        else
+            printf("    - Output Log File:                false\n");
+        if (db.pltFlag)
+            printf("    - Output Plt File:                true\n");
+        else
+            printf("    - Output Plt File:                false\n");
+        if (db.checkFlag)
+            printf("    - Open Check Mode:                true\n");
+        else
+            printf("    - Open Check Mode:                false\n");
         printf("--------------------------------------------------------------------------\n");
     }
 
@@ -60,35 +91,21 @@ public:
     void PrintMemInfo();
     void PrintResult(std::chrono::duration<double> duration, bool parseSuccess); 
 
-    std::string Id2Mem(int id)
-    {
-        return this->memId2memPath[id];
-    }
-    Memory* Str2Mem(std::string str)
-    {
-        return this->memorysMappedByPath[str];
-    }
-
 private:
     bool distanceCon = true;
     bool powerCon = true;
     bool clkCon = true;
     int clkDomainNum = 0;
 
-
-    Population *population;
     ThreadPool *threadpool;
 
     std::unordered_map<std::string, Memory*> memorysMappedByPath;            // mem_path / mems
     std::unordered_map<std::string, std::set<Memory*>> memorysMappedByName;  // mem_name / mems
 
-    // std::unordered_map<int,std::string> memId2memPath;
     std::vector<std::string> memId2memPath;
 
-    // std::vector<Group*> AfterGroupBypower;
     std::unordered_map<Group, std::deque<Memory*>, Group::Hash> AfterHardCondition;
     std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupByDis;
-    // std::vector<std::map<int, std::vector<std::deque<int>>,rule>> AfterGroupByDis;
     std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> AfterGroupBypower;
 
     bool ParseMemList();
