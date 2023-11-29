@@ -49,7 +49,7 @@ std::vector<GroupedMemList> Population::calculateFitness(std::vector<int> chro)
     for (auto& memsLi : memsGroup)
     {
         auto &mems = memsLi.memList;
-        std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+        std::sort(mems.begin(), mems.end(), Memory::compareByPower);
         
         if (mems.front()->dynamic_power > db.power_max)
         {

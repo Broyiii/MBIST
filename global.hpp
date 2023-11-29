@@ -97,7 +97,7 @@ struct Memory
         return this->mem_Path == other->mem_Path;
     }
 
-    static bool compareMyClass(const Memory* v1, const Memory* v2) {
+    static bool compareByPower(const Memory* v1, const Memory* v2) {
         return v1->dynamic_power > v2->dynamic_power;
     }
 
@@ -192,6 +192,21 @@ struct Memory
 
         std::deque<int> res;
         std::set_difference(S.begin(),S.end(),
+                            mid.begin(),mid.end(),std::back_inserter(res));
+
+        return res;
+    }
+
+    std::deque<int> FindDifferenceForConnect(std::deque<int> S)
+    {
+        if (S.empty())
+            return {};
+        std::deque<int> mid;
+        std::set_intersection(this->connectedMems.begin(), this->connectedMems.end(), 
+                              S.begin(), S.end(), std::inserter(mid, mid.begin()));
+
+        std::deque<int> res;
+        std::set_difference(this->connectedMems.begin(),this->connectedMems.end(),
                             mid.begin(),mid.end(),std::back_inserter(res));
 
         return res;
@@ -395,11 +410,6 @@ struct GroupedMemList
         return v1.memList.size() > v2.memList.size();
     }
 
-    static bool ComparePower(const Memory* v1, const Memory* v2)
-    {
-        return v1->dynamic_power > v2->dynamic_power;
-    }
-
     void Print()
     {
         std::cout << this->memList.size() << " :\t";
@@ -481,10 +491,34 @@ struct dataBase
         return (t <= dis_max);
     }
 
+    bool CalculateDisFunc2(Memory *a, Memory *b)
+    {
+        long long t;
+        if (!ManhattanDis)
+        {
+            t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
+            if (logFlag) logger.log("[CalculateDis] " + std::to_string(t) + " : " + std::to_string(dis_max) + " : " + std::to_string(t <= dis_max));
+            return (t <= (dis_max >> 2));
+        }
+        else
+        {
+            long long tmp_x = a->up_bound - b->up_bound;
+            long long tmp_y = a->low_bound - b->low_bound;
+            if (tmp_x < 0) 
+                tmp_x = -tmp_x;
+            if (tmp_y < 0) 
+                tmp_y = -tmp_y;
+            t = tmp_x + tmp_y;
+            if (logFlag) logger.log("[CalculateDis] " + std::to_string(t) + " : " + std::to_string(dis_max) + " : " + std::to_string(t <= dis_max));
+            return (t <= (dis_max >> 1));
+        }
+        return 0;
+    }
+
     bool CalculateBlockCon(Memory *a, Memory *b)
     {
-        int bigSize = a->Block.size();
-        int smallSize = b->Block.size();
+        int bigSize = a->Block.size() - 1;
+        int smallSize = b->Block.size() - 1;
         if (bigSize < smallSize)
         {
             std::swap(bigSize, smallSize);
@@ -503,7 +537,7 @@ struct dataBase
             }
         }
 
-        return ((bigSize - sameBlockNum - 1) <= this->block_max);
+        return ((bigSize + smallSize - 2 * sameBlockNum) <= this->block_max);
     }
 
 

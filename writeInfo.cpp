@@ -35,6 +35,7 @@ void WrongUsage()
               << "\nOptional commands:\n"
               << "\t-p <double>                     | input max power \n"
               << "\t-l <long long>                  | input max distance \n"
+              << "\t-m <1/0>                        | use Manhattan distance , defalut is flase ( Euclidean disance ) \n"
               << "\t-b <int>                        | input max design heirarchical distance \n"
               << "\t-f <0/1/2>                      | fast mode , defalut is auto choose by memory number \n"
               << "\t                                | \tbig number means the faster running time and the worse result \n"
@@ -65,7 +66,7 @@ void Parser::PrintMemInfo()
     else
     {
         printf("    - Physical Distance:              unlimited\n");
-        printf("    - Heirarchical Distance:          %0d\n", db.block_max);
+        printf("    - Hierarchical Distance:          %0d\n", db.block_max);
     }
     
     if (this->powerCon)

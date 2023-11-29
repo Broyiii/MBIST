@@ -29,7 +29,7 @@ public:
         size_t pos = db.work_dir.size() - 2;
         while (db.work_dir[pos] != '/')
             --pos;
-        for (++pos; pos < db.work_dir.size() - 2; ++pos)
+        for (++pos; pos < db.work_dir.size() - 1; ++pos)
         {
             db.output_file_name += db.work_dir[pos];
             // db.log_file_name += db.work_dir[pos];
@@ -87,7 +87,7 @@ public:
     int groupNum = 0;
 
     bool GetInformationFromFile();
-    void Print();
+    // void Print();
     void PrintMemInfo();
     void PrintResult(std::chrono::duration<double> duration, bool parseSuccess); 
 
@@ -143,6 +143,9 @@ private:
     bool SatisfyPowerCon(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);
 
     //BK
+    std::vector<GroupedMemList> VeryFastGetMaxClique(std::deque<Memory*> mems);
+    Memory* GetMaxConnectNumMem(std::deque<int> memsID);
+
     std::vector<GroupedMemList> GetMaxClique(std::deque<Memory*> mems);
     void PrintBK();
     bool CheckLackNodes(std::unordered_map<Group, std::vector<GroupedMemList>, Group::Hash> &groups);

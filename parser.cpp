@@ -288,12 +288,12 @@ std::vector<GroupedMemList> Parser::ViolentSearch(std::vector<GroupedMemList> &m
     // auto AfterRestMems = RestMems;
 
     // if (AfterRestMems.size() > 10)
-    if (RestMems.size() > 15)
+    if (RestMems.size() > 10)
     {
         if (db.logFlag) logger.log("Genetic, size = " + std::to_string(RestMems.size()));
         Population *population;
         population = new Population(RestMems, res);
-        int geneticTime = RestMems.size() * 100;
+        int geneticTime = RestMems.size() * 50;
         if (db.logFlag) logger.log("geneticTime = " + std::to_string(geneticTime));
         auto tmp = population->DoGenetic(geneticTime);
         population->~Population();
@@ -328,6 +328,64 @@ std::vector<GroupedMemList> Parser::RemoveDuplicateMems_for_DFS(std::vector<Dupl
     return res;
 }
 
+Memory* Parser::GetMaxConnectNumMem(std::deque<int> memsID)
+{
+    Memory* res = memorysMappedByPath[memId2memPath[memsID.front()]];
+    size_t num = res->connectedMems.size();
+    for (auto memID : memsID)
+    {
+        auto mem = memorysMappedByPath[memId2memPath[memID]];
+        if (mem->connectedMems.size() > num)
+        {
+            num = mem->connectedMems.size();
+            res = mem;
+        }
+    }
+    return res;
+}
+
+std::vector<GroupedMemList> Parser::VeryFastGetMaxClique(std::deque<Memory*> mems)
+{
+    std::vector<GroupedMemList> res;
+    std::deque<int> allMems;
+    for (auto mem : mems)
+    {
+        // printf("%0d, ", mem->node_id);
+        allMems.push_back(mem->node_id);
+    }
+    // printf("\n");
+    while (!allMems.empty())
+    {
+        auto maxMem = GetMaxConnectNumMem(allMems);
+        std::deque<int> usedMems;
+        GroupedMemList g(db.power_max);
+        g.AddMemUnsafe(maxMem);
+        for (auto m : maxMem->connectedMems)
+        {
+            g.AddMemUnsafe(memorysMappedByPath[memId2memPath[m]]);
+            usedMems.push_back(m);
+        }
+        res.emplace_back(std::move(g));
+        auto iter = usedMems.begin();
+        for (; iter != usedMems.end(); ++iter)
+        {
+            if ((*iter) > maxMem->node_id)
+                break;
+        }
+        usedMems.insert(iter, maxMem->node_id);
+        std::deque<int> tmp;
+        std::set_difference(allMems.begin(),allMems.end(),
+                            usedMems.begin(),usedMems.end(),std::back_inserter(tmp));
+        allMems = tmp;
+        for (auto id : allMems)
+        {
+            auto mem = memorysMappedByPath[memId2memPath[id]];
+            mem->connectedMems = mem->FindDifferenceForConnect(usedMems);
+        }
+    }
+    return res;
+}
+
 void Parser::DFS(int num, std::vector<GroupedMemList> groups, std::vector<DuplicateMem> &RestMems, int &minGroupNum, std::vector<GroupedMemList> &minGroup)
 {
     // printf("num = %0d\n", num);
@@ -353,7 +411,11 @@ void Parser::DFS(int num, std::vector<GroupedMemList> groups, std::vector<Duplic
 
 void Parser::GroupThread(Parser* thisParser, std::pair<const Group, std::deque<Memory *>> &groupHard)
 {
-    auto maxNodes = thisParser->GetMaxClique(groupHard.second);
+    std::vector<GroupedMemList> maxNodes;
+    if ((db.BKfuntion != 2) || (!thisParser->distanceCon))
+        maxNodes = thisParser->GetMaxClique(groupHard.second);
+    else
+        maxNodes = thisParser->VeryFastGetMaxClique(groupHard.second);
     auto iter = thisParser->AfterGroupBypower.find(groupHard.first);
     if (iter == thisParser->AfterGroupBypower.end())
     {
@@ -366,7 +428,8 @@ void Parser::GroupThread(Parser* thisParser, std::pair<const Group, std::deque<M
         }
         else if (db.BKfuntion == 2)
         {
-            // TODO::
+            thisParser->AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(groupHard.first, maxNodes));
+            thisParser->GroupByPower();
         }
     }
     else
@@ -376,7 +439,11 @@ void Parser::GroupThread(Parser* thisParser, std::pair<const Group, std::deque<M
 
 void Parser::GroupUtil(std::pair<const Group, std::deque<Memory *>> &groupHard)
 {
-    auto maxNodes = this->GetMaxClique(groupHard.second);
+    std::vector<GroupedMemList> maxNodes;
+    if ((db.BKfuntion != 2) || (!this->distanceCon))
+        maxNodes = this->GetMaxClique(groupHard.second);
+    else
+        maxNodes = this->VeryFastGetMaxClique(groupHard.second);
     auto iter = this->AfterGroupBypower.find(groupHard.first);
     if (iter == this->AfterGroupBypower.end())
     {
@@ -389,7 +456,8 @@ void Parser::GroupUtil(std::pair<const Group, std::deque<Memory *>> &groupHard)
         }
         else if (db.BKfuntion == 2)
         {
-            // TODO::
+            this->AfterGroupByDis.insert(std::pair<Group, std::vector<GroupedMemList>>(groupHard.first, maxNodes));
+            this->GroupByPower();
         }
     }
     else
@@ -424,7 +492,7 @@ std::vector<GroupedMemList> Parser::GroupOneListByPower(std::vector<GroupedMemLi
     for (auto& memsLi : memsGroup)
     {
         auto &mems = memsLi.memList;
-        std::sort(mems.begin(), mems.end(), GroupedMemList::ComparePower);
+        std::sort(mems.begin(), mems.end(), Memory::compareByPower);
         
         if (mems.front()->dynamic_power > db.power_max)
         {
@@ -486,10 +554,21 @@ void Parser::BuildMatric()
             {
                 for (auto mem_back = std::next(mem_front); mem_back != i.second.end(); ++mem_back)
                 {
-                    if (db.CalculateDis(*mem_front, *mem_back))
+                    if (db.BKfuntion != 2)  // slow and fast mode
                     {
-                        (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
-                        (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                        if (db.CalculateDis(*mem_front, *mem_back))
+                        {
+                            (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
+                            (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                        }
+                    }
+                    else  // very fast mode
+                    {
+                        if (db.CalculateDisFunc2(*mem_front, *mem_back))
+                        {
+                            (*mem_front)->connectedMems.push_back((*mem_back)->node_id);
+                            (*mem_back)->connectedMems.push_back((*mem_front)->node_id);
+                        }
                     }
                 }
             }

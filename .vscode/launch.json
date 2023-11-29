@@ -8,15 +8,9 @@
             "program": "${fileDirname}/build/MBISTPart",
             "args": [
                 "-d",
-                "./case/testcase05/",
-                // "-p",
-                // "0.05",
-                "-b",
-                "10",
+                "./case/testcase02/",
                 "-f",
-                "0",
-                "-t",
-                "8"
+                "2",
             ],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",

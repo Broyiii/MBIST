@@ -1,7 +1,7 @@
 #ifndef _LOGGER_HPP_
 #define _LOGGER_HPP_
 
-// #include "global.hpp"
+#include "global.hpp"
 
 
 // extern dataBase db;
@@ -25,6 +25,11 @@ public:
 
 private:
     Logger() {
+        std::string dir = "./output/";
+        if (access(dir.c_str(), 0) != F_OK)
+        {
+            mkdir(dir.c_str(), S_IRWXU);
+        }
         logFile.open("./log/logfile.log", std::ios::out);
     }
 
