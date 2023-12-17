@@ -475,7 +475,19 @@ struct dataBase
     {
         long long t;
         if (!ManhattanDis)
+        {
             t = (a->low_bound - b->low_bound)*(a->low_bound - b->low_bound) + (a->up_bound - b->up_bound) * (a->up_bound - b->up_bound);
+            double t_a = a->width * a->width + a->height * a->height;
+            double t_b = b->width * b->width + b->height * b->height;
+            if (t_a >= t_b)
+            {
+                t += (long long)t_a;
+            }
+            else
+            {
+                t += (long long)t_b;
+            }
+        }
         else
         {
             long long tmp_x = a->up_bound - b->up_bound;

@@ -25,7 +25,7 @@ public:
 
 private:
     Logger() {
-        std::string dir = "./output/";
+        std::string dir = "./log/";
         if (access(dir.c_str(), 0) != F_OK)
         {
             mkdir(dir.c_str(), S_IRWXU);

@@ -1,4 +1,4 @@
-# Grouping Constraints for tc01
+# Grouping Constraints for tc02
 
 if (Multiple Clock Domains)
   CLK Frequency (MHz) | xxx;
@@ -8,12 +8,12 @@ if (Multiple Power Domains)
 
 if (DEF File Exists)
   UNITS_DISTANCE_MICRONS = 1000;
-  max_distance = 500000;
+  max_distance = xxx;
 else
   max_design_hierarchical_distance = 3;
 
 Dynamical Test Power:
-  max_dynamic_power = 0.05;
+  max_dynamic_power = xxx;
 
 Memory Type: SRAM | ROM;
 

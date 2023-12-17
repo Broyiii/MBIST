@@ -591,7 +591,7 @@ void Parser::ParseLvlib(std::string lvlib)
                         mem->WriteOutOfRange = GetInfoFromStr(line);
                     }
                 }
-                else if (line.find("LogicalAddressMaP") != std::string::npos)
+                else if (line.find("LogicalAddressMa") != std::string::npos)
                 {
                     bool breakFlag = false;
                     std::map<int, std::string> tmp_map;  // <Address[id], map_addr[id]>
